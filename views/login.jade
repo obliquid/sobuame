@@ -1,0 +1,15 @@
+extends layout
+
+block content
+
+	div(data-role='page' id='page-login')
+		include includes/appHeaderMinimal
+		div(role='main').ui-content
+			form(method="post").ui-body.ui-body-a.ui-corner-all
+				p #{__i("Inserire Nome utente e Password così come sono stati ricevuti via email all'atto di iscrizione al negozio")} 
+					a(href="#{sbam.config.wpSiteUrl}",target="_blank") #{sbam.config.wpSiteUrl}
+				label(for="text-basic") #{__i('User name')}
+				input(type="text",name="username",id="username",value="#{username || ''}")
+				label(for="text-basic") Password
+				input(type="password",name="password",id="password",value="#{password || ''}",autocomplete="off")
+				input(type="submit",value="Login",data-icon="check",data-theme="a")

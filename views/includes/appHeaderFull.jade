@@ -1,0 +1,11 @@
+div(data-role='panel',id='mypanel')
+	p ciao!
+	button(data-rel="close").ui-btn.ui-btn-inline.ui-mini.ui-corner-all.ui-btn-icon-left.ui-icon-delete Close panel
+div(data-role='header',data-position='fixed',data-theme='a')
+	a(href='#mypanel',data-iconpos='notext').ui-btn-left.ui-link.ui-btn.ui-icon-bars.ui-btn-icon-notext.ui-corner-all
+	div(data-role='controlgroup',data-type='horizontal').ui-mini.ui-btn-left
+		img(src='/images/logo_mini.png',style='position:absolute;left:40px;top:2px;')
+	div(data-role='controlgroup',data-type='horizontal').ui-mini.ui-btn-right
+		button.ui-btn.ui-btn-icon-right.ui-icon-back undo
+		a(href='#page-edit').ui-btn.ui-btn-icon-right.ui-icon-forward redo
+	h2 #{title}
