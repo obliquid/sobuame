@@ -35,15 +35,80 @@ function defineModels(mongoose, app, next) {
 	
 	//Schema user
 	var User = new Schema({
-		'name': { type: String, index: true, required: true },
-		'profile': { type: String },
-		'email': { type: String, validate: [validatePresenceOf, app.i18n.__('an email is required')], index: { unique: true } },
-		'password': { type: String, required: true },
-		//common fields
-		'status': { type: String, required: true, enum: ['public', 'private'] },
-		'created': { type: Date, required: true }
+		'name': { type: String, index: true, required: false },
+		'created_at':{ type: Date, index: true },
+		'updated_at':{ type: Date, index: true },
+		'ip':{ type: String, index: true }
 	});
+	User.pre('save', function(next){
+		now = new Date();
+		this.updated_at = now;
+		if ( !this.created_at ) {
+			this.created_at = now;
+		}
+		next();
+	});	
 	mongoose.model('user', User);
+	
+	//Schema project
+	var maxSizemm = 1000000; //è la massima dimensione salvabile nel db per tutte le dimensioni, ed è in mm. quindi così è 1km, abbondande per la stampa...
+	var Project = new Schema({
+		'user': { type: Schema.ObjectId, ref: 'user', required: true, index: true },
+		'type': { type: String, enum: ['album', 'poster', 'annuario','libro'], index: true, required: true },//NOTA: ogni modifica a type va riportata coerentemente in sobuame.js
+		'name': { type: String, index: true, required: true },
+		'created_at':{ type: Date, index: true },
+		'updated_at':{ type: Date, index: true },
+		'width':{ type: Number, max: maxSizemm, index: true, required: true },
+		'height':{ type: Number, max: maxSizemm, index: true, required: true },
+		'spline': { type: String, index: false, required: false },
+		'minPageQuantity': { type: Number, max: 256, index: true, required: false },
+		'pages':[{ //ogni pagina in un progetto è identificata da 2 parametri (oltre ovviamente al suo _id univoco assegnato da mongo): num e type. num da solo non basta perchè ci sono le pagine speciali, come le copertine, che non lo usano.
+			"type": { type: String, enum: ['left','right','cover-1-front','cover-2-front','cover-3-back','cover-4-back','single'], index: true, required: false },
+			"num": { type: Number, default: -1, index: false, required: false },//type:left e type:right condividono la numerazione a partire dalla 1 (si inizia con 1 che è right, e vale la regola che tutti le pagine dispari sono right e quelle pari sono left), mentre type:cover-front e cover-back non usano il campo num
+			"elements": [{
+				"bbox": {
+					"x": { type: Number, max: maxSizemm, index: true, required: false },
+					"y": { type: Number, max: maxSizemm, index: true, required: false },
+					"w": { type: Number, max: maxSizemm, index: true, required: false },
+					"h": { type: Number, max: maxSizemm, index: true, required: false }
+				},
+				"type": { type: String, enum: ['text','image','pagenum','sticker'], index: true, required: false },
+				"text": {
+					"content": { type: String, index: true, required: false },
+					"color": {
+						"c":{ type: Number, max: 100, index: true, required: false },
+						"m":{ type: Number, max: 100, index: true, required: false },
+						"y":{ type: Number, max: 100, index: true, required: false },
+						"k":{ type: Number, max: 100, index: true, required: false }
+					},
+					"font":{ type: String, index: true, required: false },
+					"font-size":{ type: Number, max: 10000, index: false, required: false },
+					"align": { type: String, enum: ['left','right','center','justify'], index: true, required: false },
+				},
+				"image": {
+					"url": { type: String, index: true, required: false },
+					"zoom": { type: Number, max: 100, index: false, required: false },
+					"offsetx": { type: Number, max: maxSizemm, index: true, required: false },
+					"offsety": { type: Number, max: maxSizemm, index: true, required: false }
+				},
+				"pagenum": {
+					"type": { type: String, enum: ['num','roman','letter'], index: true, required: false },
+				},
+				"sticker": {
+					"label": { type: String, index: true, required: false }
+				}
+			}]
+		}]
+	});
+	Project.pre('save', function(next){
+		now = new Date();
+		this.updated_at = now;
+		if ( !this.created_at ) {
+			this.created_at = now;
+		}
+		next();
+	});	
+	mongoose.model('project', Project);
 	
 	
 	/*

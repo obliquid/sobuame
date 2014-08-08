@@ -27,141 +27,26 @@
 //USERS
 
 
-function getUserID(req,res) {
-	var userID = "";
-	if (req.cookies.userID) {
-		//l'utente ha già un ID assegnato, ritorno quello
-		//console.log("utente che ritorna!");
-		userID = req.cookies.userID;
-	} else {
-		//genero un nuovo ID
-		//console.log("ucci ucci, sento utente nuevo nuovento!");
-		var A = Math.random();
-		var B = A.toString(36);
-		var C = B.substr(2, 16);
-		//console.log(A);
-		//console.log(B);
-		//console.log(C);
-		userID = C;
-		
-		
-		
-		//e lo salvo nei cookies dell'utente
-		res.cookie('userID', userID, { maxAge: 1000*60*60*24*365 });
-		
-		//devo anche crearlo nel db
-		//QUI!!
-		
-	}
-	//console.log('getUserID: ritorno userID='+userID);
-	//return "eccolo il tuo id del cazzo!: 239r78y94ry7";
-	return userID;
+function createUser(req,res,name,next) {
+	if ( !name || name == undefined ) name = "";
+	//creo lo user nel db
+	var user = new req.app.sbam.user();
+	user.name = name;
+	user.ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+	//console.log("creato new user");
+	user.save(function (err) {
+		if ( err ) {
+			console.log("save:error "+err);
+			res.send(err);
+		} else {
+			//console.log("salvo new user nei cookies");
+			//e lo salvo nei cookies dell'utente
+			req.app.sbam.sess.setCookieUserId(req,res,user._id.toString());
+			next();
+		}
+	});
 }
-
-
-/* controllo nel db se lo user (che sia in POST o dalle sessions) esiste */
-/*
-function checkValidUser(req, closure)
-{
-	//console.log('checkValidUser: req.body.login_email='+req.body.login_email);
-	//controllo se ho le credenziali in POST (cioè se sto facendo un login dal form), oppure se le ho nelle session (sono già loggato)
-	var email = ( req.body && req.body.login_email && req.body.login_email != "" ) ? req.body.login_email : req.session.email;
-	var password = ( req.body && req.body.login_password && req.body.login_password != "" ) ? req.body.login_password : req.session.password;
-	//prima controllo se si tratta del super admin
-	if ( req.app.jsl.config.superadminEmail == email && req.app.jsl.config.superadminPw == password )
-	{
-		closure(true, 'superadmin'); //se sono super user, salvo come id la parola "superadmin"
-	}
-	else
-	{
-		//verifico se effettivamente esiste nel db il mio utente
-		var hashedPw = hashPw(req, password);
-		//console.log("checkValidUser: hashedPw="+hashedPw);
-		req.app.jsl.user.findOne(
-			{ 'email': email, 'password': hashedPw },
-			function(err, user) {
-				if (!err)
-				{
-					if ( user && user.email == email && user.password == hashedPw )
-					{
-						//return true;
-						closure(true, user._id);
-					}
-					else
-					{
-						//return false;
-						closure(false, 0);
-					}
-				}
-				else
-				{
-					//qualcosa è andato storto nella query
-					errorPage(res, err, 'jslardo.checkValidUser: error in query retrieving users');
-				}
-			}
-		);		
-	}
-}
-*/
-
-/* dopo che è stato effettuato il controllo, questo metodo salva effettivamente le variabili che dicono che l'utente è loggato */
-/*
-function setSignedIn(req, user_id)
-{
-	//devo considerare i casi in cui i dati arrivano dal form di login, e il caso in cui arrivano dal form di modifica dell'utente
-	if ( req.body && req.body.login_email && req.body.login_email != "" ) 
-	{
-		var email = req.body.login_email;
-	}
-	else if ( req.body && req.body.email && req.body.email != "" ) 
-	{
-		var email = req.body.email;
-	}
-	if ( req.body && req.body.login_password && req.body.login_password != "" ) 
-	{
-		var password = req.body.login_password;
-	}
-	else if ( req.body && req.body.password && req.body.password != "" ) 
-	{
-		var password = req.body.password;
-	}
-	//salvo nelle session che il mio utente è loggato
-	req.session.email = email;
-	req.session.password = password;
-	req.session.user_id = user_id; //questo varrà 'superadmin' se mi sono loggato come superadmin
-	//by default quando un utente si logga, vedrà solo i suoi elementi, ma solo se non è superadmin
-	if ( user_id != 'superadmin' )
-	{
-		req.session.filterAllOrMine = 'mine';
-	}
-}
-*/
-
-/* slogga l'utente */
-/*
-function setSignedOut(req)
-{
-	//resetto le session
-	req.session.destroy(function() {});
-}
-*/
-
-
-/* hashing delle password */
-/*
-function hashPw(req, password)
-{
-	if (password) {
-		return req.app.jsl.crypto.createHash('sha1').update(password).digest('hex');
-	} else {
-		return '';
-	}
-}
-*/
-
-
-
-exports.getUserID = getUserID; 
+exports.createUser = createUser; 
 
 
 

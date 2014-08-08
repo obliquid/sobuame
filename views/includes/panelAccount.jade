@@ -1,0 +1,21 @@
+div(data-role='panel' id='panelAccount' data-position="right" data-display="overlay")
+	ul(data-role="listview")
+		if userName
+			li
+				a(data-rel="close").ui-icon-delete #{__i("Il tuo account")}
+			li(data-role="list-divider")
+			li(data-role="list-divider" style='background-color:#ddffdd;')
+				h5  #{__i("Benvenuto")} #{userName}
+				p #{__i("Da adesso è attiva la funzione di save.")} 
+			li(data-role="list-divider")
+			li(data-icon="sign-out")
+				a(href="/logout") #{__i("Esci")}
+		else
+			li
+				a(data-rel="close").ui-icon-delete #{__i("Salva")}
+			li(data-role="list-divider")
+			li(data-role="list-divider" style='background-color:#ffdddd;')
+				p  #{__i("Per poter salvare devi effettuare l'accesso.")} #{userName}
+			li(data-role="list-divider")
+			li(data-icon="sign-in")
+				a(id='accountLoginButton' data-rel="close") #{__i("Accedi")}

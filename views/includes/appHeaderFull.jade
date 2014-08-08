@@ -1,11 +1,34 @@
-div(data-role='panel',id='mypanel')
-	p ciao!
-	button(data-rel="close").ui-btn.ui-btn-inline.ui-mini.ui-corner-all.ui-btn-icon-left.ui-icon-delete Close panel
-div(data-role='header',data-position='fixed',data-theme='a')
-	a(href='#mypanel',data-iconpos='notext').ui-btn-left.ui-link.ui-btn.ui-icon-bars.ui-btn-icon-notext.ui-corner-all
+include panelPages
+include panelProjects
+include panelHistory
+include panelAccount
+div(data-role='header' data-position='fixed' data-theme='a')
+	//-
+		div(data-role="navbar" data-iconpos="left" data-grid="d")
+			ul
+				li
+					a(href='#panelPages' data-icon="files-o") #{__i("Pagine")}
+				li
+					a(href='#panelProjects' data-icon="book") #{__i("Pubblicazioni")}
+				li
+					a(href='#' data-icon="mail-reply") #{__i("Undo")}
+				li
+					a(href='#' data-icon="mail-forward") #{__i("Redo")}
+				li
+					if userName
+						a(href='#panelAccount' data-icon="user" style='background-color:#bbffbb;') #{__i("Account")}
+					else
+						a(href='#panelAccount' data-icon="save" style='background-color:#ffbbbb;') #{__i("Accedi")}
 	div(data-role='controlgroup',data-type='horizontal').ui-mini.ui-btn-left
-		img(src='/images/logo_mini.png',style='position:absolute;left:40px;top:2px;')
+		a(href='#panelProjects' data-iconpos='notext').ui-btn.ui-icon-book.ui-btn-icon-notext.ui-title
+		a(id="buttonPages" href='#panelPages' data-iconpos='notext').ui-btn.ui-icon-files-o.ui-btn-icon-notext.ui-title.ui-state-disabled
+		//img(src='/images/logo_mini.png',style='position:absolute;left:120px;top:2px;')
 	div(data-role='controlgroup',data-type='horizontal').ui-mini.ui-btn-right
-		button.ui-btn.ui-btn-icon-right.ui-icon-back undo
-		a(href='#page-edit').ui-btn.ui-btn-icon-right.ui-icon-forward redo
-	h2 #{title}
+		button(id="buttonUndo").ui-btn.ui-icon-mail-reply.ui-btn-icon-notext.ui-title.ui-state-disabled
+		a(id="buttonHistory" href='#panelHistory' data-iconpos='notext').ui-btn.ui-icon-ellipsis-h.ui-btn-icon-notext.ui-title.ui-state-disabled
+		button(id="buttonRedo").ui-btn.ui-icon-mail-forward.ui-btn-icon-notext.ui-title.ui-state-disabled
+		if userName
+			a(id='buttonSave').ui-btn.ui-icon-cloud-upload.ui-btn-icon-notext.ui-title.ui-state-disabled
+			a(href='#panelAccount' style='background-color:#bbffbb;').ui-btn.ui-icon-user.ui-btn-icon-notext.ui-title
+		else
+			a(href='#panelAccount' style='background-color:#ffbbbb;').ui-btn.ui-icon-cloud-upload.ui-btn-icon-notext.ui-title

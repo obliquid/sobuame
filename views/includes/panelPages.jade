@@ -1,0 +1,20 @@
+div(data-role='panel' id='panelPages' data-display="overlay" )
+	ul(data-role="listview" id='panelPagesListview')
+		li
+			a(data-rel="close").ui-icon-delete #{__i("Pagine")}
+		li(data-role="list-divider")
+		li(id="empty-pages" data-role="list-divider")
+			p  #{__i("La tua pubblicazione non ha nessuna pagina.")}
+		li(data-role="list-divider")
+		li(data-icon="plus")
+			a(id="buttonAddPage") #{__i("Aggiungi pagine")}
+		li(data-icon="minus")
+			a(id="buttonDelPage" href="#popupDelPage" data-rel="popup" data-position-to="window" data-transition="pop") #{__i("Elimina pagine")}
+			
+			
+		div(data-role="popup" id="popupDelPage")
+			div(role="main").ui-content
+				h3.ui-title(id='currentPagesLabel')
+				p #{__i('Sicuro di voler eliminare queste pagine?')}
+				a(id="delPageButton" data-icon="minus" data-rel="back").ui-btn.ui-icon-minus.ui-btn-icon-right.ui-shadow.ui-corner-all.ui-btn-inline #{__i('Elimina')}
+				a(href="#" data-rel="back").ui-btn.ui-icon-delete.ui-btn-icon-right.ui-shadow.ui-corner-all.ui-btn-inline #{__i('Annulla')}

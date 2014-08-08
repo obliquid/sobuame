@@ -27,273 +27,269 @@
 // ROUTES
 
 
-function defineRoutes(app) {
+function defineRoutes(router) {
+	
+	// route middleware that will happen on every request
+	router.use(function(req, res, next) {
+		console.log('route matched:');
+		console.log('method='+req.method);
+		console.log('url='+req.url);
+		console.log('path='+req.path);
+		//check valid user (apart from login page)
+		if ( req.url.substring(0, 6) != "/login" ) {
+			req.app.sbam.sess.checkValidUser(req, res, next);
+		} else {
+			next();	
+		}
+	});
+	
+	
+	
+	//SESSIONS ROUTES
 	
 	//GET: mail page dell'applicazione. qui dentro ci sono tutte le pagine jQueryMobile
-	app.get('/', function(req, res){ 
-		app.sbam.routes.routeInit(req,res);
+	router.get('/', function(req, res){ 
 		res.render('home', {
-			//title:"Impagina"
+			'userName':req.cookies.userName
 		});
 	});
-	app.get('/login', function(req, res){ 
-		//app.sbam.routes.routeInit(req,res);
+	
+	router.get('/login/:username?', function(req, res){ 
 		res.render('login', {
-			//title:"Accedi"
+			username:req.params.username
 		});
 	});
-	app.post('/login', function(req, res){ 
+	
+	router.post('/login/:username?', function(req, res){ 
+		//il parametro username lo devo leggere perchè a volte arriva nell'url, ma qui non mi serve perchè leggo tutto in POST
+		//console.log(req.body.username);
+		//console.log(req.body.password);
 		//app.sbam.routes.routeInit(req,res);
-		console.log("làlà");
-		
-		console.log("lèlè");
-		
-		
-		  
-		  
-		  
-		  
-		  
-		  
-		
-		
-		console.log("uèuè");
-		console.log(req.body.username);
-		console.log(req.body.password);
-		res.render('login', {
-			username:req.body.username,
-			password:req.body.password
+		req.app.sbam.sess.checkWordpressValidUser(req,res,req.body.username,req.body.password,function(msg){
+			//on success
+			//redirect to home
+			res.redirect("/");
+		},function(msg){
+			//on fail
+			console.log("wp login failed for user: "+req.body.username+ ", and pw: "+req.body.password);
+			//ributto fuori la pagina di login con form precompilato + msg errore
+			res.render('login', {
+				username:req.body.username,
+				password:req.body.password,
+				errormsg:msg
+			});
 		});
+		
 		
 	});
 
+	router.get('/logout', function(req, res){ 
+		req.app.sbam.sess.logout(req,res,function(){
+			res.redirect("/");
+		});
+	});
+
 	
-	/*
-	//POST: login signin
-	app.post('/signin', function(req, res) {
-		app.jsl.routes.routeInit(req);
-		//controllo se esiste il mio utente nel db
-		app.jsl.sess.checkValidUser(req, function(result, user_id) { 
-			if ( result )
-			{
-				//ho trovato lo user nel db (oppure sono superadmin)
-				//il login è valido
-				app.jsl.sess.setSignedIn(req, user_id);
-				console.log("POST: login signin: login succeded for user: "+req.body.login_email);
-				//alla fine ricarico la pagina da cui arrivavo
-				res.redirect('back');
+	
+	//PROJECTS ROUTES
+		
+	//routes to be called from client via ajax (return json)
+	router.post('/getProject', function(req, res){ 
+		//console.log("provo la query getProject su id:"+req.body.id);
+		req.app.sbam.project.findById( req.body.id, function(err, project) {
+			if (err) {
+				console.log("findOne:error "+err);
+				res.send(err);
+			} else if (project) {
+				//console.log("project:");
+				//console.log(project);
+				res.end(JSON.stringify(project));
+			} else {
+				console.log("find: empty result");
+				res.end(JSON.stringify({errormsg: req.app.i18n.__("Empty result") }));
 			}
-			else
+		});
+	});
+	router.post('/getProjects', function(req, res){ 
+		//console.log("provo la query getProjects");
+		req.app.sbam.project.find(
+			{'user':req.cookies.userID},
+			//['xxx','yyy'], // Columns to Return
+			null,
 			{
-				//il mio utente non c'è nel db
-				app.jsl.sess.setSignedOut(req);
-				console.log("POST: login signin: login failed for user: "+req.body.login_email);
-				//alla fine ricarico la pagina da cui arrivavo
-				res.redirect('back');
+				//skip:0, // Starting Row
+				//limit:10, // Ending Row
+				sort:{
+					created_at: 1
+				}
+			}, 
+			function(err, projects) {
+				if (err) {
+					console.log("findOne:error "+err);
+					res.send(err);
+				} else if (projects) {
+					//console.log("projects:");
+					//console.log(projects);
+					//res.setHeader('Content-Type', 'application/json');//ma serve?
+					res.end(JSON.stringify(projects));				
+				} else {
+					console.log("find: empty result");
+					//res.setHeader('Content-Type', 'application/json');//ma serve?
+					res.end(JSON.stringify({errormsg: req.app.i18n.__("Empty result") }));
+				}
 			}
-		});	
+		);
 	});
-	
-	//GET: login signout
-	app.get('/signout', function(req, res) {
-		app.jsl.routes.routeInit(req);
-		//resetto le session
-		console.log("POST: login signout: for user: "+req.session.email);
-		app.jsl.sess.setSignedOut(req);
-		//alla fine ricarico la pagina da cui arrivavo
-		res.redirect('back');
-	});
-	
-	//GET: change language
-	app.get('/lan/:locale?', function(req, res) {
-		app.jsl.routes.routeInit(req);
-		//cambio la lingua
-		//req.session.currentLocale = req.params.locale;
-		//console.log("prima nei cookie ho:");
-		//console.log(req.cookies);
-		res.cookie('currentlocale', req.params.locale, { expires: new Date(Date.now() + app.jsl.config.cookiesDurationMs), path: '/' });
-		//console.log('dopo nei cookies ho: ');
-		//console.log(req.cookies);
-		//alla fine ricarico la pagina da cui arrivavo
-		res.redirect('back');
-	});
-	
-	//POST: qaptcha specific route
-	app.post('/qaptcha', function(req, res) {
-		app.jsl.routes.routeInit(req);
+	router.post('/addProject', function(req, res) {
+		//console.log("provo la query addProject");
+		console.log("ecco tutto il mio body:");
 		console.log(req.body);
-		var response = {};
-		response['error'] = false;
+		console.log(req.body.form);
+		console.log(req.body.form.name);
+		console.log(req.body.form.type);
+		if ( 
+			req.body.form.name && 
+			req.body.form.name != "" && 
+			req.body.form.type && 
+			req.body.form.type != "" &&
+			req.body.form.width && 
+			req.body.form.width != "" &&
+			req.body.form.height && 
+			req.body.form.height != ""
+		) {
+			var project = new req.app.sbam.project();
+			//popolo i campi obbligatori che mi arrivano dal form
+			project.user = req.cookies.userID;
+			project.name = req.body.form.name;
+			project.type = req.body.form.type;
+			project.width = req.body.form.width;
+			project.height = req.body.form.height;
+			//poi popolo quelli facoltativi
+			if ( req.body.form.minPageQuantity ) project.minPageQuantity = req.body.form.minPageQuantity;
 			
-		if(req.body.action && req.body.qaptcha_key)
-		{
-			req.session.qaptcha_key = false;	
-			
-			if(req.body.action == 'qaptcha')
-			{
-				req.session.qaptcha_key = req.body.qaptcha_key;
-			}
-			else
-			{
-				response['error'] = true;
-			}
-		}
-		else
-		{
-			response['error'] = true;
-		}
-		res.json( response );
-	});
-	*/
-	
-	
-	
-	/*
-	FILTERS
-	nota: ora li tengo qui, ma se aumentano sarà meglio metterli, ove possibile, nei rispettivi controllers js
-	*/
-	/*
-	//GET: list filter All or Mine
-	app.get('/filterAllOrMine/:filterOn', function(req, res) {
-		app.jsl.routes.routeInit(req);
-		//posso filtrare sui miei elementi solo se sono loggato, e se non sono superadmin
-		if ( req.session.loggedIn && req.session.user_id != 'superadmin' )
-		{
-			//sono loggato, non come superadmin, quindi posso filtrare
-			req.session.filterAllOrMine = req.params.filterOn;
-		}
-		else if ( req.session.loggedIn && req.session.user_id == 'superadmin' )
-		{
-			//sono loggato come superadmin, non posso filtrare sui miei elementi ma solo su tutti
-			req.session.filterAllOrMine = 'all';
-		}
-		else
-		{
-			//se invece sto cercando di attivare il filtering senza essere loggato, forzo un loagout che mi azzera tutte le sessions
-			setSignedOut(req);
-		}
-		//alla fine ricarico la pagina da cui arrivavo
-		res.redirect('back');
-	});
-	
-	//GET: filter by site
-	//nota: se si passa anche il parametro andGotoUrl, questo deve essere URIencodato: in jade usare #{encURI('url')}
-	app.get('/filterBySite/:site?/:andGotoUrl?', function(req, res) {
-		app.jsl.routes.routeInit(req);
-		//prima definisco su che url fare il redirect
-		var redirectTo = ( req.params.andGotoUrl != '' && req.params.andGotoUrl != undefined ) ? decodeURIComponent(req.params.andGotoUrl) : 'back';
-		//inizialmente azzero la session per il filtraggio
-		req.session.filterBySite = undefined;
-		//verifico se mi è arrivato un site su cui filtrare
-		if ( req.params.site != '' && req.params.site != undefined )
-		{
-			//leggo i siti su cui posso filtrare, per verificare che l'utente stia cercando di filtrare su un sito a lui consentito
-			app.jsl.siteController.getSites(req,res,function(sites) {
-				if (sites)
-				{
-					//posso filtrare su dei sites. verifico se quello richiesto è tra quelli papabili
-					//nota: non posso usare array.forEach perchè devo poter usare break;
-					for (var x=0;x<sites.length;x++)
-					{
-						if ( sites[x]._id == req.params.site )
-						{
-							//trovato il mio sito, posso usarlo per filtrare
-							//imposto le session ed esco dal ciclo
-							req.session.filterBySite = req.params.site;
-							break;
-						}
+			if ( req.body.pages && req.body.pages.length > 0 ) {
+				for( var i=0; i<req.body.pages.length; i++) {
+					console.log("starei per gestire questa page:");
+					console.log(req.body.pages[i]);
+					if (req.body.pages[i].num) {
+						project.pages.push({
+							'type':req.body.pages[i].type,
+							'num':Number(req.body.pages[i].num)
+						});
+					} else {
+						project.pages.push({
+							'type':req.body.pages[i].type
+						});
 					}
-					//ricarico la pagina da cui arrivavo
-					res.redirect(redirectTo);				
 				}
-				else
-				{
-					//se non mi sono arrivati sites, vuol dire che non posso filtrare su niente
-					//ricarico la pagina da cui arrivavo
-					res.redirect(redirectTo);				
+			}
+			
+			//QUI if ( req.body.form.spline ) project.spline = req.body.form.spline; //non ancora implementato perchè non so se farlo nel modify e nel add
+			
+			//console.log("creato new project");
+			project.save(function (err) {
+				if ( err ) {
+					console.log("save:error "+err);
+					res.send(err);
+				} else {
+					//res.setHeader('Content-Type', 'application/json');//ma serve?
+					//res.end(JSON.stringify(project));	
+					//res.redirect("/");
+					res.end(JSON.stringify(project));	
 				}
 			});
-		}
-		else
-		{
-			//non mi è arrivato il site, che vuol dire che non devo filtrare su nessun site
-			//ricarico la pagina da cui arrivavo
-			res.redirect(redirectTo);
+		} else {
+			var errormsg = "";
+			if ( !req.body.form.name ) errormsg += req.app.i18n.__("Titolo obbligatorio.") + " ";
+			if ( !req.body.form.type ) errormsg += req.app.i18n.__("Tipo obbligatorio.") + " ";
+			if ( !req.body.form.width || !req.body.form.height ) errormsg += req.app.i18n.__("Formato obbligatorio.") + " ";
+			console.log("parametri mancanti:");
+			console.log("req.body.form");
+			console.log(req.body.form);
+			res.end(JSON.stringify({'errormsg': errormsg }));
 		}
 	});
-	*/
-	
-	/*	
-	//GET: filter by model
-	//nota: se si passa anche il parametro andGotoUrl, questo deve essere URIencodato: in jade usare #{encURI('url')}
-	app.get('/filterByModel/:jslModel?/:andGotoUrl?', function(req, res) {
-		app.jsl.routes.routeInit(req);
-		//prima definisco su che url fare il redirect
-		var redirectTo = ( req.params.andGotoUrl != '' && req.params.andGotoUrl != undefined ) ? decodeURIComponent(req.params.andGotoUrl) : 'back';
-		//inizialmente azzero la session per il filtraggio
-		req.session.filterByModel = undefined;
-		//verifico se mi è arrivato un jslModel su cui filtrare
-		if ( req.params.jslModel != '' && req.params.jslModel != undefined )
-		{
-			//leggo i siti su cui posso filtrare, per verificare che l'utente stia cercando di filtrare su un sito a lui consentito
-			app.jsl.jslModelController.getJslModels(req,res,function(jslModels) {
-				if (jslModels)
-				{
-					//posso filtrare su dei jslModels. verifico se quello richiesto è tra quelli papabili
-					//nota: non posso usare array.forEach perchè devo poter usare break;
-					for (var x=0;x<jslModels.length;x++)
-					{
-						if ( jslModels[x]._id == req.params.jslModel )
-						{
-							//trovato il mio sito, posso usarlo per filtrare
-							//imposto le session ed esco dal ciclo
-							req.session.filterByModel = req.params.jslModel;
-							break;
+	router.post('/saveProject', function(req, res) {
+		//console.log("provo la query saveProject");
+		console.log("PRIMA ecco il mio project da salvare come mi arriva dal client:");
+		console.log(req.body.project);
+		if ( req.body.project ) {
+			req.app.sbam.project.findById( req.body.project._id, function(err, project) {
+				if (err) {
+					console.log("findOne:error "+err);
+					res.send(err);
+				} else if (project) {
+					//console.log("PRIMA ecco il mio project da salvare come è nel db:");
+					//console.log(project);
+					
+					//////project = req.body.project; //goffo tentativo di merge di ciò che mi arriva dal client con ciò che c'è nel db
+					//ciclo su tutte le properties dell'oggetto project che mi arriva dal client
+					//e ne replico il contenuto nell'oggetto da salvare nel db
+					for (var project_field in req.body.project) {
+						if ( 
+							req.body.project.hasOwnProperty(project_field) 
+							&& 
+							typeof req.body.project[project_field] !== 'function' 
+							&& 
+							project_field != "_id"
+							&& 
+							project_field != "created_at"
+							&& 
+							project_field != "updated_at"
+							&& 
+							project_field != "user" //lo user non lo cambio mai, a parte quanto si passa da utente anonimo a utente loggato, poi resta sempre invariato
+							&& 
+							project_field != "__v"
+						) {
+							//console.log("uella gente!, questa la terrei ;-) "+project_field+" con contenuto: "+req.body.project[project_field]);
+							project[project_field] = req.body.project[project_field];
 						}
 					}
-					//ricarico la pagina da cui arrivavo
-					res.redirect(redirectTo);				
+					console.log("POI ecco il mio project come lo sto per salvare nel db:");
+					console.log(project);
+					//console.log("ma");
+					project.save(function (err) {
+						//console.log("dove");
+						if ( err ) {
+							console.log("save:error "+err);
+							res.send(err);
+						} else {
+							//console.log("INFINE salvato!");
+							res.end(JSON.stringify(project));	
+						}
+						//console.log("cazzo?!");
+					});
+				} else {
+					console.log("find: empty result");
+					res.end(JSON.stringify({errormsg: req.app.i18n.__("Empty result") }));
 				}
-				else
-				{
-					//se non mi sono arrivati jslModels, vuol dire che non posso filtrare su niente
-					//ricarico la pagina da cui arrivavo
-					res.redirect(redirectTo);				
-				}
-			});
-		}
-		else
-		{
-			//non mi è arrivato il jslModel, che vuol dire che non devo filtrare su nessun jslModel
-			//ricarico la pagina da cui arrivavo
-			res.redirect(redirectTo);
+			});			
+		} else {
+			var errormsg = "";
+			if ( !req.body.project ) errormsg += req.app.i18n.__("Campo project obbligatorio.");
+			res.end(JSON.stringify({'errormsg': errormsg }));
 		}
 	});
-	*/
-
-	
-	
-}
-
-
-/* questa va richiamata da ogni route, e compie operazioni utili e comuni a tutte le route.
-nota che i controlli sui permessi vengono fatti dal middleware, questa servirà ad altro */
-function routeInit(req,res)
-{
-	console.log('route matched: '+req.route.path);	
-	//check valid user
-	req.app.sbam.sess.checkValidUser();
-
+	router.post('/delProject', function(req, res) {
+		console.log("provo la query delProject su id:"+req.body.id);
+		req.app.sbam.project.findById( req.body.id ).remove( function(err) {
+			if (err) {
+				console.log("findById:error "+err);
+				res.send(err);
+			} else {
+				//console.log("project:");
+				//console.log(project);
+				res.end(JSON.stringify({}));
+			}
+		});
+	});
 
 	
 }
-
-
-
 
 
 exports.defineRoutes = defineRoutes; 
-exports.routeInit = routeInit; 
+//exports.routeInit = routeInit; serve? viene usata solo qui
 
 
 

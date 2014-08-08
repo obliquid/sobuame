@@ -1,0 +1,63 @@
+div(data-role='panel' id='panelProjects' data-display='overlay' )
+	ul(data-role="listview")
+		li
+			a(data-rel="close").ui-icon-delete #{__i("Pubblicazioni")}
+		li(id="empty-projects" data-role="list-divider")
+			p  #{__i("Non hai ancora pubblicazioni su cui lavorare.")}
+	div(style="height:16px;")
+	ul(data-role="listview" id='panelProjectsListview' data-filter='true' data-filter-placeholder='#{__i("Cerca per titolo")}')
+	div(style="height:32px;")
+	ul(data-role="listview")
+		li(data-role="list-divider")
+		li(data-icon="plus")
+			a(href="#popupAddProject" data-rel="popup" data-position-to="window" data-transition="pop") #{__i("Nuova pubblicazione")}
+		li(data-icon="minus")
+			a(id="buttonDelProject" href="#popupDelProject" data-rel="popup" data-position-to="window" data-transition="pop") #{__i("Elimina pubblicazione")}
+		li(data-icon="pencil")
+			a(id="buttonModifyProject" href="#popupModifyProject" data-rel="popup" data-position-to="window" data-transition="pop") #{__i("Modifica pubblicazione")}
+			
+		div(data-role="popup" id="popupAddProject")
+			form(id="addProjectForm")
+				div(role="main").ui-content
+					h3 #{__i("Nuova pubblicazione")}
+					label(for="name") #{__i('Titolo')}
+					input(type="text" name="name" id="name" value="")
+					input(type="hidden" name="width" id="width" value="")
+					input(type="hidden" name="height" id="height" value="")
+					input(type="hidden" name="minPageQuantity" id="minPageQuantity" value="")
+					p(id="addProjectErrormsg" style="display:none;").ui-bar.ui-bar-a
+					a(id="addProjectButton").ui-btn.ui-icon-cloud-upload.ui-btn-icon-right.ui-shadow.ui-corner-all.ui-btn-inline #{__i('Crea')}
+					a(href="#" data-rel="back").ui-btn.ui-icon-delete.ui-btn-icon-right.ui-shadow.ui-corner-all.ui-btn-inline #{__i('Annulla')}
+					
+		div(data-role="popup" id="popupModifyProject")
+			form(id="modifyProjectForm")
+				div(role="main").ui-content
+					h3 #{__i("Modifica pubblicazione")}
+					label(for="name") #{__i('Titolo')}
+					input(type="text" name="name" id="name" value="")
+					label(for="spline") #{__i('Dorso')}
+					input(type="text" name="spline" id="spline" value="")
+					p(id="modifyProjectErrormsg" style="display:none;").ui-bar.ui-bar-a
+					a(id="modifyProjectButton").ui-btn.ui-icon-cloud-upload.ui-btn-icon-right.ui-shadow.ui-corner-all.ui-btn-inline #{__i('Salva')}
+					a(href="#" data-rel="back").ui-btn.ui-icon-delete.ui-btn-icon-right.ui-shadow.ui-corner-all.ui-btn-inline #{__i('Annulla')}
+					
+		div(data-role="popup" id="popupDelProject")
+			div(role="main").ui-content
+				h3.ui-title(id='currentProjectTitle')
+				p #{__i('Sicuro di voler eliminare questa pubblicazione?')}
+				a(id="delProjectButton" data-icon="minus" data-rel="back").ui-btn.ui-icon-minus.ui-btn-icon-right.ui-shadow.ui-corner-all.ui-btn-inline #{__i('Elimina')}
+				a(href="#" data-rel="back").ui-btn.ui-icon-delete.ui-btn-icon-right.ui-shadow.ui-corner-all.ui-btn-inline #{__i('Annulla')}
+
+		div(data-role="popup" id="popupAddProjectSure")
+			div(role="main").ui-content
+				h3 #{__i("Modifiche non salvate.")}
+				p #{__i("Attenzione ci sono modifiche non salvate per la pubblicazione aperta, se si procede andranno perse. Continuare?")}
+				a(id="popupAddProjectSureButton").ui-btn.ui-icon-check.ui-btn-icon-right.ui-shadow.ui-corner-all.ui-btn-inline #{__i('Continua')}
+				a(href="#" data-rel="back").ui-btn.ui-icon-delete.ui-btn-icon-right.ui-shadow.ui-corner-all.ui-btn-inline #{__i('Annulla')}
+					
+
+					
+					
+					
+					
+					

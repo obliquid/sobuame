@@ -1,12 +1,19 @@
 doctype html
 html
-  head
-    title= title
-    meta( name='viewport', content='width=device-width, initial-scale=1')
-    //link(rel='stylesheet', href='/stylesheets/style.css')
-    link(rel='stylesheet', href='/javascripts/jqmobile/jquery.mobile-1.4.2.min.css')
-    script(src='/javascripts/jquery-1.11.1.min.js')
-    script(src='/javascripts/jqmobile/jquery.mobile-1.4.2.min.js')
-    script(src='/javascripts/sobuame.js')
-  body
-    block content
+	head
+		title= title
+		meta( name='viewport', content='width=device-width, initial-scale=1')
+		//link(rel='stylesheet', href='/stylesheets/style.css')
+		link(rel='stylesheet', href='/stylesheets/jqm-icon-pack-fa.css')
+		link(rel='stylesheet', href='/javascripts/jqmobile/jquery.mobile-1.4.2.min.css')
+		script(src='/javascripts/jquery-1.11.1.min.js')
+		script.
+			//questo disabilita l'infausta ajax navigation di jquerymobile, e va esattamente dopo il load di jquery e prima del load di jquerymobile
+			$(document).bind("mobileinit", function () {
+				$.mobile.ajaxEnabled = false;
+			});
+
+		script(src='/javascripts/jqmobile/jquery.mobile-1.4.2.min.js')
+		script(src='/javascripts/sobuame.js')
+	body
+		block content
