@@ -2,26 +2,12 @@ include panelPages
 include panelProjects
 include panelHistory
 include panelAccount
-div(data-role='header' data-position='fixed' data-theme='a')
-	//-
-		div(data-role="navbar" data-iconpos="left" data-grid="d")
-			ul
-				li
-					a(href='#panelPages' data-icon="files-o") #{__i("Pagine")}
-				li
-					a(href='#panelProjects' data-icon="book") #{__i("Pubblicazioni")}
-				li
-					a(href='#' data-icon="mail-reply") #{__i("Undo")}
-				li
-					a(href='#' data-icon="mail-forward") #{__i("Redo")}
-				li
-					if userName
-						a(href='#panelAccount' data-icon="user" style='background-color:#bbffbb;') #{__i("Account")}
-					else
-						a(href='#panelAccount' data-icon="save" style='background-color:#ffbbbb;') #{__i("Accedi")}
+include panelMedia
+div(data-role='header' data-position='fixed')
 	div(data-role='controlgroup',data-type='horizontal').ui-mini.ui-btn-left
 		a(href='#panelProjects' data-iconpos='notext').ui-btn.ui-icon-book.ui-btn-icon-notext.ui-title
-		a(id="buttonPages" href='#panelPages' data-iconpos='notext').ui-btn.ui-icon-files-o.ui-btn-icon-notext.ui-title.ui-state-disabled
+		a(href='#panelPages' data-iconpos='notext' id="buttonPages").ui-btn.ui-icon-files-o.ui-btn-icon-notext.ui-title.ui-state-disabled
+		a(href='#panelMedia' data-iconpos='notext' id="buttonMedia").ui-btn.ui-icon-camera.ui-btn-icon-notext.ui-title.ui-state-disabled
 		//img(src='/images/logo_mini.png',style='position:absolute;left:120px;top:2px;')
 	div(data-role='controlgroup',data-type='horizontal').ui-mini.ui-btn-right
 		button(id="buttonUndo").ui-btn.ui-icon-mail-reply.ui-btn-icon-notext.ui-title.ui-state-disabled

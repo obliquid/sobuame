@@ -85,5 +85,21 @@
 	"Attenzione ci sono modifiche non salvate per la pubblicazione aperta, se si procede andranno perse. Continuare?": "Attenzione ci sono modifiche non salvate per la pubblicazione aperta, se si procede andranno perse. Continuare?",
 	"Continua": "Continua",
 	"Modifica pubblicazione": "Modifica pubblicazione",
-	"Dorso": "Dorso"
+	"Dorso": "Dorso",
+	"Titolo obbligatorio.": "Titolo obbligatorio.",
+	"Tipo obbligatorio.": "Tipo obbligatorio.",
+	"Formato obbligatorio.": "Formato obbligatorio.",
+	"Aggiungi": "Aggiungi",
+	"Modifica": "Modifica",
+	"Titolo sul dorso": "Titolo sul dorso",
+	"Immagini": "Immagini",
+	"Non hai ancora caricato alcuna pagina.": "Non hai ancora caricato alcuna pagina.",
+	"Sicuro di voler eliminare questo file?": "Sicuro di voler eliminare questo file?",
+	"Non hai ancora caricato alcuna immagine.": "Non hai ancora caricato alcuna immagine.",
+	"Carica": "Carica",
+	"Gestisci immagine": "Gestisci immagine",
+	"Qui ci saranno operazioni specifiche sulle immagini": "Qui ci saranno operazioni specifiche sulle immagini",
+	"Azione": "Azione",
+	"Cancella": "Cancella",
+	"Sicuro di voler eliminare questa pubblicazione e tutte le sue immagini?": "Sicuro di voler eliminare questa pubblicazione e tutte le sue immagini?"
 }

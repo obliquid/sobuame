@@ -77,7 +77,7 @@ function checkValidUser(req, res, next)
 	} else {
 		//caso di nuovo utente che entra per la prima volta sull'app (oppure gli è scaduto il cookie userID, che dura ab aeternum)
 		//se l'ID non è definito, resetto tutti i cookies per sicurezza
-		//console.log("caso di nuovo utente (entra per la prima volta sull'app, oppure gli è scaduto il cookie userID, che dura ab aeternum)");
+		//console.log("caso di nuovo utente entra per la prima volta sull'app, oppure gli è scaduto il cookie userID, che dura ab aeternum)");
 		resetCookies(req,res);
 		//creo lo user nel db
 		req.app.sbam.users.createUser(req,res,"",next);
@@ -170,7 +170,7 @@ function checkWordpressValidUser(req,res,userName,password,success,fail) {
 									//il problema è cosa fare del vecchio user indicato dai cookies prima di essere sovrascritti
 									//devo cercare nel db se ha uno username
 									//se ha username, lo lascio stare
-									//se non ce l'ha, vuol dire che provengo da un utente anonimo, e devo spostare i suoi progetti sul primo utente su cui viene fatto il login
+									//se non ce l'ha, vuol dire che provengo da un utente anonimo, e devo spostare i suoi progetti (e file) sul primo utente su cui viene fatto il login
 									req.app.sbam.user.findById(req.cookies.userID, function(err, prevUser) {
 										if (err) {
 											console.log("findById:error "+err);
@@ -200,7 +200,35 @@ function checkWordpressValidUser(req,res,userName,password,success,fail) {
 														setCookieUserId(req,res,user._id.toString());
 														//e salvo nei cookies lo username
 														setCookieUserName(req,res,userName);
-														success('login succeded and personal ID updated with original one');
+														//devo anche spostare i file uploadati dall'utente anonimo nel folder dell'utente loggato
+														//e poi cancellare la cartella dell'utente anonimo
+														var ncp = require('ncp').ncp;
+														ncp.limit = 16;
+														//sposto i file:
+														var source = "repo/"+prevUser._id.toString();
+														var destination = "repo/"+user._id.toString();
+														ncp(source, destination, { clobber: false }, function (err) {
+															if (err) {
+																console.log("checkWordpressValidUser: error moving files from "+source+" to "+destination);
+																console.log(err);
+																fail(err);
+																//return false;
+															} else {
+																//cancello la vecchia cartella:
+																var rimraf = require("rimraf");
+																rimraf(source, function (err) {
+																	if (err) {
+																		console.log("checkWordpressValidUser: error deleting user folder "+source);
+																		console.log(err);
+																		fail(err);
+																		//return false;
+																	} else {
+																		//ritorno success
+																		success('login succeded and personal ID updated with original one, and moved user files');
+																	}
+																});
+															}
+														});
 													});
 												}
 											});
@@ -235,7 +263,7 @@ function checkWordpressValidUser(req,res,userName,password,success,fail) {
 										res.send(err);
 									} else if (user && user.name && user.name != "") {
 										//il mio id esiste già nel db e ha anche name, devo creare un nuovo user
-										//creo lo user nel db (questo metodo salva anche il nuovo id nei cookies)
+										//creo lo user nel db (questo metodo salva anche il nuovo id nei cookies, e crea la cartella dello user)
 										req.app.sbam.users.createUser(req,res,userName,function(){
 											success('login succeded and user switched');
 										});

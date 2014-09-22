@@ -75,7 +75,8 @@ function defineRoutes(router) {
 			//ributto fuori la pagina di login con form precompilato + msg errore
 			res.render('login', {
 				username:req.body.username,
-				password:req.body.password,
+				//password:req.body.password,
+				password:"",//per sicurezza la pw non la ritorno
 				errormsg:msg
 			});
 		});
@@ -87,6 +88,76 @@ function defineRoutes(router) {
 		req.app.sbam.sess.logout(req,res,function(){
 			res.redirect("/");
 		});
+	});
+
+	
+	
+	//MEDIA ROUTES
+		
+	//routes to be called from client via ajax (return json)
+	router.post('/getWidgetImg', function(req, res){ 
+		var url = req.body.url;
+		var projectId = req.body.projectId;
+		console.log("##### chiamata route /getWidgetImg con url="+url+" e projectId="+projectId);
+		if ( !url || url == "") {
+			var err = "getWidgetImg: error, missing url!";
+			console.log(err);
+			res.send(err);
+		} else if ( !projectId || projectId == "") {
+			var err = "getWidgetImg: error, missing projectId!";
+			console.log(err);
+			res.send(err);
+		} else {
+			req.app.sbam.utils.getWidgetImg(req,res,url,req.cookies.userID,projectId, function(widgetResult){
+				res.end(JSON.stringify(widgetResult));
+			});
+		}
+	});
+	router.post('/getMedia', function(req, res){ 
+		var repoSubdir = req.body.path;
+		if ( !repoSubdir ) repoSubdir = "";
+		if ( !req.body.projectId || req.body.projectId == "") {
+			var err = "getMedia: error, missing projectId!";
+			console.log(err);
+			res.send(err);
+		} else {
+			
+			console.log("getMedia con path="+repoSubdir+" e user_id:"+req.cookies.userID+" e project_id:"+req.body.projectId);
+			var repoPath = req.app.sbam.utils.getRepoPath(req.cookies.userID, req.body.projectId) + repoSubdir;
+			console.log("repoPath:"+repoPath);
+			var fs   = require('fs');
+			fs.readdir(repoPath, function(err, files) {
+				if (err) {
+					console.log("getMedia:error "+err);
+					res.send(err);
+				} else if (files) {
+					console.log("files:");
+					console.log(files);
+					var filesDetail = [];
+					//loop sui files (ho solo i nomi files) per trovare altre info
+					for ( var x=0; x<files.length; x++ ) {
+						//controllo se è file o dir
+						
+						if ( fs.statSync(repoPath + files[x]).isDirectory() ) {
+							var type = "folder";
+							var thumbUrl = "images/icon-folder-128.png";
+						} else {
+							var type = "file";
+							var thumbUrl = req.app.sbam.utils.getImg(req,res,req.cookies.userID,req.body.projectId,files[x],repoSubdir,80,80,true);
+						}
+						filesDetail.push({
+							'name': files[x], 
+							'thumbUrl': thumbUrl,  
+							'type': type
+						});
+					}
+					res.end(JSON.stringify(filesDetail));
+				} else {
+					console.log("getMedia: empty result");
+					res.end(JSON.stringify({errormsg: req.app.i18n.__("Empty result") }));
+				}
+			});
+		}
 	});
 
 	
@@ -141,12 +212,137 @@ function defineRoutes(router) {
 		);
 	});
 	router.post('/addProject', function(req, res) {
+		//helper functions
+		var pagesRemaining = 0;
+		function syncTheAsyncLoop(req,res,project) {
+			if ( pagesRemaining > 0 ) {
+				var i = req.body.pages.length - pagesRemaining;
+				console.log("syncTheAsyncLoop: starei per gestire questa page:");
+				console.log(req.body.pages[i]);
+				//console.log(req.body.pages[i].num);
+				//if ( !req.body.pages[i].num ) console.log("EPPURE PER ME NON ESISTE DIOCANE!!!!");
+				var pageType = req.body.pages[i].type;
+				if ( req.body.pages[i].num ) {
+					var pageNum = req.body.pages[i].num;
+				} else {
+					var pageNum = -1;
+				}
+				console.log(pageNum);
+				console.log(pageType);
+				if ( req.body.pages[i].tpl ) {
+					//devo aprire il mio tpl
+					var tplFile = req.app.sbam.config.templatesDir + req.body.pages[i].tpl + "." + req.app.sbam.config.templatesExt;
+					var tplFile = "templates/02-txts_00-imgs.xml";
+					//console.log(tplFile);
+					//var pageNumBis = pageNum;
+					//var pageTypeBis = pageType;
+					fs.readFile(tplFile, 'utf8', function(err, data) {
+						if ( data ) {
+							//console.log("e comunque dopo che ho letto il file xml pageNumBis="+pageNumBis+" e pageTypeBis="+pageTypeBis);
+							console.log("fs.readFile ALE': arrivata data!");
+							console.log(data);
+							//var pageNumTris = pageNumBis;
+							//var pageTypeTris = pageTypeBis;
+							parser.parseString(data, function (err, result) {
+								//console.log("e comunque dopo che ho oarsato il file xml pageNumTris="+pageNumTris+" e pageTypeTris="+pageTypeTris);
+								
+								if ( err ) {
+									console.log("xml layout parsing: error "+err);
+									//res.send(err);
+								} else {
+									console.dir("ma dove...");
+									console.dir(result);
+									console.dir("...di preciso?");
+									//console.log(result.elements);
+									var elements = result.elements.element;
+									console.log("elements:"); //questo è esattamente un array con i miei elements
+									console.log(elements); //questo è esattamente un array con i miei elements
+									addPage(req,res,project,elements);
+									//console.log('Done');
+								}								
+							});
+						} else if ( err ) {
+							console.log("xml layout fs.readFile: error "+err);
+						}
+					});						
+				} else {
+					//se non è specificato un template, creo un array vuoto di elements e basta
+					addPage(req,res,project,[]);
+				}
+			} else {
+				//ho finito!!
+				console.log("syncTheAsyncLoop: finito!!!!!!!!! chiamo il save....");
+				//ho aggiunto tutte le pagine in modo async, posso procdere col save vero e proprio
+				addProjectSave(project);
+				
+			}
+		}
+		
+		function addPage(req,res,project,elements) {
+			console.log("addPage con pagesRemaining="+pagesRemaining);
+			console.log("addPage con project:");
+			console.log(project);
+			var i = req.body.pages.length - pagesRemaining;
+			console.log("addPage con i="+i);
+			var num = req.body.pages[i].num;
+			var type = req.body.pages[i].type;
+			if (num) {
+				project.pages.push({
+					'type':type,
+					'num':Number(num),
+					'elements':elements
+				});
+			} else {
+				project.pages.push({
+					'type':type,
+					'elements':elements
+				});
+			}
+			pagesRemaining--;
+			syncTheAsyncLoop(req,res,project);
+
+		}
+		function addProjectSave(project){
+			console.log("addProjectSave:");
+			console.log("ecco tutto il mio project:");
+			console.log(project);
+			project.save(function (err) {
+				if ( err ) {
+					console.log("save:error "+err);
+					res.send(err);
+				} else {
+					//dopo che ho salvato il project, devo creare una sua cartella dentro al repo dell'utente
+					var fs   = require('fs');
+					var projectDir = "repo/"+req.cookies.userID+"/files/project_"+project._id;
+					fs.mkdir(projectDir, 0775, function(err) {
+						if (err) {
+							if (err.code == 'EEXIST') {
+								// ignore the error if the folder already exists
+							} else {
+								// something else went wrong
+								console.log("addProjectSave: error creating folder "+projectDir+" for user "+req.cookies.userID);
+								console.log("addProjectSave: error: "+err);
+								res.send(err);
+							}
+						} else {
+							// successfully created folder
+							//res.setHeader('Content-Type', 'application/json');//ma serve?
+							//res.end(JSON.stringify(project));	
+							//res.redirect("/");
+							res.end(JSON.stringify(project));	
+						}
+					});
+					
+					
+				}
+			});
+		}
+		//dopo aver definito tutti gli helper che mi servono, 
+		//valido il contenuto e se ok lancio lo script syncTheAsyncLoop per aggiungere le pagine al mio project
+		//leggendo per ciascuna pagina il template da file xml e trasfromandolo in json
 		//console.log("provo la query addProject");
 		console.log("ecco tutto il mio body:");
 		console.log(req.body);
-		console.log(req.body.form);
-		console.log(req.body.form.name);
-		console.log(req.body.form.type);
 		if ( 
 			req.body.form.name && 
 			req.body.form.name != "" && 
@@ -166,38 +362,19 @@ function defineRoutes(router) {
 			project.height = req.body.form.height;
 			//poi popolo quelli facoltativi
 			if ( req.body.form.minPageQuantity ) project.minPageQuantity = req.body.form.minPageQuantity;
-			
-			if ( req.body.pages && req.body.pages.length > 0 ) {
-				for( var i=0; i<req.body.pages.length; i++) {
-					console.log("starei per gestire questa page:");
-					console.log(req.body.pages[i]);
-					if (req.body.pages[i].num) {
-						project.pages.push({
-							'type':req.body.pages[i].type,
-							'num':Number(req.body.pages[i].num)
-						});
-					} else {
-						project.pages.push({
-							'type':req.body.pages[i].type
-						});
-					}
-				}
+			if ( req.body.form.variant ) project.variant = req.body.form.variant;
+			if ( req.body.form.spline ) {
+				project.spline = req.body.form.spline;
+			} else {
+				project.spline = project.name; //se non specificato il dorso, lo preimposto uguale al titolo
 			}
-			
-			//QUI if ( req.body.form.spline ) project.spline = req.body.form.spline; //non ancora implementato perchè non so se farlo nel modify e nel add
-			
-			//console.log("creato new project");
-			project.save(function (err) {
-				if ( err ) {
-					console.log("save:error "+err);
-					res.send(err);
-				} else {
-					//res.setHeader('Content-Type', 'application/json');//ma serve?
-					//res.end(JSON.stringify(project));	
-					//res.redirect("/");
-					res.end(JSON.stringify(project));	
-				}
-			});
+			if ( req.body.pages && req.body.pages.length > 0 ) {
+				pagesRemaining = req.body.pages.length;
+				var fs = require('fs');
+				var xml2js = require('xml2js');
+				var parser = new xml2js.Parser({'explicitArray':false});
+				syncTheAsyncLoop(req,res,project);
+			}
 		} else {
 			var errormsg = "";
 			if ( !req.body.form.name ) errormsg += req.app.i18n.__("Titolo obbligatorio.") + " ";
@@ -266,8 +443,8 @@ function defineRoutes(router) {
 			});			
 		} else {
 			var errormsg = "";
-			if ( !req.body.project ) errormsg += req.app.i18n.__("Campo project obbligatorio.");
-			res.end(JSON.stringify({'errormsg': errormsg }));
+			errormsg += req.app.i18n.__("Campo project obbligatorio.");
+			res.end(JSON.stringify({errormsg: errormsg }));
 		}
 	});
 	router.post('/delProject', function(req, res) {
@@ -277,9 +454,19 @@ function defineRoutes(router) {
 				console.log("findById:error "+err);
 				res.send(err);
 			} else {
-				//console.log("project:");
-				//console.log(project);
-				res.end(JSON.stringify({}));
+				//dopo aver cancellato il project dal db, ne cancello anche la cartella dei file
+				var rimraf = require("rimraf");
+				var prjDir = req.app.sbam.utils.getRepoPath(req.cookies.userID, req.body.id);
+				rimraf(prjDir, function (err) {
+					if (err) {
+						console.log("delProject: error deleting project folder "+prjDir);
+						console.log(err);
+						res.send(err);
+					} else {
+						//ritorno
+						res.end(JSON.stringify({}));
+					}
+				});
 			}
 		});
 	});

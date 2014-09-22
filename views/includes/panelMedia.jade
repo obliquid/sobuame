@@ -1,0 +1,36 @@
+div(data-role='panel' id='panelMedia' data-display="overlay" )
+	ul(data-role="listview")
+		li
+			a(data-rel="close").ui-icon-delete #{__i("Immagini")}
+		li(id="empty-media" data-role="list-divider")
+			p  #{__i("Non hai ancora caricato alcuna immagine.")}
+		li(data-role="list-divider")
+	div(style="height:32px;")
+	ul(data-role="listview" id='panelMediaListview'  data-split-icon="arrows" )
+	div(style="height:32px;")
+	ul(data-role="listview")
+		li(data-role="list-divider")
+		li(data-icon="plus")
+			a(href="#popupAddMedia" data-rel="popup" data-position-to="window" data-transition="pop") #{__i("Aggiungi")}
+		li(data-icon="minus")
+			a(id="buttonDelMedia" href="#popupDelMedia" data-rel="popup" data-position-to="window" data-transition="pop") #{__i("Elimina")}
+
+
+	
+			
+			
+		div(data-role="popup" id="popupDelMedia")
+			div(role="main").ui-content
+				h3.ui-title(id='currentMediaLabel')
+				p #{__i('Sicuro di voler eliminare questo file?')}
+				a(id="delMediaButton" data-icon="minus" data-rel="back").ui-btn.ui-icon-minus.ui-btn-icon-right.ui-shadow.ui-corner-all.ui-btn-inline #{__i('Elimina')}
+				a(href="#" data-rel="back").ui-btn.ui-icon-delete.ui-btn-icon-right.ui-shadow.ui-corner-all.ui-btn-inline #{__i('Annulla')}
+
+
+
+		div(data-role="popup" id="popupToolboxMedia").ui-content
+			h3 #{__i("Gestisci immagine")}
+			p #{__i("Qui ci saranno operazioni specifiche sulle immagini")}
+			a(data-rel="back").ui-shadow.ui-btn.ui-corner-all.ui-btn-b.ui-icon-check.ui-btn-icon-left.ui-btn-inline.ui-mini #{__i("Azione")}
+			a(data-rel="back").ui-shadow.ui-btn.ui-corner-all.ui-btn-inline.ui-mini #{__i("Cancella")}
+		

@@ -210,137 +210,385 @@ function renderJson(jsonString,tabString) {
 }
 exports.renderJson = renderJson;
 
-/*
-è un helper da usare direttamente nei tpl jade.
-data un'immagine da visualizzare (completa di file_name e file_path) e una risoluzione
-crea l'immagine ridimensionata se già non esiste, e ne ritorna l'url.
-essendo usata nei tpl, viene eseguita prima che il tpl arrivi all'utente,
-che nel browser riceve sempre un url esplicito, e non l'url di uno script
+/* 
+questa è un wrapper di getImg, asyncrono, che ritorna anche altre informazioni per creare il widget zoomabile di un'immagine nel frontend
+il parametro url mi arriva direttamente dai layout xml: element.image.url, quindi può essere relativo al repo dell'utente, o alle immagini di default
 */
-function getImg(image,width,height,cssClasses,domId) {
-	//se invece di una singola immagine mi arriva un array, tengo la prima
-	if (is_array(image)) image = image[0];
-	
-	var path = image.file_path;
-	var name = image.file_name;
-	if ( !domId ) domId = '';
-	if ( !cssClasses ) cssClasses = '';
+function getWidgetImg(req,res,url,userId,projectId,next) {
+	//scindo l'url in un path e un name
+	var urlChunks = url.split("/");
+	var name = urlChunks.pop();
+	var path = urlChunks.join("/")+"/"; //devo aggiungere il trailing slash per uniformità nel modi di trattare le directory
+	//capisco se si tratta di un'immagine dell'utente, o di una dei template
+	console.log("utils.getWidgetImg(): url = "+url);
+	console.log("utils.getWidgetImg(): name = "+name);
+	console.log("utils.getWidgetImg(): path = "+path);
+	if ( path == req.app.sbam.config.templatesImagesDir ) {
+		//caso di immagine di default
+		var sourcePath = getAppPath()+path;
+		//inoltre devo azzerare userId e projectId così getImg non li riceve e capisce che si tratta di un'immagine di default
+		userId = false;
+		projectId = false;
+	} else {
+		//caso di immagine da repo di utente
+		var sourcePath = getRepoPath(userId,projectId)+path;
+	}
+	var sourceFullPath = sourcePath+name;
+	//leggo le dimensioni dell'immagine
+	getImgFeatures(req, res, sourceFullPath, function(features){
+		//in base alle dimensioni dell'immagine, decido se va bene per il widget, o se va rimpicciolita perchè troppo pesante
+		var originalImageSquarePixels = features.size.width * features.size.height;
+		if ( originalImageSquarePixels > req.app.sbam.config.imgWidgetMaxSize ) {
+			//devo ridurre l'immagine
+			var cachedAR = features.size.width / features.size.height;
+			var cachedWidth = Math.round( Math.sqrt( req.app.sbam.config.imgWidgetMaxSize * cachedAR  ) );
+			var cachedHeight = Math.round( Math.sqrt( req.app.sbam.config.imgWidgetMaxSize / cachedAR ) );
+			
+		} else {
+			//ritorno l'immainge alle sue dimensioni originali
+			var cachedWidth = features.size.width;
+			var cachedHeight = features.size.height;
+		}
+		//chiamo getImg per ottenere l'url dell'immaine in cache
+		getImg(req,res,userId,projectId,name,path,cachedWidth,cachedHeight,false, function(cachedUrl){
+			//alla fine ritorno via ajax al frontend
+			next({
+				"cachedUrl": cachedUrl,
+				"originalW": features.size.width,
+				"originalH": features.size.height
+			});
+		})
+	});
+}
+exports.getWidgetImg = getWidgetImg;
+
+/* 
+mi ritorna tutte le informazioni dell'immagine (dimensioni e molto altro)
+es. completo dell'output:
+features: { 
+  Format: 'JPEG (Joint Photographic Experts Group JFIF format)',
+  format: 'JPEG',
+  Class: 'DirectClass',
+  Geometry: '3456x2304+0+0',
+  size: { width: 3456, height: 2304 },
+  Resolution: '72x72',
+  'Print size': '48x32',
+  Units: 'PixelsPerInch',
+  Type: 'TrueColor',
+  Endianess: 'Undefined',
+  Colorspace: 'sRGB',
+  Depth: '8-bit',
+  depth: 8,
+  'Channel depth': { red: '8-bit', green: '8-bit', blue: '8-bit' },
+  'Channel statistics':
+   { Red:
+      { min: '0 (0)',
+        max: '255 (1)',
+        mean: '153.463 (0.601815)',
+        'standard deviation': '73.2643 (0.287311)',
+        kurtosis: '-0.560678',
+        skewness: '-0.556331' },
+     Green:
+      { min: '0 (0)',
+        max: '255 (1)',
+        mean: '130.949 (0.513524)',
+        'standard deviation': '72.765 (0.285353)',
+        kurtosis: '-0.798209',
+        skewness: '0.0997804' },
+     Blue:
+      { min: '0 (0)',
+        max: '255 (1)',
+        mean: '99.2892 (0.38937)',
+        'standard deviation': '76.1307 (0.298552)',
+        kurtosis: '-0.393638',
+        skewness: '0.850941' } },
+  'Image statistics':
+   { Overall:
+      { min: '0 (0)',
+        max: '255 (1)',
+        mean: '127.9 (0.50157)',
+        'standard deviation': '74.0682 (0.290463)',
+        kurtosis: '-0.723025',
+        skewness: '0.123887' } },
+  'Rendering intent': 'Perceptual',
+  Gamma: '0.454545',
+  Chromaticity:
+   { 'red primary': '(0.64,0.33)',
+     'green primary': '(0.3,0.6)',
+     'blue primary': '(0.15,0.06)',
+     'white point': '(0.3127,0.329)' },  
+  Interlace: 'None',
+  'Background color': 'white',
+  'Border color': 'srgb(223,223,223)',   
+  'Matte color': 'grey74',
+  'Transparent color': 'black',
+  Compose: 'Over',
+  'Page geometry': '3456x2304+0+0',
+  Dispose: 'Undefined',
+  Iterations: '0',
+  Compression: 'JPEG',
+  Quality: '98',
+  Orientation: 'TopLeft',
+  Properties:
+   { 'date:create': '2014-09-21T03:55:22+02:00',
+     'date:modify': '2014-09-21T03:55:18+02:00',
+     'exif:ApertureValue': '284416/65536',
+     'exif:ColorSpace': '1',
+     'exif:ComponentsConfiguration': '1, 2, 3, 0',
+     'exif:Compression': '6',
+     'exif:CustomRendered': '0',
+     'exif:DateTime': '2007:02:15 13:30:48',
+     'exif:DateTimeDigitized': '2007:02:15 13:30:48',
+     'exif:DateTimeOriginal': '2007:02:15 13:30:48',
+     'exif:ExifImageLength': '2304',
+     'exif:ExifImageWidth': '3456',
+     'exif:ExifOffset': '196',
+     'exif:ExifVersion': '48, 50, 50, 49',
+     'exif:ExposureBiasValue': '0/2',
+     'exif:ExposureMode': '1',
+     'exif:ExposureProgram': '1',
+     'exif:ExposureTime': '1/4',
+     'exif:Flash': '16',
+     'exif:FlashPixVersion': '48, 49, 48, 48',
+     'exif:FNumber': '45/10',
+     'exif:FocalLength': '34/1',
+     'exif:FocalPlaneResolutionUnit': '2',
+     'exif:FocalPlaneXResolution': '3456000/874',
+     'exif:FocalPlaneYResolution': '2304000/582',
+     'exif:InteroperabilityIndex': 'R98',
+     'exif:InteroperabilityOffset': '9230',
+     'exif:InteroperabilityVersion': '48, 49, 48, 48',
+     'exif:ISOSpeedRatings': '200',
+     'exif:JPEGInterchangeFormat': '9716',
+     'exif:JPEGInterchangeFormatLength': '8156',
+     'exif:Make': 'Canon',
+     'exif:MakerNote': '...',
+     'exif:MeteringMode': '5',
+     'exif:Model': 'Canon EOS 350D DIGITAL',
+     'exif:Orientation': '1',
+     'exif:ResolutionUnit': '2',
+     'exif:SceneCaptureType': '0',
+     'exif:ShutterSpeedValue': '131072/65536',
+     'exif:UserComment': '...',
+     'exif:WhiteBalance': '0',
+     'exif:XResolution': '72/1',
+     'exif:YCbCrPositioning': '2',
+     'exif:YResolution': '72/1',
+     'jpeg:colorspace': '2',
+     'jpeg:sampling-factor': '2x1,1x1,1x1',
+     signature: '67d725957da1548dfb416a94176cea12e2da7fe0cc5f2ec641b64d3971100b71' },
+  Profiles: { 'Profile-exif': '17880 bytes' },
+  Artifacts:
+   { filename: '/var/node/sobuame/repo/541bd3ab00d30ddd0938a1f0/files/project_541e2f2e4f12faf105322582/ticonosco/farabutto.jpg',
+     verbose: 'true' },
+  Tainted: 'False',
+  Filesize: '2.327MB',
+  'Number pixels': '7.963M',
+  'Pixels per second': '16.59MB',
+  'User time': '0.070u',
+  'Elapsed time': '0:01.480',
+  Version: 'ImageMagick 6.7.7-10 2014-03-06 Q16 http://www.imagemagick.org',
+  path: '/var/node/sobuame/repo/541bd3ab00d30ddd0938a1f0/files/project_541e2f2e4f12faf105322582/ticonosco/farabutto.jpg' 
+}
+
+
+*/
+function getImgFeatures(req, res, fullpath, next) {
+	var gm = require('gm').subClass({ imageMagick: true });
+	//trovo le dimensioni (e molte altre info) dell'immagine
+	gm(fullpath).identify(function(err, features){
+		if ( err ) {
+			console.log("imagemagick:error "+err);
+			res.send(err);
+		} else {
+			//console.log("utils.getImgFeatures(): return features:");
+			//console.log(features);
+			next(features);
+		}
+	});
+}
+exports.getImgFeatures = getImgFeatures;
+
+/*
+data un'immagine da visualizzare (name,path) e una risoluzione
+crea l'immagine ridimensionata se già non esiste, e ne ritorna l'url.
+essendo usata server-side, viene eseguita prima che il tpl arrivi all'utente,
+che nel browser riceve sempre un url esplicito, e non l'url di uno script.
+la prima volta che deve essere creata una immagine in cache, essendo un metodo asincrono,
+non è subito disponibile, quindi (solo la prima volta) ritorno subito un'immagine waiter di 
+default e poi lancio la creazione dell'immagine cache. dalle volte successive
+ritornerà quella.
+
+logica di gestione dei parametri:
+se userId e projectId != "", allora considero il path come relativo al repo dell'utente per il progetto dato
+se non sono specificati, allora considero il path come relativo all'app
+
+path: me lo aspetto sempre e solo con slash finale (no iniziale), es: "" | "subdir/" | "subdir/subsubdir/"
+next: se la closure non viene passata, questo metodo si comporta in modo syncrono ritornando subito un url di immaine (o il waiter se l'immagine in cache sta venendo creata)
+	  se invece viene passata la closure, il metodo si comporta in modo asyncrono
+
+*/
+function getImg(req,res,userId,projectId,name,path,width,height,crop,next) { 
+	console.log("getImg: userId = "+userId);
+	console.log("getImg: projectId = "+projectId);
+	console.log("getImg: name = "+name);
+	console.log("getImg: path = "+path);
+	console.log("getImg: width = "+width);
+	console.log("getImg: height = "+height);
+	console.log("getImg: crop = "+crop);
+	//normalizzo i parametri
 	if ( !width ) width = 0;
 	if ( !height ) height = 0;
-	//costruisco l'url dell'immagine ridimensionata
-	var resizedName = 'size'+width+'x'+height+'_'+name;
-	var url = process.cwd()+'/public/'+path+name;
-	var resizedUrl = process.cwd()+'/public/'+path+resizedName;
-	console.log('getImg()');
-	//console.log('image:');
-	//console.log(image);
-	console.log('url:');
-	console.log(url);
-	console.log('resizedUrl:');
-	console.log(resizedUrl);
+	//altre var interne
+	var waitIcon = "images/icon-wait.svg";
+	var fs = require('fs');
 	
-	//considero i casi su width ed height = 0
-	if ( width == 0 && height == 0 ) {
-		//devo restituire l'immagine originale
-		return "<img id='"+domId+"' class='"+cssClasses+"' src='/"+path+name+"'/>";
+	//in base al fatto che siano specificati o meno userId e projectId capisco
+	//se si tratta di un'immagine di un repo utente, o di un'immagine generica di cui ho path assoluto
+	if ( userId && userId != "" && projectId && projectId != "" ) {
+		//caso in cui sto leggendo un'immagine da un repo di un utente e per un certo progetto
+		var sourcePath = getRepoPath(userId,projectId)+path;
+		var resizedName = "user-"+userId+"_project-"+projectId+"_size-"+width+"x"+height+"_"+path.split("/").join("-")+name;
+	} else {
+		//caso in cui sto leggendo un file generico, e mi aspetto che il path sia relativo all'app, e non al repo dell'utente
+		var sourcePath = getAppPath()+path;
+		var resizedName = "common_size-"+width+"x"+height+"_"+path.split("/").join("-")+name;
 	}
+	var resizedFullUrl = req.app.sbam.config.cacheUrl+resizedName;
+	var resizedPath = getCachePath(req);
+	var resizedFullPath = resizedPath+resizedName;
+	var sourceFullPath = sourcePath+name;
+	
+	console.log("getImg: resizedName = "+resizedName);
+	console.log("getImg: resizedPath = "+resizedPath);
+	console.log('getImg: resizedFullPath = '+resizedFullPath);
+	console.log('getImg: resizedFullUrl = '+resizedFullUrl);
+	console.log("getImg: sourceFullPath = "+sourceFullPath);
+
 	
 	//controllo se esiste già l'immagine ridimensionata
-	try
-	{
-		var fs = require('fs');
-		var stats = fs.lstatSync(resizedUrl);
+	if (fs.existsSync(resizedFullPath)) {
 		console.log('resized esiste già');
 		//ritorno l'immagine già esistente
 		//ritorno l'url, con uno slash davanti, altrimenti non funzia
-		return "<img id='"+domId+"' class='"+cssClasses+"' src='/"+path+resizedName+"'/>";
-	}
-	catch (e)
-	{
-		console.log('resized NON esiste, va creata');
-		console.log('width:');
-		console.log(width);
-		console.log('height:');
-		console.log(height);
-		var im = require('imagemagick');
-		//distinguo i casi di width o height = 0
-		if ( width == 0 ) {
-			console.log('fisso height');
-			//prima trovo le specs dell'immagine
-			im.identify(url, function(err, features){
-				if (err) throw err;
-				console.log(features);
-				// { format: 'JPEG', width: 3904, height: 2622, depth: 8 }
-				//trovo width in funzione di height
-				width = height*features.width/features.height;
-				im.resize({
-					srcPath: url,
-					dstPath: resizedUrl,
-					'width':   width,
-					'height':   height,
-					quality: 0.9,
-					//format: 'jpg',
-					//progressive: false,
-					strip: false,
-					//filter: 'Lagrange',
-					sharpening: 0.2
-					//customArgs: []			
-				}, function(err, stdout, stderr){
-					if (err) throw err;
-				});
-			});
-			//ritorno l'url, con uno slash davanti, altrimenti non funzia
-			//ritorno l'url originario perchè la cache sta venendo generata e non è ancora disponibile
-			return "<img id='"+domId+"' class='"+cssClasses+"' src='/"+path+name+"' style='height:"+height+"px;'/>";
-		} else if ( height == 0 ) {
-			console.log('fisso width');
-			//prima trovo le specs dell'immagine
-			im.identify(url, function(err, features){
-				if (err) throw err;
-				console.log(features);
-				// { format: 'JPEG', width: 3904, height: 2622, depth: 8 }
-				//trovo height in funzione di width
-				height = width*features.height/features.width;
-				im.resize({
-					srcPath: url,
-					dstPath: resizedUrl,
-					'width':   width,
-					'height':   height,
-					quality: 0.9,
-					strip: false,
-					sharpening: 0.2
-				}, function(err, stdout, stderr){
-					if (err) throw err;
-				});
-			});
-			//ritorno l'url, con uno slash davanti, altrimenti non funzia
-			//ritorno l'url originario perchè la cache sta venendo generata e non è ancora disponibile
-			return "<img id='"+domId+"' class='"+cssClasses+"' src='/"+path+name+"' style='width:"+width+"px;'/>";
+		if ( next && typeof(next) == "function" ) {
+			next(resizedFullUrl);
 		} else {
-			console.log('croppo');
-			//prima trovo le specs dell'immagine
-			im.identify(url, function(err, features){
-				if (err) throw err;
-				console.log(features);
-				// { format: 'JPEG', width: 3904, height: 2622, depth: 8 }
-				im.crop({
-					srcPath: url,
-					dstPath: resizedUrl,
-					'width': width,
-					'height': height,
-					quality: 0.9,
-					sharpening: 0.2
-				}, function(err, stdout, stderr){
-					if (err) throw err;
+			return resizedFullUrl;
+		}
+	} else {
+		console.log('resized NON esiste, va creata');
+		//trovo le dimensioni dell'immagine
+		getImgFeatures(req, res, sourceFullPath, function(features){
+			//console.log(features);
+			var gm = require('gm').subClass({ imageMagick: true });
+			//distinguo i casi di width o height = 0
+			if ( width == 0 ) {
+				console.log('fisso height');
+				//trovo width in funzione di height
+				width = height*features.size.width/features.size.height;
+				gm(sourceFullPath).resize(width,height).write(resizedFullPath, function (err) {
+					if ( err ) { 
+						console.log("imagemagick:error "+err); 
+						res.send(err); 
+					} else {
+						if ( next && typeof(next) == "function" ) {
+							next(resizedFullUrl);
+						}
+					}
 				});
-			});
-			//ritorno l'url, con uno slash davanti, altrimenti non funzia
-			//ritorno l'url originario perchè la cache sta venendo generata e non è ancora disponibile
-			return "<img id='"+domId+"' class='"+cssClasses+"' src='/"+path+name+"' style='width:"+width+"px;height:"+height+"px;'/>";
+			} else if ( height == 0 ) {
+				console.log('fisso width');
+				//trovo height in funzione di width
+				height = width*features.size.height/features.size.width;
+				gm(sourceFullPath).resize(width,height).write(resizedFullPath, function (err) { 
+					if ( err ) { 
+						console.log("imagemagick:error "+err); 
+						res.send(err); 
+					} else {
+						if ( next && typeof(next) == "function" ) {
+							next(resizedFullUrl);
+						}
+					} 
+				});
+			} else if ( width == 0 && height == 0 ) {
+				console.log('ritorno immagine originale');
+				//trovo height in funzione di width
+				width = features.size.width;
+				height = features.size.height;
+				gm(sourceFullPath).resize(width,height).write(resizedFullPath, function (err) { 
+					if ( err ) { 
+						console.log("imagemagick:error "+err); 
+						res.send(err); 
+					} else {
+						if ( next && typeof(next) == "function" ) {
+							next(resizedFullUrl);
+						}
+					} 
+				});
+			} else {
+				if ( crop ) {
+					console.log('croppo '+sourceFullPath);
+					var sourceAR = features.size.width / features.size.height;
+					var destAR = width / height;
+					if ( sourceAR > destAR ) {
+						var resizedHeight = height;
+						var resizedWidth = resizedHeight * sourceAR;
+					} else {
+						var resizedWidth = width;
+						var resizedHeight = resizedWidth / sourceAR;
+					}
+					gm(sourceFullPath).resize(resizedWidth,resizedHeight).crop(width, height, (resizedWidth-width)/2, (resizedHeight-height)/2).write(resizedFullPath, function (err) {
+						if ( err ) {
+							console.log("imagemagick:error "+err);
+							res.send(err);
+						} else {
+							if ( next && typeof(next) == "function" ) {
+								next(resizedFullUrl);
+							}
+						}
+					});
+				} else {
+					console.log('non croppo '+sourceFullPath);
+					gm(sourceFullPath).resize(width,height).write(resizedFullPath, function (err) { 
+						if ( err ) { 
+							console.log("imagemagick:error "+err); 
+							res.send(err); 
+						} else {
+							if ( next && typeof(next) == "function" ) {
+								next(resizedFullUrl);
+							}
+						}
+					});
+				}
+			}
+		});
+		//ritorno url di wait perchè la cache sta venendo generata e non è ancora disponibile
+		if ( next && typeof(next) == "function" ) {
+			//se è stata specificata una closure, qui non ritorno nulla
+		} else {
+			return waitIcon;
 		}
 	}
+	
 }
 exports.getImg = getImg;
 
+function getAppPath() {
+	var appRoot = require('app-root-path');
+	return appRoot + "/";
+}
+exports.getAppPath = getAppPath;
 
+function getRepoPath(userId,projectId) {
+	var repoPath = getAppPath() + "repo/" + userId + "/files/project_" + projectId + "/";
+	return repoPath;
+}
+exports.getRepoPath = getRepoPath;
+
+function getCachePath(req) {
+	var cachePath = getAppPath() + req.app.sbam.config.cacheDir;
+	return cachePath;
+}
+exports.getCachePath = getCachePath;
 

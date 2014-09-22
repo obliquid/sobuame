@@ -42,11 +42,55 @@ function createUser(req,res,name,next) {
 			//console.log("salvo new user nei cookies");
 			//e lo salvo nei cookies dell'utente
 			req.app.sbam.sess.setCookieUserId(req,res,user._id.toString());
-			next();
+			//e gli creo le cartelle di default
+			req.app.sbam.users.createUserFolders(req,res,user._id.toString(),next);
 		}
 	});
 }
 exports.createUser = createUser; 
+
+/*
+questo metodo crea le cartelle di default di utente ma solo se non esistono
+infatti viene richiamato automaticamente dopo ogni login, oltre che dopo la creazione di un nuovo user
+*/
+function createUserFolders(req,res,user_id,next) {
+	var fs   = require('fs');
+	var homeDir = "repo/"+user_id;
+	var filesDir = homeDir+"/files";
+	//creo la cartella per lo user (se esiste già procedo)
+	fs.mkdir(homeDir, 0775, function(err) {
+		if (err) {
+			if (err.code == 'EEXIST') {
+				// ignore the error if the folder already exists
+			} else {
+				// something else went wrong
+				console.log("createUser: error creating folder "+homeDir+" for new user "+user_id);
+				console.log(err);
+				return false;
+			}
+		} else {
+			// successfully created folder
+		}
+		//dopo che ho creato la dir dell'utente, creo anche le soottocartelle (ora solo "files")
+		fs.mkdir(filesDir, 0775, function(err) {
+			if (err) {
+				if (err.code == 'EEXIST') {
+					// ignore the error if the folder already exists
+				} else {
+					// something else went wrong
+					console.log("createUser: error creating folder "+filesDir+" for new user "+user_id);
+					console.log(err);
+					return false;
+				}
+			} else {
+				// successfully created folder
+			}
+			//dopo che ho creato le dir, proseguo
+			next();
+		});
+	});
+}
+exports.createUserFolders = createUserFolders; 
 
 
 

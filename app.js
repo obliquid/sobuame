@@ -72,10 +72,18 @@ app.sbam.config = {
 		port : 80,
 		path : '/xmlrpc.php'
 	},
-	'mysqlHost'     : 'bavosa.obliquid.org',
-	'mysqlDatabase' : 'c109myeeu',
-	'mysqlUser'     : 'c109myeeu',
-	'mysqlPassword' : 'cecronespe'
+	'mysqlHost'     	: 'bavosa.obliquid.org',
+	'mysqlDatabase' 	: 'c109myeeu',
+	'mysqlUser'     	: 'c109myeeu',
+	'mysqlPassword' 	: 'cecronespe',
+	'fontDir'			: 'fonts/', //this is intended as a subfolder of public/ and should not be changed since it's defined also in client file sobuame.js
+	'templatesImagesDir': 'templates/images/',
+	'templatesDir'		: 'templates/',
+	'templatesExt'		: 'xml',
+	'cacheDir'			: 'public/cache/', //questa deve essere una sottocartella di public/ altrimenti i file cachati non sarebbero visibili da fuori
+	'cacheUrl'			: 'cache/', //questa deve essere uguale a cacheDir meno il prefisso "public/"
+	'pdfPdi'			:  300, //è la risoluzione di riferimento per la generazione dei pdf. se cambiata qui va cambiata anche nel frontend sobuame.js
+	'imgWidgetMaxSize'	:  100000 //per il widget di editing immagini (quello con lo zoom, per inenderci) non passo mai immagini il cui numero di pixel sia maggiore di questo limite
 
 };
 
@@ -249,7 +257,7 @@ app.locals({
 	esc: function(content){ return escape(content) },
 	uesc: function(content){ return unescape(content) },
 	trunc: app.sbam.utils.trunc,
-	getImg: app.sbam.utils.getImg,
+	getImago: app.sbam.utils.getImago,
 	emailObfuscate: app.sbam.utils.emailObfuscate,
 	renderJson: app.sbam.utils.renderJson
 });

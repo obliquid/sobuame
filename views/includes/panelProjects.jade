@@ -5,16 +5,16 @@ div(data-role='panel' id='panelProjects' data-display='overlay' )
 		li(id="empty-projects" data-role="list-divider")
 			p  #{__i("Non hai ancora pubblicazioni su cui lavorare.")}
 	div(style="height:16px;")
-	ul(data-role="listview" id='panelProjectsListview' data-filter='true' data-filter-placeholder='#{__i("Cerca per titolo")}')
+	ul(data-role="listview" id='panelProjectsListview' data-autodividers="true"  data-filter='true' data-filter-placeholder='#{__i("Cerca per titolo")}')
 	div(style="height:32px;")
 	ul(data-role="listview")
 		li(data-role="list-divider")
 		li(data-icon="plus")
-			a(href="#popupAddProject" data-rel="popup" data-position-to="window" data-transition="pop") #{__i("Nuova pubblicazione")}
+			a(href="#popupAddProject" data-rel="popup" data-position-to="window" data-transition="pop") #{__i("Crea")}
 		li(data-icon="minus")
-			a(id="buttonDelProject" href="#popupDelProject" data-rel="popup" data-position-to="window" data-transition="pop") #{__i("Elimina pubblicazione")}
+			a(id="buttonDelProject" href="#popupDelProject" data-rel="popup" data-position-to="window" data-transition="pop") #{__i("Elimina")}
 		li(data-icon="pencil")
-			a(id="buttonModifyProject" href="#popupModifyProject" data-rel="popup" data-position-to="window" data-transition="pop") #{__i("Modifica pubblicazione")}
+			a(id="buttonModifyProject" href="#popupModifyProject" data-rel="popup" data-position-to="window" data-transition="pop") #{__i("Modifica")}
 			
 		div(data-role="popup" id="popupAddProject")
 			form(id="addProjectForm")
@@ -35,7 +35,7 @@ div(data-role='panel' id='panelProjects' data-display='overlay' )
 					h3 #{__i("Modifica pubblicazione")}
 					label(for="name") #{__i('Titolo')}
 					input(type="text" name="name" id="name" value="")
-					label(for="spline") #{__i('Dorso')}
+					label(for="spline") #{__i('Titolo sul dorso')}
 					input(type="text" name="spline" id="spline" value="")
 					p(id="modifyProjectErrormsg" style="display:none;").ui-bar.ui-bar-a
 					a(id="modifyProjectButton").ui-btn.ui-icon-cloud-upload.ui-btn-icon-right.ui-shadow.ui-corner-all.ui-btn-inline #{__i('Salva')}
@@ -44,7 +44,7 @@ div(data-role='panel' id='panelProjects' data-display='overlay' )
 		div(data-role="popup" id="popupDelProject")
 			div(role="main").ui-content
 				h3.ui-title(id='currentProjectTitle')
-				p #{__i('Sicuro di voler eliminare questa pubblicazione?')}
+				p #{__i('Sicuro di voler eliminare questa pubblicazione e tutte le sue immagini?')}
 				a(id="delProjectButton" data-icon="minus" data-rel="back").ui-btn.ui-icon-minus.ui-btn-icon-right.ui-shadow.ui-corner-all.ui-btn-inline #{__i('Elimina')}
 				a(href="#" data-rel="back").ui-btn.ui-icon-delete.ui-btn-icon-right.ui-shadow.ui-corner-all.ui-btn-inline #{__i('Annulla')}
 
