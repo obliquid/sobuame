@@ -1,10 +1,10 @@
-div(data-role='panel' id='panelHistory' data-display="overlay")
-	ul(data-role="listview" id='panelHistoryListview')
+div(data-role='panel' id='panelHistory' data-position="right" data-display="overlay")
+	ul(data-role="listview" )
 		li
 			a(data-rel="close").ui-icon-delete #{__i("History")}
-		li(data-role="list-divider")
 		li(id="empty-history" data-role="list-divider")
 			p  #{__i("L'history è vuota.")}
-		li(data-role="list-divider")
 		li(data-icon="trash-o")
 			a(id="buttonResetHistory") #{__i("Azzera history")}
+		li(data-role="list-divider")
+	ul(data-role="listview" id='panelHistoryListview'  style='position:relative;top:16px;')

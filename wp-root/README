@@ -1,0 +1,1 @@
+to let sobuame authenticate users against a wordpress isntallation, you must properly configure the file app.js (at least set app.sbam.config.wpSiteUrl) and then put the file wp-auth-sobuame.php in the root folder of the wordpress site specified in app.sbam.config.wpSiteUrl

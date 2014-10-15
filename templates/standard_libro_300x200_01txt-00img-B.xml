@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<elements>
+	<element>
+		<type>image</type>
+		<image>
+			<url></url>
+			<dpi></dpi>
+			<offsetx></offsetx>
+			<offsety></offsety>
+		</image>
+		<bbox>
+			<x>0%</x>
+			<y>0%</y>
+			<w>100%</w>
+			<h>100%</h>
+		</bbox>
+		<style>
+			<foregroundColor>
+				<c>0</c>
+				<m>0</m>
+				<y>0</y>
+				<k>100</k>
+			</foregroundColor>
+			<backgroundColor>
+				<c>0</c>
+				<m>0</m>
+				<y>0</y>
+				<k>0</k>
+			</backgroundColor>
+		</style>
+	</element>
+	<element>
+		<type>text</type>
+		<text>
+			<content>Clicca qui per inserire il testo.</content>
+		</text>
+		<bbox>
+			<x>28.3%</x>
+			<y>9.6%</y>
+			<w>43.3%</w>
+			<h>80.8%</h>
+		</bbox>
+		<style>
+			<foregroundColor>
+				<c>0</c>
+				<m>0</m>
+				<y>0</y>
+				<k>100</k>
+			</foregroundColor>
+			<font>HelveticaNeue-Medium.ttf</font>
+			<fontSize>14</fontSize>
+			<align>justify</align>
+		</style>
+	</element>
+</elements>

@@ -46,8 +46,8 @@ app.set('view engine', 'jade');
 
 app.use(favicon());
 app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded());
+app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.urlencoded({limit: '50mb'}));
 app.use(cookieParser('sonbulacco'));
 //////app.use(cookieSessions('songaglioffo'));
 app.use(express.static(__dirname + '/public'));
@@ -78,12 +78,46 @@ app.sbam.config = {
 	'mysqlPassword' 	: 'cecronespe',
 	'fontDir'			: 'fonts/', //this is intended as a subfolder of public/ and should not be changed since it's defined also in client file sobuame.js
 	'templatesImagesDir': 'templates/images/',
+	'templatesImagesLink': 'libreria/', //questo è un link simbolico che viene creato dentro al repo dell'utente, per ogni project, e che linka a templatesImagesDir
 	'templatesDir'		: 'templates/',
 	'templatesExt'		: 'xml',
 	'cacheDir'			: 'public/cache/', //questa deve essere una sottocartella di public/ altrimenti i file cachati non sarebbero visibili da fuori
 	'cacheUrl'			: 'cache/', //questa deve essere uguale a cacheDir meno il prefisso "public/"
-	'pdfPdi'			:  300, //è la risoluzione di riferimento per la generazione dei pdf. se cambiata qui va cambiata anche nel frontend sobuame.js
-	'imgWidgetMaxSize'	:  100000 //per il widget di editing immagini (quello con lo zoom, per inenderci) non passo mai immagini il cui numero di pixel sia maggiore di questo limite
+	'pdfDir'			: 'public/pdf/', //questa deve essere una sottocartella di public/ altrimenti i pdf generati non sarebbero visibili da fuori
+	'pdfUrl'			: 'pdf/', //questa deve essere uguale a pdfDir meno il prefisso "public/"
+	'defaultPdfDpi'			:  300, //è la risoluzione di riferimento dei pdf generati dai projects. cioè quando creo un nuovo project gli assegno questa risoluzione, e poi uso la risoluzione del project per il relativo pdf. (se cambio questa variabile qui la devo cambiare anche in sobuame.js)
+	'imgWidgetMaxSize'	:  100000, //per il widget di editing immagini (quello con lo zoom, per inenderci) non passo mai immagini il cui numero di pixel sia maggiore di questo limite
+	'uploaderOptions'	: {
+		tmpDir:  'public/uploaded/tmp', //uso la cartella comune di cache? meglio tenere in altra cartella? ma deve essere in "public/"?
+		publicDir: 'public/uploaded', //QUI qui va usata la cartella privata del cliente
+		uploadDir: 'public/uploaded/files', //QUI qui va usata la cartella privata del cliente
+		uploadUrl:  '/uploaded/files/', //QUI questo non lo voglio abilitare, posso toglierlo?
+		maxPostSize: 104857600, // 100 MB - nota che va cambiato anche nel client sobuame.js
+		minFileSize:  1,
+		maxFileSize:  104857600, // 100 MB - nota che va cambiato anche nel client sobuame.js
+		acceptFileTypes:  /.+/i,
+		// Files not matched by this regular expression force a download dialog,
+		// to prevent executing any scripts in the context of the service domain:
+		inlineFileTypes:  /\.(gif|jpe?g|png)$/i,
+		imageTypes:  /\.(gif|jpe?g|png)$/i,
+		//imageVersions: {
+		//	width:  80,
+		//	height: 80
+		//},
+		accessControl: {
+			allowOrigin: '*',
+			allowMethods: 'OPTIONS, HEAD, GET, POST, PUT, DELETE',
+			allowHeaders: 'Content-Type, Content-Range, Content-Disposition'
+		},
+		storage : {
+			type : 'local'
+		},
+		nodeStatic: {
+			cache:  3600 // seconds to cache served files //QUI come la gestisce? mi serve?
+		}
+	}
+
+
 
 };
 
@@ -113,6 +147,9 @@ app.sbam.users = require('./core/users');
 //projects
 app.sbam.projects = require('./core/projects');
 
+//renderer
+app.sbam.renderer = require('./core/renderer');
+
 /*
 //pagination
 app.sbam.pag = require('./core/pagination');
@@ -123,8 +160,15 @@ app.sbam.utils = require('./core/utils');
 app.sbam.utils.app = app; //mi serve che utils conosca internamente app
 
 
+
+
+// config the uploader
+//lasciare questa var globale perchè la leggo anche nelle route (oppure modificare anche le route)
+app.sbam.uploader = require('blueimp-file-upload-expressjs')(app.sbam.config.uploaderOptions);
+
+
 //routes
-// get an instance of router
+//get an instance of router
 var router = express.Router();
 app.use('/', router);
 app.sbam.routes = require('./core/routes');

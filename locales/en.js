@@ -70,5 +70,22 @@
 	"Azione": "Azione",
 	"Cancella": "Cancella",
 	"Campo project obbligatorio.": "Campo project obbligatorio.",
-	"Sicuro di voler eliminare questa pubblicazione e tutte le sue immagini?": "Sicuro di voler eliminare questa pubblicazione e tutte le sue immagini?"
+	"Sicuro di voler eliminare questa pubblicazione e tutte le sue immagini?": "Sicuro di voler eliminare questa pubblicazione e tutte le sue immagini?",
+	"Caricamento file": "Caricamento file",
+	"Seleziona i file da caricare, anche più di uno, e clicca su Inizia": "Seleziona i file da caricare, anche più di uno, e clicca su Inizia",
+	"Inizia caricamento": "Inizia caricamento",
+	"Chiudi": "Chiudi",
+	"Layout di pagina": "Layout di pagina",
+	"Nuova": "Nuova",
+	"Rinomina": "Rinomina",
+	"Ordina la stampa della tua pubblicazione.": "Ordina la stampa della tua pubblicazione.",
+	"Se non hai ancora acquistato un prodotto da stampare, fallo ora su ": "Se non hai ancora acquistato un prodotto da stampare, fallo ora su ",
+	"Di seguito la lista dei prodotti da te acquistati e validi per la stampa di questa pubblicazione:": "Di seguito la lista dei prodotti da te acquistati e validi per la stampa di questa pubblicazione:",
+	"Scegli quello che vuoi usare e clicca su stampa!": "Scegli quello che vuoi usare e clicca su stampa!",
+	"Stampa": "Stampa",
+	"Carica Immagini": "Carica Immagini",
+	"Nuova Cartella": "Nuova Cartella",
+	"Caricamento Immagini": "Caricamento Immagini",
+	"Seleziona le immagini da caricare, anche più di una, e clicca su Inizia": "Seleziona le immagini da caricare, anche più di una, e clicca su Inizia",
+	"Crea nuova cartella": "Crea nuova cartella"
 }

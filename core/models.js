@@ -58,53 +58,57 @@ function defineModels(mongoose, app, next) {
 		'name': { type: String, index: true, required: true },
 		'created_at':{ type: Date, index: true },
 		'updated_at':{ type: Date, index: true },
+		'dpi':{ type: Number, max: maxSizemm, index: true, required: true },
 		'width':{ type: Number, max: maxSizemm, index: true, required: true },
 		'height':{ type: Number, max: maxSizemm, index: true, required: true },
 		'spline': { type: String, index: false, required: false },
 		'variant': { type: String, index: false, required: false },
 		'minPageQuantity': { type: Number, max: 256, index: true, required: false },
-		'pages':[{ //ogni pagina in un progetto è identificata da 2 parametri (oltre ovviamente al suo _id univoco assegnato da mongo): num e type. num da solo non basta perchè ci sono le pagine speciali, come le copertine, che non lo usano.
-			"type": { type: String, enum: ['left','right','cover-1-front','cover-2-front','cover-3-back','cover-4-back','single'], index: true, required: false },
-			"num": { type: Number, default: -1, index: false, required: false },//type:left e type:right condividono la numerazione a partire dalla 1 (si inizia con 1 che è right, e vale la regola che tutti le pagine dispari sono right e quelle pari sono left), mentre type:cover-front e cover-back non usano il campo num
-			"elements": [{
-				"bbox": {
-					"x": { type: String, index: true, required: false },
-					"y": { type: String, index: true, required: false },
-					"w": { type: String, index: true, required: false },
-					"h": { type: String, index: true, required: false }
+		'stickersLayers': [{ //i layers sono intesi come url di immagini che verranno prese e stretchate alla misura del bbox e sovrapposte ad ogni immagine di tipo sticker. non sono immagini caricabili dall'utente (sono immagini di template - PNG trasparenti - lette dalla dir dei template), ma solo gli utenti possono assegnarli runtime a livello di intero progetto.
+			'url': { type: String, index: true, required: false }
+		}],
+		'pages': [{ //ogni pagina in un progetto è identificata da 2 parametri (oltre ovviamente al suo _id univoco assegnato da mongo): num e type. num da solo non basta perchè ci sono le pagine speciali, come le copertine, che non lo usano.
+			'type': { type: String, enum: ['left','right','cover-1-front','cover-2-front','cover-3-back','cover-4-back','single'], index: true, required: false },
+			'num': { type: Number, default: -1, index: false, required: false },//type:left e type:right condividono la numerazione a partire dalla 1 (si inizia con 1 che è right, e vale la regola che tutti le pagine dispari sono right e quelle pari sono left), mentre type:cover-front e cover-back non usano il campo num
+			'elements': [{
+				'bbox': {
+					'x': { type: String, index: true, required: false },
+					'y': { type: String, index: true, required: false },
+					'w': { type: String, index: true, required: false },
+					'h': { type: String, index: true, required: false }
 				},
-				"style": {
-					"foregroundColor": {
-						"c":{ type: Number, max: 100, index: true, required: false },
-						"m":{ type: Number, max: 100, index: true, required: false },
-						"y":{ type: Number, max: 100, index: true, required: false },
-						"k":{ type: Number, max: 100, index: true, required: false }
+				'style': {
+					'foregroundColor': {
+						'c':{ type: Number, max: 100, index: true, required: false },
+						'm':{ type: Number, max: 100, index: true, required: false },
+						'y':{ type: Number, max: 100, index: true, required: false },
+						'k':{ type: Number, max: 100, index: true, required: false }
 					},
-					"backgroundColor": {
-						"c":{ type: Number, max: 100, index: true, required: false },
-						"m":{ type: Number, max: 100, index: true, required: false },
-						"y":{ type: Number, max: 100, index: true, required: false },
-						"k":{ type: Number, max: 100, index: true, required: false }
+					'backgroundColor': {
+						'c':{ type: Number, max: 100, index: true, required: false },
+						'm':{ type: Number, max: 100, index: true, required: false },
+						'y':{ type: Number, max: 100, index: true, required: false },
+						'k':{ type: Number, max: 100, index: true, required: false }
 					},
-					"font":{ type: String, index: true, required: false },
-					"fontSize":{ type: Number, max: 10000, index: false, required: false },
-					"align": { type: String, enum: ['left','right','center','justify'], index: true, required: false }
+					'font':{ type: String, index: true, required: false },
+					'fontSize':{ type: Number, max: 10000, index: false, required: false }, //sono intesi in pt (point)
+					'align': { type: String, enum: ['left','right','center','justify'], index: true, required: false }
 				},
-				"type": { type: String, enum: ['text','image','pagenum','sticker'], index: true, required: false },
-				"text": {
-					"content": { type: String, index: true, required: false }
+				'type': { type: String, enum: ['text','image','pagenum'], index: true, required: false },
+				'text': {
+					'content': { type: String, index: true, required: false },
+					'demoContent': { type: Boolean, index: false, required: false }
 				},
-				"image": {
-					"url": { type: String, index: true, required: false },
-					"zoom": { type: Number, max: 100, index: false, required: false }, //uno zoom tra 0 e 1
-					"offsetx": { type: Number, max: maxSizemm, index: true, required: false }, //questi devono essere in mm, non vale la percentuale
-					"offsety": { type: Number, max: maxSizemm, index: true, required: false }
+				'image': {
+					'type': { type: String, enum: ['image','sticker'], index: true, required: false },
+					'url': { type: String, index: true, required: false },
+					'dpi': { type: Number, index: false, required: false }, //uso i dpi dell'immagine come valore di zoom. per ingrandire l'immagine, diminuisco i dpi. per tutto il resto valgono idp del project
+					'offsetx': { type: Number, index: false, required: false }, //questi devono essere in mm, non vale la percentuale
+					'offsety': { type: Number, index: false, required: false },
+					'stickerLayout': { type: String, index: true, required: false } //il layout delle figurine indica se sono singoile, o multipli. per questo campo si usa la naming convention: T-CxR, es. v-3x2 (l'immagine verrà suddivisa su 6 figurine verticali "v" disposte su 2 righe "R" e 3 colonne "C")
 				},
-				"pagenum": {
-					"type": { type: String, enum: ['num','roman','letter'], index: true, required: false },
-				},
-				"sticker": {
-					"label": { type: String, index: true, required: false }
+				'pagenum': {
+					'type': { type: String, enum: ['num','roman','letter'], index: true, required: false },
 				}
 			}]
 		}]

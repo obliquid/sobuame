@@ -5,22 +5,22 @@ block content
 	div(data-role='page' id='page-login' data-url='/login')
 		include includes/appHeaderMinimal
 		div(role='main').ui-content
-			div.ui-grid-a
-				div.ui-block-a
-					form(method="post").ui-body
-						label(for="username") #{__i('User name')}
-						input(type="text",name="username",id="username",value="#{username || ''}")
-						label(for="password") Password
-						input(type="password",name="password",id="password",value="#{password || ''}",autocomplete="off")
-						if errormsg
-							p.ui-bar.ui-bar-a #{errormsg}
-						input(type="submit" value="#{__i('Accedi')}" data-icon="sign-in" data-iconpos="right")
-						a(href="/").ui-btn.ui-icon-delete.ui-btn-icon-right.ui-shadow.ui-corner-all #{__i('Annulla')}
-				div.ui-block-b
-					div.ui-body
-						p #{__i("Inserire Nome utente e Password ricevuti all'atto di iscrizione al negozio.")} 
-						p #{__i("Effettuando l'accesso potrete salvare i vostri progetti nel vostro account, e potrete vederli anche da altri device.")} 
-						p #{__i("Non siete registrati? Fatelo subito gratuitamente andando al nostro negozio:")} 
-							a(href="http://#{sbam.config.wpSiteUrl}",target="_blank") #{sbam.config.wpSiteUrl}
-						//div(data-role="collapsible")
-							//h3 Help
+			//div.ui-grid-a
+			//div.ui-block-a
+			form(method="post").ui-body
+				label(for="username") #{__i('User name')}
+				input(type="text",name="username",id="username",value="#{username || ''}")
+				label(for="password") Password
+				input(type="password",name="password",id="password",value="#{password || ''}",autocomplete="off")
+				if errormsg
+					p.ui-bar.ui-bar-a #{errormsg}
+				input(type="submit" value="#{__i('Accedi')}" data-icon="sign-in" data-iconpos="right")
+				a(href="/").ui-btn.ui-icon-delete.ui-btn-icon-right.ui-shadow.ui-corner-all #{__i('Annulla')}
+			//div.ui-block-b
+			div.ui-body
+				p #{__i("Inserire Nome utente e Password ricevuti all'atto di iscrizione al negozio.")} 
+				p #{__i("Effettuando l'accesso potrete salvare i vostri progetti nel vostro account, e potrete vederli anche da altri device.")} 
+				p #{__i("Non siete registrati? Fatelo subito gratuitamente andando al nostro negozio:")} 
+					a(href="http://#{sbam.config.wpSiteUrl}",target="_blank") #{sbam.config.wpSiteUrl}
+				//div(data-role="collapsible")
+					//h3 Help

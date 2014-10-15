@@ -34,8 +34,8 @@ function checkValidUser(req, res, next)
 	console.log('checkValidUser');
 	var userID = "";
 	var userName = "";
-	//console.log("req.cookies.userID:"+req.cookies.userID);
-	//console.log("req.cookies.userName:"+req.cookies.userName);
+	console.log("req.cookies.userID:"+req.cookies.userID);
+	console.log("req.cookies.userName:"+req.cookies.userName);
 	if ( req.cookies.userID != "" && req.cookies.userID != undefined ) {
 		//l'utente ha già un ID assegnato, tengo quello
 		userID = req.cookies.userID;
@@ -51,7 +51,7 @@ function checkValidUser(req, res, next)
 				next();
 			} else if (user && user.name != "") {
 				//console.log("findOne:trovato con name");
-				//se lo trovo e ha userName="XXX" vuol dire che è un utente registrato, verifico se è loggato (se ha il cookie userName)
+				//se lo trovo e ha userName uguale al mio vuol dire che è un utente registrato, verifico se è loggato (se ha il cookie userName)
 				if (req.cookies.userName != "" && req.cookies.userName != undefined && req.cookies.userName == user.name ) {
 					//il nome salvato nel db corrisponde al nome nei miei cookies, procedo
 					next();
@@ -63,8 +63,11 @@ function checkValidUser(req, res, next)
 				} else {
 					//nei cookies non è salvato il nome, obbligo a fare il login
 					//è il caso in cui l'utente si trova su un nuovo pc, e aveva già effettuato il login una prima volta su un altro pc 
+					console.log("CASCO IN QUESTO CASO MALVAGIO");
 					res.redirect('/login/'+user.name);
+					//res.redirect('/');
 					//res.redirect('/login');
+
 				}
 			} else {
 			//se non lo trovo
@@ -352,8 +355,10 @@ function setCookieUserId(req,res,id) {
 exports.setCookieUserId = setCookieUserId; 
 
 function setCookieUserName(req,res,name) {
+	console.log("EPORCODIO IO LO SALVO STO COOKIE!!!");
 	req.cookies.userName = name;
 	res.cookie('userName', name, { maxAge: 1000*60*60*8 }); //8 ore
+	console.log("ENNFATTI MO VALE: "+req.cookies.userName);
 }
 exports.setCookieUserName = setCookieUserName; 
 
@@ -364,6 +369,7 @@ function resetCookieUserId(req,res) {
 exports.resetCookieUserId = resetCookieUserId; 
 
 function resetCookieUserName(req,res) {
+	console.log("AAAAMAPPEROLOSCANCELLO!!!");
 	req.cookies.userName = "";
 	res.clearCookie('userName');
 }

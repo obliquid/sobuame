@@ -1,36 +1,50 @@
 div(data-role='panel' id='panelMedia' data-display="overlay" )
-	ul(data-role="listview")
+	ul(data-role="listview" )
 		li
 			a(data-rel="close").ui-icon-delete #{__i("Immagini")}
+		li(style="padding:0;border:none;")
+			div(data-role="navbar")
+				ul
+					li
+						a(id="buttonAddMedia" href="#popupAddMedia" data-icon="plus" data-rel="popup" data-position-to="window" data-transition="pop") #{__i("Carica Immagini")}
+					li
+						a(id="buttonAddFolder" href="#popupAddFolder" data-icon="folder" data-rel="popup" data-position-to="window" data-transition="pop") #{__i("Nuova Cartella")}
 		li(id="empty-media" data-role="list-divider")
 			p  #{__i("Non hai ancora caricato alcuna immagine.")}
 		li(data-role="list-divider")
-	div(style="height:32px;")
-	ul(data-role="listview" id='panelMediaListview'  data-split-icon="arrows" )
-	div(style="height:32px;")
-	ul(data-role="listview")
-		li(data-role="list-divider")
-		li(data-icon="plus")
-			a(href="#popupAddMedia" data-rel="popup" data-position-to="window" data-transition="pop") #{__i("Aggiungi")}
-		li(data-icon="minus")
-			a(id="buttonDelMedia" href="#popupDelMedia" data-rel="popup" data-position-to="window" data-transition="pop") #{__i("Elimina")}
+	ul(data-role="listview" id='panelMediaListview'  data-split-icon="gear"  style='position:relative;top:16px;' )
 
 
-	
-			
-			
-		div(data-role="popup" id="popupDelMedia")
+	div(data-role="popup" id="popupAddMedia")
+		div(role="main").ui-content
+			h3 #{__i("Caricamento Immagini")}
+			form(id="filesUploadForm" enctype="multipart/form-data" method="post" action="/upload")
+				label(for="fileToUpload") #{__i("Seleziona le immagini da caricare, anche più di una, e clicca su Inizia")}
+				input(type="file" name="fileToUpload" id="fileToUpload" onchange="sbam.utils.uploader.fileSelected();" multiple="multiple" accept="image/*").ui-btn.ui-icon-plus.ui-btn-icon-right.ui-shadow.ui-corner-all.ui-btn-inline
+				p
+					strong(id="totalFileSizeLabel")
+				input(type='range' name='progressNumber' id='progressNumber' data-highlight='true'  data-mini='true' min='0' max='100' value='0')
+				h2(id='progressLabel')
+				a(id="addMediaButton" onclick="sbam.utils.uploader.uploadFile()").ui-btn.ui-icon-cloud-upload.ui-btn-icon-right.ui-shadow.ui-corner-all.ui-btn-inline #{__i('Inizia caricamento')}
+				a(href="#" data-rel="back").ui-btn.ui-icon-delete.ui-btn-icon-right.ui-shadow.ui-corner-all.ui-btn-inline #{__i('Chiudi')}
+
+
+
+	div(data-role="popup" id="popupAddFolder")
+		form(id="addFolderForm")
 			div(role="main").ui-content
-				h3.ui-title(id='currentMediaLabel')
-				p #{__i('Sicuro di voler eliminare questo file?')}
-				a(id="delMediaButton" data-icon="minus" data-rel="back").ui-btn.ui-icon-minus.ui-btn-icon-right.ui-shadow.ui-corner-all.ui-btn-inline #{__i('Elimina')}
+				h3 #{__i("Crea nuova cartella")}
+				//label(for="name") #{__i('Nome')}
+				input(type="text" name="name" id="name" value="")
+				p(id="addFolderErrormsg" style="display:none;").ui-bar.ui-bar-a
+				a(id="addFolderButton").ui-btn.ui-icon-folder.ui-btn-icon-right.ui-shadow.ui-corner-all.ui-btn-inline #{__i('Crea')}
 				a(href="#" data-rel="back").ui-btn.ui-icon-delete.ui-btn-icon-right.ui-shadow.ui-corner-all.ui-btn-inline #{__i('Annulla')}
 
 
 
-		div(data-role="popup" id="popupToolboxMedia").ui-content
-			h3 #{__i("Gestisci immagine")}
-			p #{__i("Qui ci saranno operazioni specifiche sulle immagini")}
-			a(data-rel="back").ui-shadow.ui-btn.ui-corner-all.ui-btn-b.ui-icon-check.ui-btn-icon-left.ui-btn-inline.ui-mini #{__i("Azione")}
-			a(data-rel="back").ui-shadow.ui-btn.ui-corner-all.ui-btn-inline.ui-mini #{__i("Cancella")}
-		
+	div(data-role="popup" id="popupToolboxMedia").ui-content
+		h3 #{__i("Gestisci immagine")}
+		p #{__i("Qui ci saranno operazioni specifiche sulle immagini")}
+		a(data-rel="back").ui-shadow.ui-btn.ui-corner-all.ui-btn-b.ui-icon-check.ui-btn-icon-left.ui-btn-inline.ui-mini #{__i("Azione")}
+		a(data-rel="back").ui-shadow.ui-btn.ui-corner-all.ui-btn-inline.ui-mini #{__i("Cancella")}
+	

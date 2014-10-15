@@ -3,6 +3,7 @@ html
 	head
 		title= title
 		meta( name='viewport', content='width=device-width, initial-scale=1')
+		link(rel="icon" href="http://my-e.eu/wp-content/uploads/2014/05/faviconmy-e-300x300.png" type="image/png")
 		link(rel='stylesheet', href='/stylesheets/style.css')
 		link(rel='stylesheet', href='/stylesheets/jqm-icon-pack-fa.css')
 		link(rel='stylesheet', href='/javascripts/jqmobile/jquery.mobile-1.4.2.min.css')
@@ -12,9 +13,15 @@ html
 			$(document).bind("mobileinit", function () {
 				$.mobile.ajaxEnabled = false;
 			});
-
 		script(src='/javascripts/jqmobile/jquery.mobile-1.4.2.min.js')
 		script(src='/javascripts/jquery.pep.js')
 		script(src='/javascripts/sobuame.js')
+		
+		//robba per il color picker
+		script(src='/javascripts/spectrum-colorpicker/spectrum.js')
+		link(href='/javascripts/spectrum-colorpicker/spectrum.css' rel="stylesheet" type="text/css")
+		
+		
+		
 	body
 		block content
