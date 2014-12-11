@@ -1,0 +1,9 @@
+form(method="post").ui-body
+	label(for="username") #{__i('User name')}
+	input(type="text",name="username",id="username",value="#{username || ''}")
+	label(for="password") Password
+	input(type="password",name="password",id="password",value="#{password || ''}",autocomplete="off")
+	if errormsg
+		p.ui-bar.ui-bar-a #{errormsg}
+	input(type="submit" value="#{__i('Accedi')}" data-icon="sign-in" data-iconpos="right")
+	a(href="/").ui-btn.ui-icon-delete.ui-btn-icon-right.ui-shadow.ui-corner-all #{__i('Annulla')}

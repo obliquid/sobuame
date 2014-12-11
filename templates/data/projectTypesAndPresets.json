@@ -1,0 +1,2441 @@
+{  
+	"album": { 
+		"label": "Album e figurine",
+		"shippingPrice": 8.9, 
+		"presets": [
+			{
+				"label": "Normale (210x300mm)",
+				"code": "normale",  
+				"width": 216, 
+				"height": 306,
+				"dpi": 300, 
+				"minPageQuantity": 4, 
+				"minPageNum": 8, 
+				"maxPageNum": 80, 
+				"rilegatura": "punto metallico", 
+				"price": 19.90, 
+				"pricePerPage": 0.90, 
+				"coupons": [
+					{
+						"code": "nat001",
+						"label": "solo fino al 25 dicembre, su tutti i tuoi ordini: sconto natalizio del 10%, più 1,5€+iva di ulteriore sconto sul totale",
+						"start": "2014-11-10",
+						"end": "2014-12-25",
+						"priceMultiply": 0.9,
+						"priceAdd": -1.5
+					},
+					{
+						"code": "nov001",
+						"label": "solo a novembre sconto di 5€+iva su tutti i tuoi ordini",
+						"start": "2014-11-01",
+						"end": "2014-11-30",
+						"priceAdd": -5
+					},
+					{
+						"code": "dic001",
+						"label": "solo a dicembre sconto fenomenale del 50% su tutti i tuoi prodotti!!!",
+						"start": "2014-12-01",
+						"end": "2014-12-31",
+						"priceMultiply": 0.5
+					}
+				],
+				"stickers": {
+					"width": 45, 
+					"height": 65,
+					"sbordatura": 2 
+				},
+				"defaultPages": [
+					{
+						"type": "cover-1-front",
+						"tpl": "album_normale-grande_02txt-02img-A"
+					},
+					{
+						"type": "cover-2-front",
+						"tpl": "album_normale-grande_02txt-02img-A"
+					},
+					{
+						"type": "right",
+						"tpl": "album_normale-grande_02txt-02img-A",
+						"num": 1
+					},
+					{
+						"type": "left",
+						"tpl": "album_normale-grande_02txt-02img-A",
+						"num": 2
+					},
+					{
+						"type": "right",
+						"tpl": "album_normale-grande_02txt-02img-A",
+						"num": 3
+					},
+					{
+						"type": "left",
+						"tpl": "album_normale-grande_02txt-02img-A",
+						"num": 4
+					},
+					{
+						"type": "cover-3-back",
+						"tpl": "album_normale-grande_02txt-02img-A"
+					},
+					{
+						"type": "cover-4-back",
+						"tpl": "album_normale-grande_02txt-02img-A"
+					}
+				]
+			},
+			{
+				"label": "Grande (300x427mm)",
+				"code": "grande",
+				"width": 306,
+				"height": 433,
+				"dpi": 300, 
+				"minPageQuantity": 4,
+				"minPageNum": 8, 
+				"maxPageNum": 80, 
+				"rilegatura": "punto metallico",
+				"price": 29.90, 
+				"pricePerPage": 1.20, 
+				"stickers": {
+					"width": 45,
+					"height": 65,
+					"sbordatura": 2
+				},
+				"defaultPages": [
+					{
+						"type": "cover-1-front",
+						"tpl": "album_normale-grande_02txt-02img-A"
+					},
+					{
+						"type": "cover-2-front",
+						"tpl": "album_normale-grande_02txt-02img-A"
+					},
+					{
+						"type": "right",
+						"tpl": "album_normale-grande_02txt-02img-A",
+						"num": 1
+					},
+					{
+						"type": "left",
+						"tpl": "album_normale-grande_02txt-02img-A",
+						"num": 2
+					},
+					{
+						"type": "right",
+						"tpl": "album_normale-grande_02txt-02img-A",
+						"num": 3
+					},
+					{
+						"type": "left",
+						"tpl": "album_normale-grande_02txt-02img-A",
+						"num": 4
+					},
+					{
+						"type": "cover-3-back",
+						"tpl": "album_normale-grande_02txt-02img-A"
+					},
+					{
+						"type": "cover-4-back",
+						"tpl": "album_normale-grande_02txt-02img-A"
+					}
+				]
+			}
+		]
+	},
+	"poster": {
+		"label": "Poster e figurine",
+		"shippingPrice": 8.9, 
+		"presets": [
+			{
+				"label": "Orizzontale (420x300mm)",
+				"code": "orizz",
+				"width": 426,
+				"height": 306,
+				"dpi": 300, 
+				"minPageQuantity": 1,
+				"minPageNum": 1, 
+				"maxPageNum": 1, 
+				"rilegatura": "",
+				"price": 9.90, 
+				"stickers": {
+					"width": 45,
+					"height": 65,
+					"sbordatura": 2
+				},
+				"defaultPages": [
+					{
+						"type": "single",
+						"tpl": "poster_orizz_02txt-02img-A",
+						"num": 1
+					}
+				]
+			},
+			{
+				"label": "Verticale (300x420mm)",
+				"code": "vert",
+				"width": 306,
+				"height": 426,
+				"dpi": 300, 
+				"minPageQuantity": 1,
+				"minPageNum": 1, 
+				"maxPageNum": 1, 
+				"rilegatura": "",
+				"price": 9.90, 
+				"stickers": {
+					"width": 45,
+					"height": 65,
+					"sbordatura": 2
+				},
+				"defaultPages": [
+					{
+						"type": "single",
+						"tpl": "poster_vert_02txt-02img-A",
+						"num": 1
+					}
+				]
+			}
+		]
+	},
+	"annuario": {
+		"label": "Annuario",
+		"shippingPrice": 8.9, 
+		"presets": [
+			{
+				"label": "Normale (210x300mm)",
+				"code": "normale",
+				"width": 216,
+				"height": 306,
+				"dpi": 300, 
+				"minPageQuantity": 4,
+				"minPageNum": 8, 
+				"maxPageNum": 80, 
+				"rilegatura": "brossura",
+				"price": 14.90, 
+				"pricePerPage": 0.80, 
+				"cover": { 
+					"type": "morbida",
+					"pageWidth": 218, 
+					"pageHeight": 308,
+					"splineWidth": 10, 
+					"wingWidth": 20 
+				},
+				"defaultPages": [
+					{
+						"type": "cover-1-front",
+						"tpl": "annuario_normale_16txt-16img-B"
+					},
+					{
+						"type": "cover-2-front",
+						"tpl": "annuario_normale_16txt-16img-B"
+					},
+					{
+						"type": "right",
+						"tpl": "annuario_normale_16txt-16img-B",
+						"num": 1
+					},
+					{
+						"type": "left",
+						"tpl": "annuario_normale_16txt-16img-B",
+						"num": 2
+					},
+					{
+						"type": "right",
+						"tpl": "annuario_normale_16txt-16img-B",
+						"num": 3
+					},
+					{
+						"type": "left",
+						"tpl": "annuario_normale_16txt-16img-B",
+						"num": 4
+					},
+					{
+						"type": "cover-3-back",
+						"tpl": "annuario_normale_16txt-16img-B"
+					},
+					{
+						"type": "cover-4-back",
+						"tpl": "annuario_normale_16txt-16img-B"
+					}
+				]
+			},
+			{
+				"label": "Grande (300x427mm)",
+				"code": "grande",
+				"width": 306,
+				"height": 433,
+				"dpi": 300, 
+				"minPageQuantity": 4,
+				"minPageNum": 8, 
+				"maxPageNum": 80, 
+				"rilegatura": "brossura",
+				"price": 18.90, 
+				"pricePerPage": 1.10, 
+				"cover": { 
+					"type": "morbida",
+					"pageWidth": 308, 
+					"pageHeight": 435,
+					"splineWidth": 10, 
+					"wingWidth": 20 
+				},
+				"defaultPages": [
+					{
+						"type": "cover-1-front",
+						"tpl": "annuario_grande_16txt-16img-B"
+					},
+					{
+						"type": "cover-2-front",
+						"tpl": "annuario_grande_16txt-16img-B"
+					},
+					{
+						"type": "right",
+						"tpl": "annuario_grande_16txt-16img-B",
+						"num": 1
+					},
+					{
+						"type": "left",
+						"tpl": "annuario_grande_16txt-16img-B",
+						"num": 2
+					},
+					{
+						"type": "right",
+						"tpl": "annuario_grande_16txt-16img-B",
+						"num": 3
+					},
+					{
+						"type": "left",
+						"tpl": "annuario_grande_16txt-16img-B",
+						"num": 4
+					},
+					{
+						"type": "cover-3-back",
+						"tpl": "annuario_grande_16txt-16img-B"
+					},
+					{
+						"type": "cover-4-back",
+						"tpl": "annuario_grande_16txt-16img-B"
+					}
+				]
+			}
+		]
+	},
+	"libro": { 
+		"label": "Fotolibro",
+		"shippingPrice": 7.00, 
+		"presets": [
+			{ 
+				"label": "Funny verticale 21x30 cm",
+				"code": "vertnormfun",
+				"width": 216,
+				"height": 306,
+				"dpi": 300, 
+				"minPageQuantity": 2,
+				"minPageNum": 20, 
+				"maxPageNum": 200, 
+				"rilegatura": "brossura",
+				"price": 7.00, 
+				"pricePerPage": 0.45, 
+				"cover": { 
+					"type": "morbida", 
+					"pageWidth": 216, 
+					"pageHeight": 306,
+					"splineWidth": 6 
+				},
+				"coupons": [
+					{
+						"code": "nat001",
+						"label": "solo fino al 25 dicembre, su tutti i tuoi ordini: sconto natalizio del 10%, più 1,5€+iva di ulteriore sconto sul totale",
+						"start": "2014-11-10",
+						"end": "2014-12-25",
+						"priceMultiply": 0.9,
+						"priceAdd": -1.5
+					},
+					{
+						"code": "nov001",
+						"label": "solo a novembre sconto di 5€ su tutti i tuoi ordini",
+						"start": "2014-11-01",
+						"end": "2014-11-30",
+						"priceAdd": -5
+					},
+					{
+						"code": "dic001",
+						"label": "solo a dicembre sconto fenomenale del 50% su tutti i tuoi prodotti!!!",
+						"start": "2014-12-01",
+						"end": "2014-12-31",
+						"priceMultiply": 0.5
+					}
+				],
+				"defaultPages": [
+					{
+						"type": "cover-1-front",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_01txt-01img-B" 
+					},
+					{
+						"type": "cover-2-front",
+						"tpl": "libro_quadnormlux-quadgranlux-vertnormlux-vertgranlux-oriznormlux-orizgranlux-quadnormfun-vertnormfun-oriznormfun_cover2-cover3"
+					},
+					{
+						"type": "right",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_01txt-01img-D",
+						"num": 1
+					},
+					{
+						"type": "left",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-01img-C",
+						"num": 2
+					},
+					{
+						"type": "right",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-04img-F",
+						"num": 3
+					},
+					{
+						"type": "left",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-01img-D",
+						"num": 4
+					},
+					{
+						"type": "right",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-02img-A",
+						"num": 5
+					},
+					{
+						"type": "left",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-01img-D",
+						"num": 6
+					},
+					{
+						"type": "right",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-03img-B",
+						"num": 7
+					},
+					{
+						"type": "left",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-03img-F",
+						"num": 8
+					},
+					{
+						"type": "right",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-04img-E",
+						"num": 9
+					},
+					{
+						"type": "left",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-01img-A",
+						"num": 10
+					},
+					{
+						"type": "right",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-02img-B",
+						"num": 11
+					},
+					{
+						"type": "left",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-02img-A",
+						"num": 12
+					},
+					{
+						"type": "right",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-01img-B",
+						"num": 13
+					},
+					{
+						"type": "left",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-03img-D",
+						"num": 14
+					},
+					{
+						"type": "right",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-02img-B",
+						"num": 15
+					},
+					{
+						"type": "left",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-02img-A",
+						"num": 16
+					},
+					{
+						"type": "right",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-02img-A",
+						"num": 17
+					},
+					{
+						"type": "left",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-02img-A",
+						"num": 18
+					},
+					{
+						"type": "right",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-01img-D",
+						"num": 19
+					},
+					{
+						"type": "left",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_01txt-01img-D",
+						"num": 20
+					},
+					{
+						"type": "cover-3-back",
+						"tpl": "libro_quadnormlux-quadgranlux-vertnormlux-vertgranlux-oriznormlux-orizgranlux-quadnormfun-vertnormfun-oriznormfun_cover2-cover3"
+					},
+					{
+						"type": "cover-4-back",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_01txt-01img-C"
+					}
+				]
+			},
+			{ 
+				"label": "Funny orizzontle 30x21 cm",
+				"code": "oriznormfun",
+				"width": 306,
+				"height": 216,
+				"dpi": 300, 
+				"minPageQuantity": 2,
+				"minPageNum": 20, 
+				"maxPageNum": 200, 
+				"rilegatura": "brossura",
+				"price": 7.00, 
+				"pricePerPage": 0.45, 
+				"cover": { 
+					"type": "morbida", 
+					"pageWidth": 306, 
+					"pageHeight": 216,
+					"splineWidth": 6 
+				},
+				"defaultPages": [
+					{
+						"type": "cover-1-front",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_01txt-01img-B" 
+					},
+					{
+						"type": "cover-2-front",
+						"tpl": "libro_quadnormlux-quadgranlux-vertnormlux-vertgranlux-oriznormlux-orizgranlux-quadnormfun-vertnormfun-oriznormfun_cover2-cover3"
+					},
+					{
+						"type": "right",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-01img-B",
+						"num": 1
+					},
+					{
+						"type": "left",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-03img-A",
+						"num": 2
+					},
+					{
+						"type": "right",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-02img-A",
+						"num": 3
+					},
+					{
+						"type": "left",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-01img-B",
+						"num": 4
+					},
+					{
+						"type": "right",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-01img-B",
+						"num": 5
+					},
+					{
+						"type": "left",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-01img-C",
+						"num": 6
+					},
+					{
+						"type": "right",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-02img-C",
+						"num": 7
+					},
+					{
+						"type": "left",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-04img-E",
+						"num": 8
+					},
+					{
+						"type": "right",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-04img-D",
+						"num": 9
+					},
+					{
+						"type": "left",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-04img-A",
+						"num": 10
+					},
+					{
+						"type": "right",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-04img-B",
+						"num": 11
+					},
+					{
+						"type": "left",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-04img-C",
+						"num": 12
+					},
+					{
+						"type": "right",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-04img-C",
+						"num": 13
+					},
+					{
+						"type": "left",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-01img-B",
+						"num": 14
+					},
+					{
+						"type": "right",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-04img-F",
+						"num": 15
+					},
+					{
+						"type": "left",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-02img-C",
+						"num": 16
+					},
+					{
+						"type": "right",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-03img-C",
+						"num": 17
+					},
+					{
+						"type": "left",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-02img-C",
+						"num": 18
+					},
+					{
+						"type": "right",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-01img-B",
+						"num": 19
+					},
+					{
+						"type": "left",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_01txt-01img-B",
+						"num": 20
+					},
+					{
+						"type": "cover-3-back",
+						"tpl": "libro_quadnormlux-quadgranlux-vertnormlux-vertgranlux-oriznormlux-orizgranlux-quadnormfun-vertnormfun-oriznormfun_cover2-cover3"
+					},
+					{
+						"type": "cover-4-back",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_01txt-01img-D"
+					}
+				]
+			},
+			{ 
+				"label": "Funny quadrato 20x20 cm",
+				"code": "quadnormfun",
+				"width": 206,
+				"height": 206,
+				"dpi": 300, 
+				"minPageQuantity": 2,
+				"minPageNum": 20, 
+				"maxPageNum": 200, 
+				"rilegatura": "brossura",
+				"price": 7.50, 
+				"pricePerPage": 0.46, 
+				"cover": { 
+					"type": "morbida", 
+					"pageWidth": 206, 
+					"pageHeight": 206,
+					"splineWidth": 6 
+				},
+				"defaultPages": [
+					{
+						"type": "cover-1-front",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-01img-B" 
+					},
+					{
+						"type": "cover-2-front",
+						"tpl": "libro_quadnormlux-quadgranlux-vertnormlux-vertgranlux-oriznormlux-orizgranlux-quadnormfun-vertnormfun-oriznormfun_cover2-cover3"
+					},
+					{
+						"type": "right",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_01txt-01img-G",
+						"num": 1
+					},
+					{
+						"type": "left",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-01img-B",
+						"num": 2
+					},
+					{
+						"type": "right",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-02img-A",
+						"num": 3
+					},
+					{
+						"type": "left",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-02img-B",
+						"num": 4
+					},
+					{
+						"type": "right",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-02img-A",
+						"num": 5
+					},
+					{
+						"type": "left",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-01img-C",
+						"num": 6
+					},
+					{
+						"type": "right",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-02img-B",
+						"num": 7
+					},
+					{
+						"type": "left",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-01img-C",
+						"num": 8
+					},
+					{
+						"type": "right",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-03img-B",
+						"num": 9
+					},
+					{
+						"type": "left",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-03img-C",
+						"num": 10
+					},
+					{
+						"type": "right",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-03img-A",
+						"num": 11
+					},
+					{
+						"type": "left",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-04img-A",
+						"num": 12
+					},
+					{
+						"type": "right",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-04img-E",
+						"num": 13
+					},
+					{
+						"type": "left",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-04img-C",
+						"num": 14
+					},
+					{
+						"type": "right",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-04img-B",
+						"num": 15
+					},
+					{
+						"type": "left",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-04img-D",
+						"num": 16
+					},
+					{
+						"type": "right",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-04img-F",
+						"num": 17
+					},
+					{
+						"type": "left",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-06img-H",
+						"num": 18
+					},
+					{
+						"type": "right",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-01img-C",
+						"num": 19
+					},
+					{
+						"type": "left",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_01txt-01img-G",
+						"num": 20
+					},
+					{
+						"type": "cover-3-back",
+						"tpl": "libro_quadnormlux-quadgranlux-vertnormlux-vertgranlux-oriznormlux-orizgranlux-quadnormfun-vertnormfun-oriznormfun_cover2-cover3"
+					},
+					{
+						"type": "cover-4-back",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_01txt-01img-E"
+					}
+				]
+			},
+			{ 
+				"label": "Essenza verticale 21x30 cm",
+				"code": "vertnormess",
+				"width": 216,
+				"height": 306,
+				"dpi": 300, 
+				"minPageQuantity": 2,
+				"minPageNum": 20, 
+				"maxPageNum": 200, 
+				"rilegatura": "brossura",
+				"price": 14.00, 
+				"pricePerPage": 0.45, 
+				"cover": { 
+					"type": "rigida-tela"
+				},
+				"coverlet": { 
+					"pageWidth": 213,  
+					"pageHeight": 312,
+					"splineWidth": 12, 
+					"wingWidth": 85, 
+					"wingHeight": 0 
+				},
+				"defaultPages": [
+					{
+						"type": "cover-1-front",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_01txt-01img-B" 
+					},
+					{
+						"type": "cover-2-front",
+						"tpl": "libro_vertnormess_coverletSX"
+					},
+					{
+						"type": "right",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_01txt-01img-D",
+						"num": 1
+					},
+					{
+						"type": "left",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-01img-C",
+						"num": 2
+					},
+					{
+						"type": "right",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-04img-F",
+						"num": 3
+					},
+					{
+						"type": "left",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-01img-D",
+						"num": 4
+					},
+					{
+						"type": "right",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-02img-A",
+						"num": 5
+					},
+					{
+						"type": "left",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-01img-D",
+						"num": 6
+					},
+					{
+						"type": "right",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-03img-B",
+						"num": 7
+					},
+					{
+						"type": "left",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-03img-F",
+						"num": 8
+					},
+					{
+						"type": "right",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-04img-E",
+						"num": 9
+					},
+					{
+						"type": "left",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-01img-A",
+						"num": 10
+					},
+					{
+						"type": "right",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-02img-B",
+						"num": 11
+					},
+					{
+						"type": "left",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-02img-A",
+						"num": 12
+					},
+					{
+						"type": "right",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-01img-B",
+						"num": 13
+					},
+					{
+						"type": "left",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-03img-D",
+						"num": 14
+					},
+					{
+						"type": "right",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-02img-B",
+						"num": 15
+					},
+					{
+						"type": "left",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-02img-A",
+						"num": 16
+					},
+					{
+						"type": "right",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-02img-A",
+						"num": 17
+					},
+					{
+						"type": "left",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-02img-A",
+						"num": 18
+					},
+					{
+						"type": "right",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-01img-D",
+						"num": 19
+					},
+					{
+						"type": "left",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_01txt-01img-D",
+						"num": 20
+					},
+					{
+						"type": "cover-3-back",
+						"tpl": "libro_vertnormess_coverletDX"
+					},
+					{
+						"type": "cover-4-back",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_01txt-01img-C"
+					}
+				]
+			},
+			{ 
+				"label": "Essenza verticale 30x43 cm",
+				"code": "vertgraness",
+				"width": 306,
+				"height": 433,
+				"dpi": 300, 
+				"minPageQuantity": 2,
+				"minPageNum": 20, 
+				"maxPageNum": 200, 
+				"rilegatura": "brossura",
+				"price": 22.00, 
+				"pricePerPage": 0.90, 
+				"cover": { 
+					"type": "rigida-tela"
+				},
+				"coverlet": { 
+					"pageWidth": 303,  
+					"pageHeight": 439,
+					"splineWidth": 12, 
+					"wingWidth": 85, 
+					"wingHeight": 0 
+				},
+				"defaultPages": [
+					{
+						"type": "cover-1-front",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_01txt-01img-B" 
+					},
+					{
+						"type": "cover-2-front",
+						"tpl": "libro_vertgraness_coverletSX"
+					},
+					{
+						"type": "right",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_01txt-01img-D",
+						"num": 1
+					},
+					{
+						"type": "left",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-01img-C",
+						"num": 2
+					},
+					{
+						"type": "right",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-04img-F",
+						"num": 3
+					},
+					{
+						"type": "left",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-01img-D",
+						"num": 4
+					},
+					{
+						"type": "right",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-02img-A",
+						"num": 5
+					},
+					{
+						"type": "left",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-01img-D",
+						"num": 6
+					},
+					{
+						"type": "right",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-03img-B",
+						"num": 7
+					},
+					{
+						"type": "left",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-03img-F",
+						"num": 8
+					},
+					{
+						"type": "right",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-04img-E",
+						"num": 9
+					},
+					{
+						"type": "left",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-01img-A",
+						"num": 10
+					},
+					{
+						"type": "right",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-02img-B",
+						"num": 11
+					},
+					{
+						"type": "left",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-02img-A",
+						"num": 12
+					},
+					{
+						"type": "right",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-01img-B",
+						"num": 13
+					},
+					{
+						"type": "left",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-03img-D",
+						"num": 14
+					},
+					{
+						"type": "right",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-02img-B",
+						"num": 15
+					},
+					{
+						"type": "left",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-02img-A",
+						"num": 16
+					},
+					{
+						"type": "right",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-02img-A",
+						"num": 17
+					},
+					{
+						"type": "left",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-02img-A",
+						"num": 18
+					},
+					{
+						"type": "right",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-01img-D",
+						"num": 19
+					},
+					{
+						"type": "left",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_01txt-01img-D",
+						"num": 20
+					},
+					{
+						"type": "cover-3-back",
+						"tpl": "libro_vertgraness_coverletDX"
+					},
+					{
+						"type": "cover-4-back",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_01txt-01img-C"
+					}
+				]
+			},
+			{ 
+				"label": "Essenza orizzontale 30x21 cm",
+				"code": "oriznormess",
+				"width": 306,
+				"height": 216,
+				"dpi": 300, 
+				"minPageQuantity": 2,
+				"minPageNum": 20, 
+				"maxPageNum": 200, 
+				"rilegatura": "brossura",
+				"price": 14.00, 
+				"pricePerPage": 0.45, 
+				"cover": { 
+					"type": "rigida-tela"
+				},
+				"coverlet": { 
+					"pageWidth": 303,  
+					"pageHeight": 222,
+					"splineWidth": 12, 
+					"wingWidth": 85, 
+					"wingHeight": 0 
+				},
+				"defaultPages": [
+					{
+						"type": "cover-1-front",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_01txt-01img-B" 
+					},
+					{
+						"type": "cover-2-front",
+						"tpl": "libro_oriznormess-orizgraness-quadnormess-quadgraness_coverletSX"
+					},
+					{
+						"type": "right",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-01img-B",
+						"num": 1
+					},
+					{
+						"type": "left",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-03img-A",
+						"num": 2
+					},
+					{
+						"type": "right",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-02img-A",
+						"num": 3
+					},
+					{
+						"type": "left",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-01img-B",
+						"num": 4
+					},
+					{
+						"type": "right",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-01img-B",
+						"num": 5
+					},
+					{
+						"type": "left",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-01img-C",
+						"num": 6
+					},
+					{
+						"type": "right",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-02img-C",
+						"num": 7
+					},
+					{
+						"type": "left",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-04img-E",
+						"num": 8
+					},
+					{
+						"type": "right",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-04img-D",
+						"num": 9
+					},
+					{
+						"type": "left",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-04img-A",
+						"num": 10
+					},
+					{
+						"type": "right",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-04img-B",
+						"num": 11
+					},
+					{
+						"type": "left",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-04img-C",
+						"num": 12
+					},
+					{
+						"type": "right",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-04img-C",
+						"num": 13
+					},
+					{
+						"type": "left",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-01img-B",
+						"num": 14
+					},
+					{
+						"type": "right",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-04img-F",
+						"num": 15
+					},
+					{
+						"type": "left",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-02img-C",
+						"num": 16
+					},
+					{
+						"type": "right",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-03img-C",
+						"num": 17
+					},
+					{
+						"type": "left",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-02img-C",
+						"num": 18
+					},
+					{
+						"type": "right",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-01img-B",
+						"num": 19
+					},
+					{
+						"type": "left",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_01txt-01img-B",
+						"num": 20
+					},
+					{
+						"type": "cover-3-back",
+						"tpl": "libro_oriznormess-orizgraness-quadnormess-quadgraness_coverletDX"
+					},
+					{
+						"type": "cover-4-back",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_01txt-01img-D"
+					}
+				]
+			},
+			{ 
+				"label": "Essenza orizzontale 43x30 cm",
+				"code": "orizgraness",
+				"width": 433,
+				"height": 306,
+				"dpi": 300, 
+				"minPageQuantity": 2,
+				"minPageNum": 20, 
+				"maxPageNum": 200, 
+				"rilegatura": "brossura",
+				"price": 22.00, 
+				"pricePerPage": 0.90, 
+				"cover": { 
+					"type": "rigida-tela"
+				},
+				"coverlet": { 
+					"pageWidth": 430,  
+					"pageHeight": 312,
+					"splineWidth": 12, 
+					"wingWidth": 85, 
+					"wingHeight": 0 
+				},
+				"defaultPages": [
+					{
+						"type": "cover-1-front",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_01txt-01img-B" 
+					},
+					{
+						"type": "cover-2-front",
+						"tpl": "libro_oriznormess-orizgraness-quadnormess-quadgraness_coverletSX"
+					},
+					{
+						"type": "right",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-01img-B",
+						"num": 1
+					},
+					{
+						"type": "left",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-03img-A",
+						"num": 2
+					},
+					{
+						"type": "right",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-02img-A",
+						"num": 3
+					},
+					{
+						"type": "left",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-01img-B",
+						"num": 4
+					},
+					{
+						"type": "right",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-01img-B",
+						"num": 5
+					},
+					{
+						"type": "left",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-01img-C",
+						"num": 6
+					},
+					{
+						"type": "right",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-02img-C",
+						"num": 7
+					},
+					{
+						"type": "left",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-04img-E",
+						"num": 8
+					},
+					{
+						"type": "right",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-04img-D",
+						"num": 9
+					},
+					{
+						"type": "left",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-04img-A",
+						"num": 10
+					},
+					{
+						"type": "right",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-04img-B",
+						"num": 11
+					},
+					{
+						"type": "left",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-04img-C",
+						"num": 12
+					},
+					{
+						"type": "right",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-04img-C",
+						"num": 13
+					},
+					{
+						"type": "left",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-01img-B",
+						"num": 14
+					},
+					{
+						"type": "right",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-04img-F",
+						"num": 15
+					},
+					{
+						"type": "left",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-02img-C",
+						"num": 16
+					},
+					{
+						"type": "right",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-03img-C",
+						"num": 17
+					},
+					{
+						"type": "left",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-02img-C",
+						"num": 18
+					},
+					{
+						"type": "right",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-01img-B",
+						"num": 19
+					},
+					{
+						"type": "left",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_01txt-01img-B",
+						"num": 20
+					},
+					{
+						"type": "cover-3-back",
+						"tpl": "libro_oriznormess-orizgraness-quadnormess-quadgraness_coverletDX"
+					},
+					{
+						"type": "cover-4-back",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_01txt-01img-D"
+					}
+				]
+			},
+			{ 
+				"label": "Essenza quadrato 20x20 cm",
+				"code": "quadnormess",
+				"width": 206,
+				"height": 206,
+				"dpi": 300, 
+				"minPageQuantity": 2,
+				"minPageNum": 20, 
+				"maxPageNum": 200, 
+				"rilegatura": "brossura",
+				"price": 15.00, 
+				"pricePerPage": 0.46, 
+				"cover": { 
+					"type": "rigida-tela"
+				},
+				"coverlet": { 
+					"pageWidth": 203,  
+					"pageHeight": 212,
+					"splineWidth": 12, 
+					"wingWidth": 85, 
+					"wingHeight": 0 
+				},
+				"defaultPages": [
+					{
+						"type": "cover-1-front",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-01img-B" 
+					},
+					{
+						"type": "cover-2-front",
+						"tpl": "libro_oriznormess-orizgraness-quadnormess-quadgraness_coverletSX"
+					},
+					{
+						"type": "right",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_01txt-01img-G",
+						"num": 1
+					},
+					{
+						"type": "left",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-01img-B",
+						"num": 2
+					},
+					{
+						"type": "right",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-02img-A",
+						"num": 3
+					},
+					{
+						"type": "left",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-02img-B",
+						"num": 4
+					},
+					{
+						"type": "right",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-02img-A",
+						"num": 5
+					},
+					{
+						"type": "left",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-01img-C",
+						"num": 6
+					},
+					{
+						"type": "right",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-02img-B",
+						"num": 7
+					},
+					{
+						"type": "left",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-01img-C",
+						"num": 8
+					},
+					{
+						"type": "right",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-03img-B",
+						"num": 9
+					},
+					{
+						"type": "left",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-03img-C",
+						"num": 10
+					},
+					{
+						"type": "right",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-03img-A",
+						"num": 11
+					},
+					{
+						"type": "left",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-04img-A",
+						"num": 12
+					},
+					{
+						"type": "right",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-04img-E",
+						"num": 13
+					},
+					{
+						"type": "left",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-04img-C",
+						"num": 14
+					},
+					{
+						"type": "right",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-04img-B",
+						"num": 15
+					},
+					{
+						"type": "left",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-04img-D",
+						"num": 16
+					},
+					{
+						"type": "right",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-04img-F",
+						"num": 17
+					},
+					{
+						"type": "left",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-06img-H",
+						"num": 18
+					},
+					{
+						"type": "right",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-01img-C",
+						"num": 19
+					},
+					{
+						"type": "left",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_01txt-01img-G",
+						"num": 20
+					},
+					{
+						"type": "cover-3-back",
+						"tpl": "libro_oriznormess-orizgraness-quadnormess-quadgraness_coverletDX"
+					},
+					{
+						"type": "cover-4-back",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_01txt-01img-E"
+					}
+				]
+			},
+			{ 
+				"label": "Essenza quadrato 30x30 cm",
+				"code": "quadgraness",
+				"width": 306,
+				"height": 306,
+				"dpi": 300, 
+				"minPageQuantity": 2,
+				"minPageNum": 20, 
+				"maxPageNum": 200, 
+				"rilegatura": "brossura",
+				"price": 23.00, 
+				"pricePerPage": 0.92, 
+				"cover": { 
+					"type": "rigida-tela"
+				},
+				"coverlet": { 
+					"pageWidth": 303,  
+					"pageHeight": 312,
+					"splineWidth": 12, 
+					"wingWidth": 85, 
+					"wingHeight": 0 
+				},
+				"defaultPages": [
+					{
+						"type": "cover-1-front",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-01img-B" 
+					},
+					{
+						"type": "cover-2-front",
+						"tpl": "libro_oriznormess-orizgraness-quadnormess-quadgraness_coverletSX"
+					},
+					{
+						"type": "right",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_01txt-01img-G",
+						"num": 1
+					},
+					{
+						"type": "left",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-01img-B",
+						"num": 2
+					},
+					{
+						"type": "right",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-02img-A",
+						"num": 3
+					},
+					{
+						"type": "left",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-02img-B",
+						"num": 4
+					},
+					{
+						"type": "right",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-02img-A",
+						"num": 5
+					},
+					{
+						"type": "left",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-01img-C",
+						"num": 6
+					},
+					{
+						"type": "right",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-02img-B",
+						"num": 7
+					},
+					{
+						"type": "left",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-01img-C",
+						"num": 8
+					},
+					{
+						"type": "right",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-03img-B",
+						"num": 9
+					},
+					{
+						"type": "left",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-03img-C",
+						"num": 10
+					},
+					{
+						"type": "right",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-03img-A",
+						"num": 11
+					},
+					{
+						"type": "left",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-04img-A",
+						"num": 12
+					},
+					{
+						"type": "right",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-04img-E",
+						"num": 13
+					},
+					{
+						"type": "left",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-04img-C",
+						"num": 14
+					},
+					{
+						"type": "right",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-04img-B",
+						"num": 15
+					},
+					{
+						"type": "left",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-04img-D",
+						"num": 16
+					},
+					{
+						"type": "right",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-04img-F",
+						"num": 17
+					},
+					{
+						"type": "left",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-06img-H",
+						"num": 18
+					},
+					{
+						"type": "right",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-01img-C",
+						"num": 19
+					},
+					{
+						"type": "left",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_01txt-01img-G",
+						"num": 20
+					},
+					{
+						"type": "cover-3-back",
+						"tpl": "libro_oriznormess-orizgraness-quadnormess-quadgraness_coverletDX"
+					},
+					{
+						"type": "cover-4-back",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_01txt-01img-E"
+					}
+				]
+			},
+			{ 
+				"label": "Luxury verticale 21x30 cm",
+				"code": "vertnormlux",
+				"width": 216,
+				"height": 306,
+				"dpi": 300, 
+				"minPageQuantity": 2,
+				"minPageNum": 20, 
+				"maxPageNum": 200, 
+				"rilegatura": "brossura",
+				"price": 18.00, 
+				"pricePerPage": 0.45, 
+				"cover": { 
+					"type": "rigida-stampabile", 
+					"pageWidth": 213, 
+					"pageHeight": 303,
+					"splineWidth": 12, 
+					"wingWidth": 20, 
+					"wingHeight": 20 
+				},
+				"defaultPages": [
+					{
+						"type": "cover-1-front",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_01txt-01img-B" 
+					},
+					{
+						"type": "cover-2-front",
+						"tpl": "libro_quadnormlux-quadgranlux-vertnormlux-vertgranlux-oriznormlux-orizgranlux-quadnormfun-vertnormfun-oriznormfun_cover2-cover3"
+					},
+					{
+						"type": "right",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_01txt-01img-D",
+						"num": 1
+					},
+					{
+						"type": "left",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-01img-C",
+						"num": 2
+					},
+					{
+						"type": "right",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-04img-F",
+						"num": 3
+					},
+					{
+						"type": "left",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-01img-D",
+						"num": 4
+					},
+					{
+						"type": "right",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-02img-A",
+						"num": 5
+					},
+					{
+						"type": "left",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-01img-D",
+						"num": 6
+					},
+					{
+						"type": "right",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-03img-B",
+						"num": 7
+					},
+					{
+						"type": "left",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-03img-F",
+						"num": 8
+					},
+					{
+						"type": "right",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-04img-E",
+						"num": 9
+					},
+					{
+						"type": "left",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-01img-A",
+						"num": 10
+					},
+					{
+						"type": "right",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-02img-B",
+						"num": 11
+					},
+					{
+						"type": "left",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-02img-A",
+						"num": 12
+					},
+					{
+						"type": "right",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-01img-B",
+						"num": 13
+					},
+					{
+						"type": "left",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-03img-D",
+						"num": 14
+					},
+					{
+						"type": "right",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-02img-B",
+						"num": 15
+					},
+					{
+						"type": "left",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-02img-A",
+						"num": 16
+					},
+					{
+						"type": "right",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-02img-A",
+						"num": 17
+					},
+					{
+						"type": "left",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-02img-A",
+						"num": 18
+					},
+					{
+						"type": "right",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-01img-D",
+						"num": 19
+					},
+					{
+						"type": "left",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_01txt-01img-D",
+						"num": 20
+					},
+					{
+						"type": "cover-3-back",
+						"tpl": "libro_quadnormlux-quadgranlux-vertnormlux-vertgranlux-oriznormlux-orizgranlux-quadnormfun-vertnormfun-oriznormfun_cover2-cover3"
+					},
+					{
+						"type": "cover-4-back",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_01txt-01img-C"
+					}
+				]
+			},
+			{ 
+				"label": "Luxury verticale 30x43 cm",
+				"code": "vertgranlux",
+				"width": 306,
+				"height": 433,
+				"dpi": 300, 
+				"minPageQuantity": 2,
+				"minPageNum": 20, 
+				"maxPageNum": 200, 
+				"rilegatura": "brossura",
+				"price": 24.00, 
+				"pricePerPage": 0.90, 
+				"cover": { 
+					"type": "rigida-stampabile", 
+					"pageWidth": 303, 
+					"pageHeight": 433,
+					"splineWidth": 12, 
+					"wingWidth": 20, 
+					"wingHeight": 20 
+				},
+				"defaultPages": [
+					{
+						"type": "cover-1-front",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_01txt-01img-B" 
+					},
+					{
+						"type": "cover-2-front",
+						"tpl": "libro_quadnormlux-quadgranlux-vertnormlux-vertgranlux-oriznormlux-orizgranlux-quadnormfun-vertnormfun-oriznormfun_cover2-cover3"
+					},
+					{
+						"type": "right",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_01txt-01img-D",
+						"num": 1
+					},
+					{
+						"type": "left",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-01img-C",
+						"num": 2
+					},
+					{
+						"type": "right",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-04img-F",
+						"num": 3
+					},
+					{
+						"type": "left",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-01img-D",
+						"num": 4
+					},
+					{
+						"type": "right",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-02img-A",
+						"num": 5
+					},
+					{
+						"type": "left",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-01img-D",
+						"num": 6
+					},
+					{
+						"type": "right",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-03img-B",
+						"num": 7
+					},
+					{
+						"type": "left",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-03img-F",
+						"num": 8
+					},
+					{
+						"type": "right",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-04img-E",
+						"num": 9
+					},
+					{
+						"type": "left",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-01img-A",
+						"num": 10
+					},
+					{
+						"type": "right",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-02img-B",
+						"num": 11
+					},
+					{
+						"type": "left",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-02img-A",
+						"num": 12
+					},
+					{
+						"type": "right",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-01img-B",
+						"num": 13
+					},
+					{
+						"type": "left",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-03img-D",
+						"num": 14
+					},
+					{
+						"type": "right",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-02img-B",
+						"num": 15
+					},
+					{
+						"type": "left",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-02img-A",
+						"num": 16
+					},
+					{
+						"type": "right",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-02img-A",
+						"num": 17
+					},
+					{
+						"type": "left",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-02img-A",
+						"num": 18
+					},
+					{
+						"type": "right",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_00txt-01img-D",
+						"num": 19
+					},
+					{
+						"type": "left",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_01txt-01img-D",
+						"num": 20
+					},
+					{
+						"type": "cover-3-back",
+						"tpl": "libro_quadnormlux-quadgranlux-vertnormlux-vertgranlux-oriznormlux-orizgranlux-quadnormfun-vertnormfun-oriznormfun_cover2-cover3"
+					},
+					{
+						"type": "cover-4-back",
+						"tpl": "libro_vertnormlux-vertgranlux-vertnormess-vertgraness-vertnormfun_01txt-01img-C"
+					}
+				]
+			},
+			{ 
+				"label": "Luxury orizzontale 30x21 cm",
+				"code": "oriznormlux",
+				"width": 306,
+				"height": 216,
+				"dpi": 300, 
+				"minPageQuantity": 2,
+				"minPageNum": 20, 
+				"maxPageNum": 200, 
+				"rilegatura": "brossura",
+				"price": 18.00, 
+				"pricePerPage": 0.45, 
+				"cover": { 
+					"type": "rigida-stampabile", 
+					"pageWidth": 303, 
+					"pageHeight": 216,
+					"splineWidth": 12, 
+					"wingWidth": 20, 
+					"wingHeight": 20 
+				},
+				"defaultPages": [
+					{
+						"type": "cover-1-front",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_01txt-01img-B" 
+					},
+					{
+						"type": "cover-2-front",
+						"tpl": "libro_quadnormlux-quadgranlux-vertnormlux-vertgranlux-oriznormlux-orizgranlux-quadnormfun-vertnormfun-oriznormfun_cover2-cover3"
+					},
+					{
+						"type": "right",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-01img-B",
+						"num": 1
+					},
+					{
+						"type": "left",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-03img-A",
+						"num": 2
+					},
+					{
+						"type": "right",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-02img-A",
+						"num": 3
+					},
+					{
+						"type": "left",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-01img-B",
+						"num": 4
+					},
+					{
+						"type": "right",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-01img-B",
+						"num": 5
+					},
+					{
+						"type": "left",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-01img-C",
+						"num": 6
+					},
+					{
+						"type": "right",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-02img-C",
+						"num": 7
+					},
+					{
+						"type": "left",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-04img-E",
+						"num": 8
+					},
+					{
+						"type": "right",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-04img-D",
+						"num": 9
+					},
+					{
+						"type": "left",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-04img-A",
+						"num": 10
+					},
+					{
+						"type": "right",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-04img-B",
+						"num": 11
+					},
+					{
+						"type": "left",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-04img-C",
+						"num": 12
+					},
+					{
+						"type": "right",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-04img-C",
+						"num": 13
+					},
+					{
+						"type": "left",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-01img-B",
+						"num": 14
+					},
+					{
+						"type": "right",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-04img-F",
+						"num": 15
+					},
+					{
+						"type": "left",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-02img-C",
+						"num": 16
+					},
+					{
+						"type": "right",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-03img-C",
+						"num": 17
+					},
+					{
+						"type": "left",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-02img-C",
+						"num": 18
+					},
+					{
+						"type": "right",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-01img-B",
+						"num": 19
+					},
+					{
+						"type": "left",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_01txt-01img-B",
+						"num": 20
+					},
+					{
+						"type": "cover-3-back",
+						"tpl": "libro_quadnormlux-quadgranlux-vertnormlux-vertgranlux-oriznormlux-orizgranlux-quadnormfun-vertnormfun-oriznormfun_cover2-cover3"
+					},
+					{
+						"type": "cover-4-back",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_01txt-01img-D"
+					}
+				]
+			},
+			{ 
+				"label": "Luxury orizzontale 43x30 cm",
+				"code": "orizgranlux",
+				"width": 433,
+				"height": 306,
+				"dpi": 300, 
+				"minPageQuantity": 2,
+				"minPageNum": 20, 
+				"maxPageNum": 200, 
+				"rilegatura": "brossura",
+				"price": 24.00, 
+				"pricePerPage": 0.90, 
+				"cover": { 
+					"type": "rigida-stampabile", 
+					"pageWidth": 430, 
+					"pageHeight": 306,
+					"splineWidth": 12, 
+					"wingWidth": 20, 
+					"wingHeight": 20 
+				},
+				"defaultPages": [
+					{
+						"type": "cover-1-front",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_01txt-01img-B" 
+					},
+					{
+						"type": "cover-2-front",
+						"tpl": "libro_quadnormlux-quadgranlux-vertnormlux-vertgranlux-oriznormlux-orizgranlux-quadnormfun-vertnormfun-oriznormfun_cover2-cover3"
+					},
+					{
+						"type": "right",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-01img-B",
+						"num": 1
+					},
+					{
+						"type": "left",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-03img-A",
+						"num": 2
+					},
+					{
+						"type": "right",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-02img-A",
+						"num": 3
+					},
+					{
+						"type": "left",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-01img-B",
+						"num": 4
+					},
+					{
+						"type": "right",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-01img-B",
+						"num": 5
+					},
+					{
+						"type": "left",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-01img-C",
+						"num": 6
+					},
+					{
+						"type": "right",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-02img-C",
+						"num": 7
+					},
+					{
+						"type": "left",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-04img-E",
+						"num": 8
+					},
+					{
+						"type": "right",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-04img-D",
+						"num": 9
+					},
+					{
+						"type": "left",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-04img-A",
+						"num": 10
+					},
+					{
+						"type": "right",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-04img-B",
+						"num": 11
+					},
+					{
+						"type": "left",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-04img-C",
+						"num": 12
+					},
+					{
+						"type": "right",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-04img-C",
+						"num": 13
+					},
+					{
+						"type": "left",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-01img-B",
+						"num": 14
+					},
+					{
+						"type": "right",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-04img-F",
+						"num": 15
+					},
+					{
+						"type": "left",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-02img-C",
+						"num": 16
+					},
+					{
+						"type": "right",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-03img-C",
+						"num": 17
+					},
+					{
+						"type": "left",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-02img-C",
+						"num": 18
+					},
+					{
+						"type": "right",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_00txt-01img-B",
+						"num": 19
+					},
+					{
+						"type": "left",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_01txt-01img-B",
+						"num": 20
+					},
+					{
+						"type": "cover-3-back",
+						"tpl": "libro_quadnormlux-quadgranlux-vertnormlux-vertgranlux-oriznormlux-orizgranlux-quadnormfun-vertnormfun-oriznormfun_cover2-cover3"
+					},
+					{
+						"type": "cover-4-back",
+						"tpl": "libro_oriznormlux-orizgranlux-oriznormess-orizgraness-oriznormfun_01txt-01img-D"
+					}
+				]
+			},
+			{ 
+				"label": "Luxury quadrato 20x20 cm",
+				"code": "quadnormlux",
+				"width": 206,
+				"height": 206,
+				"dpi": 300, 
+				"minPageQuantity": 2,
+				"minPageNum": 20, 
+				"maxPageNum": 200, 
+				"rilegatura": "brossura",
+				"price": 19.00, 
+				"pricePerPage": 0.46, 
+				"cover": { 
+					"type": "rigida-stampabile", 
+					"pageWidth": 203, 
+					"pageHeight": 206,
+					"splineWidth": 12, 
+					"wingWidth": 20, 
+					"wingHeight": 20 
+				},
+				"defaultPages": [
+					{
+						"type": "cover-1-front",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-01img-B" 
+					},
+					{
+						"type": "cover-2-front",
+						"tpl": "libro_quadnormlux-quadgranlux-vertnormlux-vertgranlux-oriznormlux-orizgranlux-quadnormfun-vertnormfun-oriznormfun_cover2-cover3"
+					},
+					{
+						"type": "right",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_01txt-01img-G",
+						"num": 1
+					},
+					{
+						"type": "left",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-01img-B",
+						"num": 2
+					},
+					{
+						"type": "right",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-02img-A",
+						"num": 3
+					},
+					{
+						"type": "left",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-02img-B",
+						"num": 4
+					},
+					{
+						"type": "right",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-02img-A",
+						"num": 5
+					},
+					{
+						"type": "left",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-01img-C",
+						"num": 6
+					},
+					{
+						"type": "right",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-02img-B",
+						"num": 7
+					},
+					{
+						"type": "left",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-01img-C",
+						"num": 8
+					},
+					{
+						"type": "right",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-03img-B",
+						"num": 9
+					},
+					{
+						"type": "left",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-03img-C",
+						"num": 10
+					},
+					{
+						"type": "right",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-03img-A",
+						"num": 11
+					},
+					{
+						"type": "left",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-04img-A",
+						"num": 12
+					},
+					{
+						"type": "right",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-04img-E",
+						"num": 13
+					},
+					{
+						"type": "left",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-04img-C",
+						"num": 14
+					},
+					{
+						"type": "right",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-04img-B",
+						"num": 15
+					},
+					{
+						"type": "left",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-04img-D",
+						"num": 16
+					},
+					{
+						"type": "right",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-04img-F",
+						"num": 17
+					},
+					{
+						"type": "left",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-06img-H",
+						"num": 18
+					},
+					{
+						"type": "right",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-01img-C",
+						"num": 19
+					},
+					{
+						"type": "left",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_01txt-01img-G",
+						"num": 20
+					},
+					{
+						"type": "cover-3-back",
+						"tpl": "libro_quadnormlux-quadgranlux-vertnormlux-vertgranlux-oriznormlux-orizgranlux-quadnormfun-vertnormfun-oriznormfun_cover2-cover3"
+					},
+					{
+						"type": "cover-4-back",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_01txt-01img-E"
+					}
+				]
+			},
+			{ 
+				"label": "Luxury quadrato 30x30 cm",
+				"code": "quadgranlux",
+				"width": 306,
+				"height": 306,
+				"dpi": 300, 
+				"minPageQuantity": 2,
+				"minPageNum": 20, 
+				"maxPageNum": 200, 
+				"rilegatura": "brossura",
+				"price": 26.00, 
+				"pricePerPage": 0.92, 
+				"cover": { 
+					"type": "rigida-stampabile", 
+					"pageWidth": 303, 
+					"pageHeight": 306,
+					"splineWidth": 12, 
+					"wingWidth": 20, 
+					"wingHeight": 20 
+				},
+				"defaultPages": [
+					{
+						"type": "cover-1-front",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-01img-B" 
+					},
+					{
+						"type": "cover-2-front",
+						"tpl": "libro_quadnormlux-quadgranlux-vertnormlux-vertgranlux-oriznormlux-orizgranlux-quadnormfun-vertnormfun-oriznormfun_cover2-cover3"
+					},
+					{
+						"type": "right",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_01txt-01img-G",
+						"num": 1
+					},
+					{
+						"type": "left",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-01img-B",
+						"num": 2
+					},
+					{
+						"type": "right",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-02img-A",
+						"num": 3
+					},
+					{
+						"type": "left",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-02img-B",
+						"num": 4
+					},
+					{
+						"type": "right",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-02img-A",
+						"num": 5
+					},
+					{
+						"type": "left",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-01img-C",
+						"num": 6
+					},
+					{
+						"type": "right",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-02img-B",
+						"num": 7
+					},
+					{
+						"type": "left",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-01img-C",
+						"num": 8
+					},
+					{
+						"type": "right",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-03img-B",
+						"num": 9
+					},
+					{
+						"type": "left",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-03img-C",
+						"num": 10
+					},
+					{
+						"type": "right",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-03img-A",
+						"num": 11
+					},
+					{
+						"type": "left",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-04img-A",
+						"num": 12
+					},
+					{
+						"type": "right",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-04img-E",
+						"num": 13
+					},
+					{
+						"type": "left",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-04img-C",
+						"num": 14
+					},
+					{
+						"type": "right",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-04img-B",
+						"num": 15
+					},
+					{
+						"type": "left",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-04img-D",
+						"num": 16
+					},
+					{
+						"type": "right",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-04img-F",
+						"num": 17
+					},
+					{
+						"type": "left",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-06img-H",
+						"num": 18
+					},
+					{
+						"type": "right",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_00txt-01img-C",
+						"num": 19
+					},
+					{
+						"type": "left",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_01txt-01img-G",
+						"num": 20
+					},
+					{
+						"type": "cover-3-back",
+						"tpl": "libro_quadnormlux-quadgranlux-vertnormlux-vertgranlux-oriznormlux-orizgranlux-quadnormfun-vertnormfun-oriznormfun_cover2-cover3"
+					},
+					{
+						"type": "cover-4-back",
+						"tpl": "libro_quadnormlux-quadgranlux-quadnormess-quadgraness-quadnormfun_01txt-01img-E"
+					}
+				]
+			}
+		]
+	}
+}

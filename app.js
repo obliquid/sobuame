@@ -21,7 +21,7 @@
  */
 
 
-
+if ( true ) {
 
 	
 // APPLICATION
@@ -65,28 +65,34 @@ app.sbam.config = {
 	'locales':['en','it'],
 	'defaultLocale':'en',
 	'cookiesDurationMs':'64800000',
-	'wpSiteUrl':'my-e.eu',
-	'rpc_options' : {
-		https : false,
-		host : 'my-e.eu',
-		port : 80,
-		path : '/xmlrpc.php'
+	'platform':'mye', //questo cambia runtime in base al cookie platform
+	'wpSiteUrl':'my-e.eu', //questo cambia runtime in base al cookie platform
+	/*'rpc_options' : { //questo cambia runtime in base al cookie platform
+	//	https : false,
+	//	host : 'my-e.eu',
+	//	port : 80,
+	//	path : '/xmlrpc.php'
+	//},*/
+	'mysql' : { //questo cambia runtime in base al cookie platform
+		'host'     	: 'bavosa.obliquid.org',
+		'database' 	: 'c109myeeu',
+		'user'     	: 'c109myeeu',
+		'password' 	: 'XXXX'
 	},
-	'mysqlHost'     	: 'bavosa.obliquid.org',
-	'mysqlDatabase' 	: 'c109myeeu',
-	'mysqlUser'     	: 'c109myeeu',
-	'mysqlPassword' 	: 'cecronespe',
+	'adminUser'     	: 'administer',
+	'adminPassword' 	: 'XXXX',
 	'fontDir'			: 'fonts/', //this is intended as a subfolder of public/ and should not be changed since it's defined also in client file sobuame.js
 	'templatesImagesDir': 'templates/images/',
 	'templatesImagesLink': 'libreria/', //questo è un link simbolico che viene creato dentro al repo dell'utente, per ogni project, e che linka a templatesImagesDir
 	'templatesDir'		: 'templates/',
 	'templatesExt'		: 'xml',
+	'effectsDir'		: 'effects/',
 	'cacheDir'			: 'public/cache/', //questa deve essere una sottocartella di public/ altrimenti i file cachati non sarebbero visibili da fuori
 	'cacheUrl'			: 'cache/', //questa deve essere uguale a cacheDir meno il prefisso "public/"
 	'pdfDir'			: 'public/pdf/', //questa deve essere una sottocartella di public/ altrimenti i pdf generati non sarebbero visibili da fuori
 	'pdfUrl'			: 'pdf/', //questa deve essere uguale a pdfDir meno il prefisso "public/"
 	'defaultPdfDpi'			:  300, //è la risoluzione di riferimento dei pdf generati dai projects. cioè quando creo un nuovo project gli assegno questa risoluzione, e poi uso la risoluzione del project per il relativo pdf. (se cambio questa variabile qui la devo cambiare anche in sobuame.js)
-	'imgWidgetMaxSize'	:  100000, //per il widget di editing immagini (quello con lo zoom, per inenderci) non passo mai immagini il cui numero di pixel sia maggiore di questo limite
+	'imgWidgetMaxSize'	:  150000, //per il widget di editing immagini (quello con lo zoom, per inenderci) non passo mai immagini il cui numero di pixel sia maggiore di questo limite
 	'uploaderOptions'	: {
 		tmpDir:  'public/uploaded/tmp', //uso la cartella comune di cache? meglio tenere in altra cartella? ma deve essere in "public/"?
 		publicDir: 'public/uploaded', //QUI qui va usata la cartella privata del cliente
@@ -96,14 +102,18 @@ app.sbam.config = {
 		minFileSize:  1,
 		maxFileSize:  104857600, // 100 MB - nota che va cambiato anche nel client sobuame.js
 		acceptFileTypes:  /.+/i,
+		/*
 		// Files not matched by this regular expression force a download dialog,
 		// to prevent executing any scripts in the context of the service domain:
+		*/
 		inlineFileTypes:  /\.(gif|jpe?g|png)$/i,
 		imageTypes:  /\.(gif|jpe?g|png)$/i,
+		/*
 		//imageVersions: {
 		//	width:  80,
 		//	height: 80
 		//},
+		*/
 		accessControl: {
 			allowOrigin: '*',
 			allowMethods: 'OPTIONS, HEAD, GET, POST, PUT, DELETE',
@@ -113,7 +123,7 @@ app.sbam.config = {
 			type : 'local'
 		},
 		nodeStatic: {
-			cache:  3600 // seconds to cache served files //QUI come la gestisce? mi serve?
+			cache:  3600 // seconds to cache served files QUI come la gestisce? mi serve?
 		}
 	}
 
@@ -249,12 +259,6 @@ module.exports = app;
 
 
 
-
-
-
-
-
-
 /*
 		//esempio funzionante di richiamo metodi wordpress via rpc:
 		//aggiugnere dependence in package.json
@@ -344,3 +348,6 @@ app.configure('production', function(){
 });
 */
 
+
+
+}

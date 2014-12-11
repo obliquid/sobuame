@@ -1,21 +1,29 @@
 div(data-role='panel' id='panelAccount' data-position="right" data-display="overlay")
 	ul(data-role="listview")
 		if userName
+			script.
+				var sbamUserIsLogged = true;
 			li
 				a(data-rel="close").ui-icon-delete #{__i("Il tuo account")}
 			li(data-role="list-divider")
-			li(data-role="list-divider").bgGreen
+			li.bgGreen
 				h5  #{__i("Benvenuto")} #{userName}
-				p #{__i("Da adesso è attiva la funzione di save.")} 
+				p.notTruncable #{__i("Con i tasti in alto a sinistra puoi gestire le tue pubblicazioni e le tue immagini. Per ordinare la stampa di una pubblicazione usa il tasto con la borsa della spesa in alto a destra.")}
 			li(data-role="list-divider")
 			li(data-icon="sign-out")
 				a(href="/logout") #{__i("Esci")}
 		else
+			script.
+				var sbamUserIsLogged = false;
 			li
 				a(data-rel="close").ui-icon-delete #{__i("Salva")}
 			li(data-role="list-divider")
-			li(data-role="list-divider").bgRed
-				p  #{__i("Per poter salvare devi effettuare l'accesso.")} #{userName}
+			li.bgRed
+				p.notTruncable  #{__i("Per poter salvare le tue pubblicazioni, e richiederne la stampa, devi prima effettuare l'accesso cliccando sul bottone sotto 'Accedi'.")}
+				p.notTruncable  #{__i("Non ti sei ancora registrato? Fallo subito andando alla ")}
+					a(href="http://#{sbam.config.wpSiteUrl}/my-account/",target="_blank") #{__i("pagina di registrazione di ")} #{platform}
 			li(data-role="list-divider")
 			li(data-icon="sign-in")
 				a(id='accountLoginButton' data-rel="close") #{__i("Accedi")}
+		li(data-icon="shopping-cart")
+			a(href="http://#{sbam.config.wpSiteUrl}/my-account" target="_blank") #{__i("I tuoi ordini su")} #{platform} 

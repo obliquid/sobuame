@@ -1,4 +1,7 @@
-div(data-role='header' data-position='fixed')
+div(data-role='header' )
 	div(data-role='controlgroup',data-type='horizontal').ui-mini.ui-btn-left
-		img(src='/images/logo_mini.png',style='position:absolute;left:15px;top:2px;')
+		if platform == 'tuolibro'
+			img(src='/images/logo_mini_tuolibro.png',style='position:absolute;left:15px;top:2px;')
+		else
+			img(src='/images/logo_mini.png',style='position:absolute;left:15px;top:2px;')
 	h2 #{title}

@@ -1,7 +1,26 @@
 extends layout
 block content
 	div(data-role='page' id='page-home' data-url='/')
+		if bootstrap
+			script.
+				var sbamBootstrap = "#{bootstrap}";	
+		else
+			script.
+				var sbamBootstrap = false;	
+		if fromadmin == 'yes'
+			script.
+				var sbamFromadmin = true;	
+		else
+			script.
+				var sbamFromadmin = false;	
+		if platform
+			script.
+				var sbamPlatform = "#{platform}";	
+		else
+			script.
+				var sbamPlatform = "mye";//valore di default
+	
+	
 		include includes/appHeaderFull
 		div(role='main').ui-content.sbamMainContainer
 		include includes/appFooter
-

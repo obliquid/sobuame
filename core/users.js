@@ -21,7 +21,7 @@
  */
 
 
-
+if ( true ) {
 
 	
 //USERS
@@ -33,6 +33,7 @@ function createUser(req,res,name,next) {
 	var user = new req.app.sbam.user();
 	user.name = name;
 	user.ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+	user.platform = req.app.sbam.config.platform;
 	//console.log("creato new user");
 	user.save(function (err) {
 		if ( err ) {
@@ -94,3 +95,4 @@ exports.createUserFolders = createUserFolders;
 
 
 
+}

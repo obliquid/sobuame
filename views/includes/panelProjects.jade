@@ -8,9 +8,11 @@ div(data-role='panel' id='panelProjects' data-display='overlay' )
 					li
 						a(href="#popupAddProject" data-icon="plus" data-rel="popup" data-position-to="window" data-transition="pop") #{__i("Nuova")}
 					li
-						a(id="buttonDelProject" href="#popupDelProject" data-icon="minus" data-rel="popup" data-position-to="window" data-transition="pop") #{__i("Elimina")}
+						a(id="buttonDelProject" href="#popupDelProject" data-icon="minus" data-rel="popup" data-position-to="window" data-transition="pop") #{__i("Canc.")}
 					li
-						a(id="buttonModifyProject" href="#popupModifyProject" data-icon="pencil" data-rel="popup" data-position-to="window" data-transition="pop") #{__i("Rinomina")}
+						a(id="buttonModifyProject" href="#popupModifyProject" data-icon="pencil" data-rel="popup" data-position-to="window" data-transition="pop") #{__i("Mod.")}
+					li
+						a(id="buttonCloneProject" data-icon="files-o") #{__i("Duplica")}
 		li(id="empty-projects" data-role="list-divider")
 			p  #{__i("Non hai ancora pubblicazioni su cui lavorare.")}
 		li(data-role="list-divider")
@@ -27,14 +29,10 @@ div(data-role='panel' id='panelProjects' data-display='overlay' )
 				h3 #{__i("Nuova pubblicazione")}
 				label(for="name") #{__i('Titolo')}
 				input(type="text" name="name" id="name" value="")
-				input(type="hidden" name="width" id="width" value="")
-				input(type="hidden" name="height" id="height" value="")
-				input(type="hidden" name="minPageQuantity" id="minPageQuantity" value="")
-				input(type="hidden" name="dpi" id="dpi" value="")
 				p(id="addProjectErrormsg" style="display:none;").ui-bar.ui-bar-a
 				a(id="addProjectButton").ui-btn.ui-icon-cloud-upload.ui-btn-icon-right.ui-shadow.ui-corner-all.ui-btn-inline #{__i('Crea')}
 				a(href="#" data-rel="back").ui-btn.ui-icon-delete.ui-btn-icon-right.ui-shadow.ui-corner-all.ui-btn-inline #{__i('Annulla')}
-				
+
 	div(data-role="popup" id="popupModifyProject")
 		form(id="modifyProjectForm")
 			div(role="main").ui-content
@@ -46,7 +44,7 @@ div(data-role='panel' id='panelProjects' data-display='overlay' )
 				p(id="modifyProjectErrormsg" style="display:none;").ui-bar.ui-bar-a
 				a(id="modifyProjectButton").ui-btn.ui-icon-cloud-upload.ui-btn-icon-right.ui-shadow.ui-corner-all.ui-btn-inline #{__i('Salva')}
 				a(href="#" data-rel="back").ui-btn.ui-icon-delete.ui-btn-icon-right.ui-shadow.ui-corner-all.ui-btn-inline #{__i('Annulla')}
-				
+
 	div(data-role="popup" id="popupDelProject")
 		div(role="main").ui-content
 			h3.ui-title(id='currentProjectTitle')
@@ -60,22 +58,38 @@ div(data-role='panel' id='panelProjects' data-display='overlay' )
 			p #{__i("Attenzione ci sono modifiche non salvate per la pubblicazione aperta, se si procede andranno perse. Continuare?")}
 			a(id="popupAddProjectSureButton").ui-btn.ui-icon-check.ui-btn-icon-right.ui-shadow.ui-corner-all.ui-btn-inline #{__i('Continua')}
 			a(href="#" data-rel="back").ui-btn.ui-icon-delete.ui-btn-icon-right.ui-shadow.ui-corner-all.ui-btn-inline #{__i('Annulla')}
-				
 
-				
-	div(data-role="popup" id="popupPrintProject")
+	div(data-role="popup" id="popupOrderProject")
 		div(role="main").ui-content
-			h3 #{__i("Ordina la stampa della tua pubblicazione.")}
-			p #{__i("Se non hai ancora acquistato un prodotto da stampare, fallo ora su ")}
-				a(href="http://#{sbam.config.wpSiteUrl}",target="_blank") #{sbam.config.wpSiteUrl}
-			p #{__i("Di seguito la lista dei prodotti da te acquistati e validi per la stampa di questa pubblicazione:")}
-			p #{__i("Scegli quello che vuoi usare e clicca su stampa!")}
-			a(id="pdfDownloadLink" target="_blank" style="display:none;").ui-btn.ui-icon-check.ui-btn-icon-right.ui-shadow.ui-corner-all.ui-btn-inline
-			a(id="popupPrintProjectButton").ui-btn.ui-icon-check.ui-btn-icon-right.ui-shadow.ui-corner-all.ui-btn-inline #{__i('Stampa')}
-			a(href="#" data-rel="back").ui-btn.ui-icon-delete.ui-btn-icon-right.ui-shadow.ui-corner-all.ui-btn-inline #{__i('Chiudi')}
+			div(id="popupOrderProjectResult")
+				h3 #{__i("Complimenti, l'ordine è iniziato!")}
+				p #{__i("L'ordine è stato salvato. Ora devi cliccare questo bottone per andare nel tuo account presso il nostro negozio: da li puoi rivedere il dettaglio dell'ordine, specificare o modificare gli indirizzi di spedizione e fatturazione, ed effettuare il pagamento per finalizzare l'acquisto.")}
+				a(href="http://#{sbam.config.wpSiteUrl}/my-account" target="_blank").ui-btn.ui-icon-shop.ui-btn-icon-right.ui-shadow.ui-corner-all.ui-btn-inline #{__i("Procedi su")} #{platform} 
+			div(id="popupOrderProjectContent")
+				h3 #{__i("Ordina la stampa della tua pubblicazione.")}
+				p #{__i("Per ricevere a casa la stampa del tuo progetto, devi solo decidere quante copie vuoi, inserire eventuali coupon in tuo possesso, e premere 'Ordina' per proseguire nell'acquisto.")}
+				form
+					table
+						tr
+							td
+								label(for="orderQty") Nr. copie:&nbsp;
+							td
+								input(type="text" id="orderQty" name="orderQty" value="1").orderQtyInputCont
+							td &nbsp;&nbsp;&nbsp;
+							td
+								label(for="orderCouponCode") Coupon (codice):&nbsp;
+							td
+								input(type="text" id="orderCouponCode" name="orderCouponCode" value="1").orderCouponCodeInputCont
+				div(id="orderContainer" role="main").ui-body.ui-body-a.ui-corner-all
+				a(id="orderProjectButton").ui-btn.ui-icon-shop.ui-btn-icon-right.ui-shadow.ui-corner-all.ui-btn-inline #{__i('Ordina')}
+				a(href="#" data-rel="back").ui-btn.ui-icon-delete.ui-btn-icon-right.ui-shadow.ui-corner-all.ui-btn-inline #{__i('Chiudi')}
+				if fromadmin == 'yes'
+					hr
+					a(id="printProjectButton").ui-btn.ui-icon-print.ui-btn-icon-right.ui-shadow.ui-corner-all.ui-btn-inline #{__i('Genera PDF')}
+					a(id="mainPdfDownloadLink" target="_blank" style="display:none;").ui-btn.ui-icon-check.ui-btn-icon-right.ui-shadow.ui-corner-all.ui-btn-inline #{__i('Scarica PDF')}
+					a(id="coverPdfDownloadLink" target="_blank" style="display:none;").ui-btn.ui-icon-check.ui-btn-icon-right.ui-shadow.ui-corner-all.ui-btn-inline #{__i('Scarica PDF coperta')}
+					a(id="coverletPdfDownloadLink" target="_blank" style="display:none;").ui-btn.ui-icon-check.ui-btn-icon-right.ui-shadow.ui-corner-all.ui-btn-inline #{__i('Scarica PDF sovracoperta')}
+					a(id="stickersPdfDownloadLink" target="_blank" style="display:none;").ui-btn.ui-icon-check.ui-btn-icon-right.ui-shadow.ui-corner-all.ui-btn-inline #{__i('Scarica PDF figurine')}
+					a(id="orderPdfDownloadLink" target="_blank" style="display:none;").ui-btn.ui-icon-check.ui-btn-icon-right.ui-shadow.ui-corner-all.ui-btn-inline #{__i('Scarica PDF ordine')}
 
-					
-					
-					
-					
-					
+

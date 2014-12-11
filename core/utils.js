@@ -1,3 +1,6 @@
+if ( true ) {
+
+
 /**
  * SOBUAME
  *
@@ -22,6 +25,10 @@
 
 
 
+
+
+
+
 // VARS
 
 /*
@@ -42,65 +49,90 @@ var app;
 
 	
 
-if ( true ) {
-
-
-
-
-
-
 // IMAGE RELATED
 
 
 /* 
-questa è un wrapper di getImg, asyncrono, che ritorna anche altre informazioni per creare il widget zoomabile di un'immagine nel frontend
+questa è un wrapper di getImg, asyncrono, che ritorna solo le dimensioni, per creare il widget zoomabile di un'immagine nel frontend
 il parametro url mi arriva direttamente dai layout xml: element.image.url, quindi può essere relativo al repo dell'utente, o alle immagini di default
 */
-function getWidgetImg(req,res,url,userId,projectId,next) {
-	//console.log("ILTRICHECOISPANO: getWidgetImg()");
+function getWidgetInfo(req,res,element,userId,projectId,next) {
+	//console.log("ILTRICHECOISPANO: getWidgetInfo()");
 	//scindo l'url in un path e un name
+	var url = element.image.url;
 	var name = separateUrl(req,res,url).name;
 	var path = separateUrl(req,res,url).path;
 	
 	//leggo le dimensioni dell'immagine
 	//console.log("INDENTIFY su "+sourceFullPath+"  START!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-	getImgFeatures(req, res, userId, projectId, path, name, function(features){
+	getImgFeatures(req, res, userId, projectId, path, name, element, function(features){
 		if ( features ) {
 			//console.log("INDENTIFY su "+sourceFullPath+"  END!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-			//in base alle dimensioni dell'immagine, decido se va bene per il widget, o se va rimpicciolita perchè troppo pesante
-			var originalImageSquarePixels = features.size.width * features.size.height;
-			if ( originalImageSquarePixels > req.app.sbam.config.imgWidgetMaxSize ) {
-				//devo ridurre l'immagine
-				var cachedAR = features.size.width / features.size.height;
-				var cachedWidth = Math.round( Math.sqrt( req.app.sbam.config.imgWidgetMaxSize * cachedAR  ) );
-				var cachedHeight = Math.round( Math.sqrt( req.app.sbam.config.imgWidgetMaxSize / cachedAR ) );
-				
-			} else {
-				//ritorno l'immainge alle sue dimensioni originali
-				var cachedWidth = features.size.width;
-				var cachedHeight = features.size.height;
-			}
-			//chiamo getImg per ottenere l'url dell'immaine in cache
-			getImg(req,res,userId,projectId,name,path,cachedWidth,cachedHeight,false, function(cachedUrl){ 
-				//alla fine ritorno via ajax al frontend
-				if ( cachedUrl ) {
-					next({
-						"cachedUrl": cachedUrl,
-						"originalW": features.size.width,
-						"originalH": features.size.height
-					});
-				} else {
-					console.log("getWidgetImg(): ricevuto errore (false) da getImg() chiamato con path/name = "+path+name);
-					next( false );
-				}
-			})
+			next({
+				"originalW": features.size.width,
+				"originalH": features.size.height
+			});
 		} else {
-			console.log("getWidgetImg(): ricevuto errore (false) da getImgFeatures() chiamato con path/name = "+path+name);
+			console.log("getWidgetInfo(): ricevuto errore (false) da getImgFeatures() chiamato con path/name = "+path+name);
 			next( false );
 		}
 	});
 }
-exports.getWidgetImg = getWidgetImg;
+exports.getWidgetInfo = getWidgetInfo;
+
+/*
+questa invece ritorna sia le dimensioni dell'immagine originale, sia l'url dell'immagine in cache
+*/
+function getWidgetImg(req,res,element,userId,projectId,next) {
+	//console.log("ILTRICHECOISPANO: getWidgetImg()");
+	//scindo l'url in un path e un name, se presente, se no skippo
+	if ( element && element.image && element.image.url ) {
+		var url = element.image.url;
+		var name = separateUrl(req,res,url).name;
+		var path = separateUrl(req,res,url).path;
+		
+		//leggo le dimensioni dell'immagine
+		//console.log("INDENTIFY su "+sourceFullPath+"  START!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+		getImgFeatures(req, res, userId, projectId, path, name, element, function(features){
+			if ( features ) {
+				//console.log("INDENTIFY su "+sourceFullPath+"  END!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+				//in base alle dimensioni dell'immagine, decido se va bene per il widget, o se va rimpicciolita perchè troppo pesante
+				var originalImageSquarePixels = features.size.width * features.size.height;
+				if ( originalImageSquarePixels > req.app.sbam.config.imgWidgetMaxSize ) {
+					//devo ridurre l'immagine
+					var cachedAR = features.size.width / features.size.height;
+					var cachedWidth = Math.round( Math.sqrt( req.app.sbam.config.imgWidgetMaxSize * cachedAR  ) );
+					var cachedHeight = Math.round( Math.sqrt( req.app.sbam.config.imgWidgetMaxSize / cachedAR ) );
+					
+				} else {
+					//ritorno l'immainge alle sue dimensioni originali
+					var cachedWidth = features.size.width;
+					var cachedHeight = features.size.height;
+				}
+				//chiamo getImg per ottenere l'url dell'immaine in cache
+				getImg(req,res,userId,projectId,name,path,cachedWidth,cachedHeight,false,element,false, function(cachedUrl){ 
+					//alla fine ritorno via ajax al frontend
+					if ( cachedUrl ) {
+						next({
+							"cachedUrl": cachedUrl,
+							"originalW": features.size.width,
+							"originalH": features.size.height
+						});
+					} else {
+						console.log("getWidgetImg(): ricevuto errore (false) da getImg() chiamato con path/name = "+path+name);
+						next( false );
+					}
+				})
+			} else {
+				console.log("getWidgetImg(): ricevuto errore (false) da getImgFeatures() chiamato con path/name = "+path+name);
+				next( false );
+			}
+		});
+	} else {
+		console.log("getWidgetImg(): parametro obbligatorio mancante: element.image.url ");
+		next( false );
+	}
+}
 exports.getWidgetImg = getWidgetImg;
 
 /* 
@@ -234,18 +266,22 @@ features: {
 }
 
 
+NOTA: adesso richiede il parametro element che però non usa... andrebbe eliminato
+
 */
-function getImgFeatures(req, res, userId, projectId, path, name, next) {
+function getImgFeatures(req, res, userId, projectId, path, name, element, next) {
 	//console.log("ILTRICHECOISPANO: getImgFeatures()");
 	//questa operazione (comano identify di imagemagick) viene chiamata per ogni immagine della pagina visualizzata, ed è lentissima non so perchè, va cachata assolutamente
 	//quindi prima controllo se esiste un file .info in cache
-	var infoFile = getCacheImgFullpath(req,res,userId,projectId,"ALL","ALL",name,path)+".info"; //il nome del file cache per le info dei file è uguale nome in cache del file, ma con misure non specificate, e suffisso .info
+	//nota che nel caso dei file .info non dichiaro l'element, perchè i file info in cache non dipendono da effetti o offset essendo riferiti all'immagine sorgente
+	var infoFile = getCacheImgFullpath(req,res,userId,projectId,"ALL","ALL",name,path,false)+".info"; //il nome del file cache per le info dei file è uguale nome in cache del file, ma con misure non specificate, e suffisso .info
 	
 	//console.log("ILTRICHECOISPANO: getImgFeatures() 2");
 	//QUI prima dovrei controllare se l'infoFile è troppo vecchio. nel caso lo butto. perhè se l'utente sovrascrive l'immagine originale con una diversa ma omonima (per esempio con dimensioni diverse) il file info resterebbe lo stesso
 	var fs = require('fs');
 	//console.log("ILTRICHECOISPANO: getImgFeatures() 3");
 	if (fs.existsSync(infoFile)) {
+		console.log('CACHE: getImgFeatures() USE');
 		//console.log("ILTRICHECOISPANO: getImgFeatures() 4");
 		//esiste file in cache con le info. leggo e ritorno quello
 		fs.readFile(infoFile, 'utf8', function (err,data) {
@@ -264,6 +300,7 @@ function getImgFeatures(req, res, userId, projectId, path, name, next) {
 			}
 		});
 	} else {
+		console.log('CACHE: getImgFeatures() CREATE');
 		//non esiste info file nella cache, devo eseguire il comando identify e poi creare il file in cache
 		var gm = require('gm').subClass({ imageMagick: true });
 		//var resizedFullPath = getCacheImgFullpath(userId,projectId,width,height,name,path);
@@ -297,8 +334,6 @@ exports.getImgFeatures = getImgFeatures;
 /*
 data un'immagine da visualizzare (name,path) e una risoluzione
 crea l'immagine ridimensionata se già non esiste, e ne ritorna l'url.
-essendo usata server-side, viene eseguita prima che il tpl arrivi all'utente,
-che nel browser riceve sempre un url esplicito, e non l'url di uno script.
 
 logica di gestione dei parametri:
 se userId e projectId != "", allora considero il path come relativo al repo dell'utente per il progetto dato
@@ -308,12 +343,11 @@ path: me lo aspetto sempre e solo con slash finale (no iniziale), es: "" | "subd
 next: se la closure non viene passata, questo metodo si comporta in modo syncrono ritornando subito un url di immaine (o il waiter se l'immagine in cache sta venendo creata)
 	  se invece viene passata la closure, il metodo si comporta in modo asyncrono
 		MA ORA CREDO DI USARLA SOLO ASYNC
-
 */
 /*
 NOTA: nel codice c'è la possibilità di NON passare la closure next(), ma ormai il metodo è inteso per usarla sempre
 */
-function getImg(req,res,userId,projectId,name,path,width,height,crop,next) { 
+function getImg(req,res,userId,projectId,name,path,width,height,crop,element,skipMtime,next) { 
 	//console.log("ILTRICHECOISPANO: getImg()");
 	//console.log("getImg: userId = "+userId);
 	//console.log("getImg: projectId = "+projectId);
@@ -322,7 +356,266 @@ function getImg(req,res,userId,projectId,name,path,width,height,crop,next) {
 	//console.log("getImg: width = "+width);
 	//console.log("getImg: height = "+height);
 	//console.log("getImg: crop = "+crop);
+	//helper
+	//effects è una stringa contenente tutti i nomi degli effetti da applicare, seprati da virgola
+	//solitamente imgFullpath è il path assoluto di un'immagine in cache, su cui vado ad applicare gli effetti, ma può in realtà essere una qualunque immagini scrivibile
+	//verrà sovrascritta con l'immagine effettata, okkio!
+	function applyImgEffects(imgFullpath,finalImgW,finalImgH,project,element,features,next){
+		//vars
+		var gm = require('gm').subClass({ imageMagick: true });
+		if ( element.image && element.image.effects ) {
+			var effects = element.image.effects.split(",");
+		} else {
+			var effects = [];
+		}
+		//se non mi han passato effetti, skippo
+		if ( effects.length > 0 ) {
+			//immagine di temp usata per il calcolo degli effetti, e poi buttata
+			var imgFullpathTempForFX = imgFullpath+".TMP-FX.png";
+			
+			//dimensioni bbox in mm (bboxValToMm)
+			var bboxMmW = bboxValToMm(element.bbox.w,project.preset.width);
+			var bboxMmH = bboxValToMm(element.bbox.h,project.preset.height);
+			//dimensioni offset in mm (sono già in mm nell'element)
+			var offsetMmX = element.image.offsetx;
+			var offsetMmY = element.image.offsety;
+			//dimensioni img in mm (le ricavo dai dpi e dai pixel dell'immagine originale)
+			var imgMmW = features.size.width / req.app.sbam.utils.dpi2dpmm(element.image.dpi);
+			var imgMmH = features.size.height / req.app.sbam.utils.dpi2dpmm(element.image.dpi);
+			//dimensioni img in px (sono parametri passati a getImg, sono le dimensioni in px dell'immagine finale da visualizzare, non quella originle intonsa)
+			var imgPxW = Number(finalImgW);
+			var imgPxH = Number(finalImgH);
+			//con una proporzione trovo dimensioni bbox in pixel
+			var bboxPxW = imgPxW / imgMmW * bboxMmW;
+			var bboxPxH = imgPxH / imgMmH * bboxMmH;
+			//e con una proporzione trovo dimensioni offset in pixel
+			var offsetPxX = imgPxW / imgMmW * offsetMmX;
+			var offsetPxY = imgPxH / imgMmH * offsetMmY;
+			//a questo punto conosco tutto in px, e ottengo offset e dimensioni della bbxFX
+			var bboxFXW = bboxPxW;
+			var bboxFXH = bboxPxH;
+			var bboxFXX = -offsetPxX; //lo nego perchè prima era l'offset dell'immagine relativamente al bbox, mentre ora è l'offset del bbox relativamente all'immagine
+			var bboxFXY = -offsetPxY;
+			//helpers
+			//queste servono per semplificare il disegno di vettori
+			//e si aspettano 0 <= val <= 1, e lo traslano all'interno del bbox
+			//la versione abs tiene conto anche dell'offset
+			function X2FX(val) {
+				//return bboxFXX + val*bboxFXW;
+				return val*bboxFXW;
+			}
+			function Y2FX(val) {
+				//return bboxFXY + val*bboxFXH;
+				return val*bboxFXH;
+			}
+			function X2FXabs(val) {
+				return bboxFXX + val*bboxFXW;
+			}
+			function Y2FXabs(val) {
+				return bboxFXY + val*bboxFXH;
+			}
+			
+			
+			//var imgAvg = Math.sqrt(imgPxW*imgPxH);
+			//var prjAvg = Math.sqrt(imgPxW*imgPxH);
+			//definisco unit come un centesimo del lato di un quadrato che ha la stessa area del project
+			//cioè unit si basa sulle dimensioni del project, e non del bbox, così da essere uniforme across tutte le immagini
+			var unit = Math.round(0.01*Math.sqrt( ( project.preset.width * imgPxW / imgMmW ) * ( project.preset.height * imgPxH / imgMmH ) ));
+			
+			
+			
+			//console.log("TECONSIDERO! con finalImgW="+finalImgW);
+			//console.log("TECONSIDERO! con finalImgH="+finalImgH);
+			//console.log("TECONSIDERO! con imgPxW="+imgPxW);
+			//console.log("TECONSIDERO! con imgPxH="+imgPxH);
+			//console.log("TECONSIDERO! con imgFullpath="+imgFullpath);
+			//ciclo su tutti gli effetti, e li applico uno ad uno, con un loop asyncrono
+			var effectsCloned = effects.slice(0).reverse(); //tengo copia dell'originale, visto che il clone lo spolpo
+			//var effectsModified = [];
+			asyncLoop();
+			function asyncLoop() {
+				if ( effectsCloned.length > 0 ) {
+					var effect = effectsCloned.pop();
+					//elimino eventuale file temporaneo già presente
+					//ne uso uno nuovo per ogni effetto, e poi dopo averlo applicato all'immagine principale lo butto
+					//######### NOTA!!!: gli effects sono implementati solo qui lato server, mentre lato client sono definiti quelli attivi (usabili dall'utente) in sobuame.js
+					switch(effect) {
+						case "palla-calcio":
+						case "palla-baseball":
+						case "palla-golf":
+						case "palla-rugby":
+							//definisco il path dell'immagine dell'effetto da applicare sopra all'immagine principale
+							var originalEffectsImgFullpath = getEffectsImgFullpath(req,"images/sport/"+effect+".png");
+							//la ridimensiono fissando la larghezza e la lunghezza uguali, e basate sul valore di unit, forzando uno stretch se l'immagine originale per l'effetto non è quadrata
+							//il fatto di avere un'immagine quadrata mi serve per il posizionamento corretto in basso a destra
+							var effectsImgUnit = 5*unit;
+							gm(originalEffectsImgFullpath)
+							.resize(effectsImgUnit,effectsImgUnit, "!") //il ! significa di stretchare
+							//e la salvo come file temporaneo
+							.write(imgFullpathTempForFX, function (err) {
+								if ( err ) { 
+									console.log("applyImgEffects(): imagemagick:error during "+effect+": "+err); 
+									next( false );
+								} else {
+									//quindi compongo l'immagine dell'effetto ridimensionata sull'immagine principale
+									//in posizione basso destra
+									gm()
+									.compose("Over")
+									.in('-page', '+0+0')
+									.in(imgFullpath)
+									//.in('-page', '+'+String(X2FXabs(1)-effectsImgUnit)+'+'+String(Y2FXabs(1)-effectsImgUnit))
+									.in('-page', '+'+String(X2FXabs(1)-effectsImgUnit)+'+'+String(Y2FXabs(1)-effectsImgUnit*1.3))
+									.in(imgFullpathTempForFX)
+									.mosaic()
+									.write(imgFullpath, function (err) {
+										if ( err ) { 
+											console.log("applyImgEffects(): imagemagick:error during "+effect+": "+err); 
+											next( false );
+										} else {
+											//elimino il file temporaneo usato per montare gli effetti
+											if (fs.existsSync(imgFullpathTempForFX)) fs.unlinkSync(imgFullpathTempForFX);
+											//infine loopo
+											asyncLoop();
+										}
+									});	
+								}
+							});	
+							break;
+						case "cornice":
+							gm(Math.round(bboxFXW), Math.round(bboxFXH), "rgba(255,255,255,1)")
+							//prima creo un bitmap vuoto bianco in memoria, e ci disegno dentro una cornice spessa nera, con un blur, che è l'ombra
+							.virtualPixel("Constant")
+							.strokeWidth(8*unit)
+							.fill("rgba(0,0,0,0)")
+							.stroke("rgba(0,0,0,0.2)")
+							.drawRectangle(X2FX(0)-2*unit, Y2FX(0)-2*unit, X2FX(1)+2*unit, Y2FX(1)+2*unit,2*unit,2*unit)
+							//.gaussian(10)
+							.blur(2*unit,2*unit)
+							.blur(2*unit,2*unit)
+							.blur(2*unit,2*unit)
+							//e la salvo in un file temporaneo
+							.write(imgFullpathTempForFX, function (err) {
+								if ( err ) { 
+									console.log("applyImgEffects(): imagemagick:error during "+effect+": "+err); 
+									next( false );
+								} else {
+									//finito di creare l'effetto in file separato, lo applico all'immagine in multiply
+									gm()
+									.compose("Multiply")
+									.in('-page', '+0+0')
+									.in(imgFullpath)
+									.in('-page', '+'+bboxFXX+'+'+bboxFXY) // l'immagine (file) temporanea viene applicata all'immagine originale tenendo conto dell'offset del bbox
+									.in(imgFullpathTempForFX)
+									.mosaic()
+									//infine, sull'immagine con sopra l'ombra, disegno la cornice vera e propria, bianca, e risalvo il file
+									.fill("rgba(0,0,0,0)")
+									.strokeWidth(unit/3)
+									.stroke("rgba(255,255,255,0.5)")
+									.drawRectangle(X2FXabs(0)+unit, Y2FXabs(0)+unit, X2FXabs(1)-unit, Y2FXabs(1)-unit,2*unit,2*unit)
+									.write(imgFullpath, function (err) {
+										if ( err ) { 
+											console.log("applyImgEffects(): imagemagick:error during "+effect+": "+err); 
+											next( false );
+										} else {
+											//elimino il file temporaneo usato per montare gli effetti
+											//nota che devo contrtollare prima se esiste, perchè è capitato che venisse cancellato da un thread parallelo
+											if (fs.existsSync(imgFullpathTempForFX)) fs.unlinkSync(imgFullpathTempForFX);
+											//infine loopo
+											asyncLoop();
+										}
+									});								
+								}
+							});
+							break;
+						case "pannello":
+							gm(Math.round(bboxFXW), Math.round(bboxFXH), "rgba(255,255,255,1)")
+							.virtualPixel("Constant")
+							.fill("rgba(0,0,0,0.5)")
+							.stroke("rgba(0,0,0,0)")
+							.drawRectangle(X2FX(0)-10*unit, Y2FX(1)-6*unit, X2FX(1)-4*unit, Y2FX(1)-2*unit,unit,unit)
+							.blur(2*unit,2*unit)
+							.blur(2*unit,2*unit)
+							.blur(2*unit,2*unit)
+							.write(imgFullpathTempForFX, function (err) {
+								if ( err ) { 
+									console.log("applyImgEffects(): imagemagick:error during "+effect+": "+err); 
+									next( false );
+								} else {
+									//finito di creare l'effetto in bitmap separato, lo applico all'immagine
+									var myGm = gm()
+									.compose("Multiply")
+									.in('-page', '+0+0')
+									.in(imgFullpath)
+									.in('-page', '+'+bboxFXX+'+'+bboxFXY) // l'immagine (file) temporanea viene applicata all'immagine originale tenendo conto dell'offset del bbox
+									.in(imgFullpathTempForFX)
+									.mosaic()
+									.fill("rgba(0,0,0,0)");
+									var linesNum = 20;
+									for (var x=0; x<linesNum; x++) {
+										var step = x/(linesNum-1);
+										var stepX = X2FX(1) * step;
+										var stepY = Y2FX(0.5) * step;
+										myGm.stroke("rgba(255,255,255,"+String(0.5 * step)+")");
+										myGm.drawLine(X2FXabs(1), Y2FXabs(0.5)+stepY, X2FXabs(1)-stepX, Y2FXabs(1));
+
+									}
+									myGm.fill("rgba(255,255,255,0.5)")
+									.stroke("rgba(0,0,0,0)")
+									.drawRectangle(X2FXabs(0)-10*unit, Y2FXabs(1)-6*unit, X2FXabs(1)-5*unit, Y2FXabs(1)-2*unit,unit,unit)
+									myGm.write(imgFullpath, function (err) {
+										if ( err ) { 
+											console.log("applyImgEffects(): imagemagick:error during "+effect+": "+err); 
+											next( false );
+										} else {
+											//elimino il file temporaneo usato per montare gli effetti
+											if (fs.existsSync(imgFullpathTempForFX)) fs.unlinkSync(imgFullpathTempForFX);
+											//infine loopo
+											asyncLoop();
+										}
+									});								
+								}
+							});
+							break;
+						default:
+							//skippo, effetto da applicare non implementato
+							asyncLoop();
+							break;
+					}
+				} else {
+					//finito asyncLoop
+					next();
+				}
+			}
+		} else {
+			//skippo, nessun effetto da applicare
+			next();
+		}
+	}
+	
 	//normalizzo i parametri
+	if ( element.image && element.image.effects ) {
+		var effects = element.image.effects;
+	} else {
+		var effects = "";
+	}
+	if ( element.image && element.image.dpi ) {
+		var dpi = element.image.dpi;
+	} else {
+		var dpi = 0;
+	}
+	if ( element.image && element.image.offsetx ) {
+		var offsetx = element.image.offsetx;
+	} else {
+		var offsetx = 0;
+	}
+	if ( element.image && element.image.offsety ) {
+		var offsety = element.image.offsety;
+	} else {
+		var offsety = 0;
+	}
+
+	
+	
 	if ( !width ) width = 0;
 	if ( !height ) height = 0;
 	//essendo intese come misure in pix arrotondo al pix superiore
@@ -336,41 +629,23 @@ function getImg(req,res,userId,projectId,name,path,width,height,crop,next) {
 	
 	//altre var interne
 	var fs = require('fs');
-	
-	
-	/*
-	//in base al fatto che siano specificati o meno userId e projectId capisco
-	//se si tratta di un'immagine di un repo utente, o di un'immagine generica di cui ho path assoluto
-	if ( userId && userId != "" && projectId && projectId != "" ) {
-		//caso in cui sto leggendo un'immagine da un repo di un utente e per un certo progetto
-		var sourcePath = getRepoPath(userId,projectId)+path;
-		//var resizedName = "user-"+userId+"_project-"+projectId+"_size-"+width+"x"+height+"_"+path.split("/").join("-")+name;
-		
-		var resizedName = getCacheImgFilename(userId,projectId,width,height,name,path);
-		
-	} else {
-		//caso in cui sto leggendo un file generico, e mi aspetto che il path sia relativo all'app, e non al repo dell'utente
-		var sourcePath = getAppPath()+path;
-		//var resizedName = "common_size-"+width+"x"+height+"_"+path.split("/").join("-")+name;
-		var resizedName = getCacheImgFilename("common","common",width,height,name,path);
-	}
-	var resizedFullUrl = req.app.sbam.config.cacheUrl+resizedName;
-	var resizedPath = getCachePath(req);
-	var resizedFullPath = resizedPath+resizedName;
-	var sourceFullPath = sourcePath+name;
-	*/
-	
-	
-	
-	
-	var resizedFullPath = getCacheImgFullpath(req,res,userId,projectId,width,height,name,path);
 	var sourceFullPath = getSourceImgFullpath(req,res,userId,projectId,name,path);
-	var resizedFullUrl = getCacheImgFullurl(req,res,userId,projectId,width,height,name,path);
-
+	var resizedFullPath = getCacheImgFullpath(req,res,userId,projectId,width,height,name,path,element);
+	var resizedFullUrl = getCacheImgFullurl(req,res,userId,projectId,width,height,name,path,element);
 	
 	//controllo se esiste già l'immagine ridimensionata in cache
 	if (fs.existsSync(resizedFullPath)) {
-		//console.log('resized esiste già');
+		if ( !skipMtime ) {
+			//per i file che arrivano dalla cache aggiungo sempre anche una variabile nell'url con il timestamp di ultima modifica del file
+			//così se si modifica un'immagine senza rinominarla, il browser vedendo cambiato l'url rinfresca la cache
+			var fs = require('fs');
+			var stats = fs.statSync(resizedFullPath);
+			//console.log("getImg() considero il file con stats:");
+			//console.log(stats);
+			var mtime = stats.mtime.getTime();
+			resizedFullUrl += "?mtime="+mtime;
+		}
+		console.log('CACHE: getImg() USE');
 		//ritorno l'immagine in cache
 		//ritorno l'url
 		if ( next && typeof(next) == "function" ) {
@@ -379,103 +654,112 @@ function getImg(req,res,userId,projectId,name,path,width,height,crop,next) {
 			return resizedFullUrl;
 		}
 	} else {
+		console.log('CACHE: getImg() CREATE');
 		//console.log('resized NON esiste, va creata');
 		//trovo le dimensioni dell'immagine originale
-		getImgFeatures(req, res, userId, projectId, path, name, function(features){
+		getImgFeatures(req, res, userId, projectId, path, name, element, function(features){
 			if ( features ) {
 				//console.log(features);
-				var gm = require('gm').subClass({ imageMagick: true });
-				//distinguo i casi di width o height = 0
-				if ( width == 0 ) {
-					//console.log('fisso height');
-					//trovo width in funzione di height
-					width = height*features.size.width/features.size.height;
-					gm(sourceFullPath).resize(width,height).write(resizedFullPath, function (err) {
-						if ( err ) { 
-							console.log("imagemagick:error during RESIZE "+err); 
-							next( false );
-						} else {
-							if ( next && typeof(next) == "function" ) {
-								next(resizedFullUrl);
-							}
-						}
-					});
-				} else if ( height == 0 ) {
-					//console.log('fisso width');
-					//trovo height in funzione di width
-					height = width*features.size.height/features.size.width;
-					gm(sourceFullPath).resize(width,height).write(resizedFullPath, function (err) { 
-						if ( err ) { 
-							console.log("imagemagick:error during RESIZE "+err); 
-							next( false );
-						} else {
-							if ( next && typeof(next) == "function" ) {
-								next(resizedFullUrl);
-							}
-						} 
-					});
-				} else if ( width == 0 && height == 0 ) {
-					//console.log('ritorno immagine originale');
-					//trovo height in funzione di width
-					width = features.size.width;
-					height = features.size.height;
-					gm(sourceFullPath).resize(width,height).write(resizedFullPath, function (err) { 
-						if ( err ) { 
-							console.log("imagemagick:error during RESIZE "+err); 
-							next( false );
-						} else {
-							if ( next && typeof(next) == "function" ) {
-								next(resizedFullUrl);
-							}
-						} 
-					});
-				} else {
-					if ( crop ) {
-						//console.log('croppo '+sourceFullPath);
-						var sourceAR = features.size.width / features.size.height;
-						var destAR = width / height;
-						if ( sourceAR > destAR ) {
-							var resizedHeight = height;
-							var resizedWidth = resizedHeight * sourceAR;
-						} else {
-							var resizedWidth = width;
-							var resizedHeight = resizedWidth / sourceAR;
-						}
-						gm(sourceFullPath).resize(resizedWidth,resizedHeight).crop(width, height, (resizedWidth-width)/2, (resizedHeight-height)/2).write(resizedFullPath, function (err) {
-							if ( err ) {
-								console.log("imagemagick:error during RESIZE "+err);
-								next( false );
-							} else {
-								if ( next && typeof(next) == "function" ) {
-									next(resizedFullUrl);
+				//poi devo leggere dal db i dati del mio project, perchè me ne servono le dimensioni in mm (e forse altro)
+				req.app.sbam.project.findById( projectId, function(err, project) {
+					if (err) {
+						console.log("findOne:error "+err);
+						next( false );
+					} else if (project) {
+						//console.log("project:");
+						//console.log(project);
+						var gm = require('gm').subClass({ imageMagick: true });
+						//distinguo i casi di width o height = 0
+						if ( width == 0 ) {
+							//console.log('fisso height');
+							//trovo width in funzione di height
+							width = height*features.size.width/features.size.height;
+							gm(sourceFullPath).resize(width,height).write(resizedFullPath, function (err) {
+								if ( err ) { 
+									console.log("imagemagick:error during RESIZE "+err); 
+									next( false );
+								} else {
+									applyImgEffects(resizedFullPath,width,height,project,element,features,function(){
+										next(resizedFullUrl);
+									});
 								}
+							});
+						} else if ( height == 0 ) {
+							//console.log('fisso width');
+							//trovo height in funzione di width
+							height = width*features.size.height/features.size.width;
+							gm(sourceFullPath).resize(width,height).write(resizedFullPath, function (err) { 
+								if ( err ) { 
+									console.log("imagemagick:error during RESIZE "+err); 
+									next( false );
+								} else {
+									applyImgEffects(resizedFullPath,width,height,project,element,features,function(){
+										next(resizedFullUrl);
+									});
+								} 
+							});
+						} else if ( width == 0 && height == 0 ) {
+							//console.log('ritorno immagine originale');
+							//trovo height in funzione di width
+							width = features.size.width;
+							height = features.size.height;
+							gm(sourceFullPath).resize(width,height).write(resizedFullPath, function (err) { 
+								if ( err ) { 
+									console.log("imagemagick:error during RESIZE "+err); 
+									next( false );
+								} else {
+									applyImgEffects(resizedFullPath,width,height,project,element,features,function(){
+										next(resizedFullUrl);
+									});
+								} 
+							});
+						} else {
+							if ( crop ) {
+								//console.log('croppo '+sourceFullPath);
+								var sourceAR = features.size.width / features.size.height;
+								var destAR = width / height;
+								if ( sourceAR > destAR ) {
+									var resizedHeight = height;
+									var resizedWidth = resizedHeight * sourceAR;
+								} else {
+									var resizedWidth = width;
+									var resizedHeight = resizedWidth / sourceAR;
+								}
+								gm(sourceFullPath).resize(resizedWidth,resizedHeight).crop(width, height, (resizedWidth-width)/2, (resizedHeight-height)/2).write(resizedFullPath, function (err) {
+									if ( err ) {
+										console.log("imagemagick:error during RESIZE "+err);
+										next( false );
+									} else {
+										applyImgEffects(resizedFullPath,resizedWidth,resizedHeight,project,element,features,function(){
+											next(resizedFullUrl);
+										});
+									}
+								});
+							} else {
+								//console.log('non croppo '+sourceFullPath);
+								gm(sourceFullPath).resize(width,height).write(resizedFullPath, function (err) { 
+									if ( err ) { 
+										console.log("imagemagick:error during RESIZE "+err); 
+										next( false );
+									} else {
+										applyImgEffects(resizedFullPath,width,height,project,element,features,function(){
+											next(resizedFullUrl);
+										});
+									}
+								});
 							}
-						});
+						}
 					} else {
-						//console.log('non croppo '+sourceFullPath);
-						gm(sourceFullPath).resize(width,height).write(resizedFullPath, function (err) { 
-							if ( err ) { 
-								console.log("imagemagick:error during RESIZE "+err); 
-								next( false );
-							} else {
-								if ( next && typeof(next) == "function" ) {
-									next(resizedFullUrl);
-								}
-							}
-						});
+						console.log("getImg(): find: empty result"); 
+						next( false );						
 					}
-				}
+				});
 			} else {
 				console.log("getImg(): errore ciamando getImgFeatures() che ha ritornato false "); 
 				next( false );
 			}
 		});
-		//ritorno url di wait perchè la cache sta venendo generata e non è ancora disponibile
-		if ( next && typeof(next) == "function" ) {
-			//se è stata specificata una closure, qui non ritorno nulla perchè è già stata chiamata la closure sopra
-		}
 	}
-	
 }
 exports.getImg = getImg;
 
@@ -497,19 +781,19 @@ function getSourceImgFullpath(req,res,userId,projectId,name,path) {
 	return sourceFullPath;
 }
 exports.getSourceImgFullpath = getSourceImgFullpath;
-function getCacheImgFullpath(req,res,userId,projectId,width,height,name,path) {
+function getCacheImgFullpath(req,res,userId,projectId,width,height,name,path,element) {
 	//console.log("ILTRICHECOISPANO: getCacheImgFullpath()");
 	//in base al fatto che siano specificati o meno userId e projectId capisco
 	//se si tratta di un'immagine di un repo utente, o di un'immagine generica di cui ho path assoluto
 	if ( !isTemplateImage(req,res,path) ) {
 		//console.log("ILTRICHECOISPANO: getCacheImgFullpath() 2");
 		//caso in cui sto leggendo un'immagine da un repo di un utente e per un certo progetto
-		var resizedName = getCacheImgFilename(userId,projectId,width,height,name,path);
+		var resizedName = getCacheFilename(userId,projectId,width,height,name,path,element);
 		//console.log("ILTRICHECOISPANO: getCacheImgFullpath() 3");
 	} else {
 		//caso in cui sto leggendo un file generico, e mi aspetto che il path sia relativo all'app, e non al repo dell'utente
 		//console.log("ILTRICHECOISPANO: getCacheImgFullpath() 4");
-		var resizedName = getCacheImgFilename("common","common",width,height,name,path);
+		var resizedName = getCacheFilename("common","common",width,height,name,path,element);
 		//console.log("ILTRICHECOISPANO: getCacheImgFullpath() 5");
 	}
 	//console.log("ILTRICHECOISPANO: getCacheImgFullpath() 6");
@@ -520,27 +804,91 @@ function getCacheImgFullpath(req,res,userId,projectId,width,height,name,path) {
 	return resizedFullPath;
 }
 exports.getCacheImgFullpath = getCacheImgFullpath;
-function getCacheImgFullurl(req,res,userId,projectId,width,height,name,path) {
+function getCacheImgFullurl(req,res,userId,projectId,width,height,name,path,element) {
 	//console.log("ILTRICHECOISPANO: getCacheImgFullurl()");
 	//in base al fatto che siano specificati o meno userId e projectId capisco
 	//se si tratta di un'immagine di un repo utente, o di un'immagine generica di cui ho path assoluto
 	if ( !isTemplateImage(req,res,path) ) {
 		//caso in cui sto leggendo un'immagine da un repo di un utente e per un certo progetto
-		var resizedName = getCacheImgFilename(userId,projectId,width,height,name,path);
+		var resizedName = getCacheFilename(userId,projectId,width,height,name,path,element);
 	} else {
 		//caso in cui sto leggendo un file generico, e mi aspetto che il path sia relativo all'app, e non al repo dell'utente
-		var resizedName = getCacheImgFilename("common","common",width,height,name,path);
+		var resizedName = getCacheFilename("common","common",width,height,name,path,element);
 	}
 	var resizedFullUrl = req.app.sbam.config.cacheUrl+resizedName;
 	return resizedFullUrl;
 }
 exports.getCacheImgFullurl = getCacheImgFullurl;
-function getCacheImgFilename(userId,projectId,width,height,name,path) {
-	//console.log("ILTRICHECOISPANO: getCacheImgFilename()");
-	if ( path == "/" ) path = "";
-	return "usr-"+userId+"_prj-"+projectId+"_"+width+"x"+height+"_"+path.split("/").join("-")+name;
+function getCacheFilename(userId,projectId,width,height,name,path,element) {
+	//console.log("ILTRICHECOISPANO: getCacheFilename()");
+	if ( !path || path == "/" ) path = "";
+	if ( element ) {
+		if ( element.image && element.image.effects ) {
+			var effectsString = "FX="+element.image.effects.replace(/,/g, "+")+"_";
+		} else {
+			var effectsString = "";
+		}
+		if ( element.image && element.image.dpi && !isNaN(element.image.dpi) ) {
+			var dpi = Math.round(element.image.dpi*100)/100;
+		} else  {
+			var dpi =  0;
+		}
+		if ( element.image && element.image.offsetx && !isNaN(element.image.offsetx) ) {
+			var offsetx = Math.round(element.image.offsetx*100)/100;
+		} else  {
+			var offsetx =  0;
+		}
+		if ( element.image && element.image.offsety && !isNaN(element.image.offsety) ) {
+			var offsety = Math.round(element.image.offsety*100)/100;
+		} else  {
+			var offsety =  0;
+		}
+		if ( dpi != 0 ) {
+			var offsetDpiString = "DPI="+dpi+"_OX="+offsetx+"_OY="+offsety+"_";
+		} else {
+			var offsetDpiString = "";
+		}
+	} else {
+		var effectsString = "";
+		var offsetDpiString = "";
+	}
+	//se non ci sono effetti, non salvo nel nome nemmeno l'offset perchè non serve e mi farebbe creare un mucchio di file inutili 
+	if ( effectsString == "" ) offsetDpiString = "";
+	return "USR="+userId+"_PRJ="+projectId+"_SIZE="+width+"x"+height+"_"+effectsString+offsetDpiString+"SRC="+path.split("/").join("-")+name;
 }
-exports.getCacheImgFilename = getCacheImgFilename;
+exports.getCacheFilename = getCacheFilename;
+/*
+questa è strettamente correlata alla getCacheFilename(), se cambia la struttura del nome file in una, deve cambiare anche nell'altra il suo parsing
+in pratica cacheFilename deve essere stato generato da getCacheFilename()
+*/
+function parseCacheFilename(cacheFilename) {
+	//console.log("parseCacheFilename() con cacheFilename="+cacheFilename);
+	var values = {};
+	//prima identifico il campo SRC, che potrebbe contenere _
+	var SRCpos = cacheFilename.indexOf("SRC");
+	values.SRC = cacheFilename.substring(SRCpos+4);
+	cacheFilename = cacheFilename.substring(0,SRCpos-1);
+	//console.log("parseCacheFilename() trovo SRC="+SRC+" e mi resta: cacheFilename="+cacheFilename);
+	//tolto il campo SRC, posso fare uno split su _ per avere tutti gli altri campi
+	var chunks = cacheFilename.split("_");
+	for ( var x=0; x<chunks.length; x++ ) {
+		var chunk = chunks[x];
+		var parts = chunk.split("=");
+		values[parts[0]] = parts[1];
+	}
+	//console.log("parseCacheFilename() dopo tutte le mie stronzate ritorno values:");
+	//console.log(values);
+	return values;
+}
+exports.parseCacheFilename = parseCacheFilename;
+function getEffectsImgFullpath(req,name) {
+	var effectsImageName = name;
+	var effectsImagePath = getEffectsPath(req);
+	var effectsImageFullPath = effectsImagePath+effectsImageName;
+	return effectsImageFullPath;
+}
+exports.getEffectsImgFullpath = getEffectsImgFullpath;
+
 function getAppPath() {
 	//console.log("ILTRICHECOISPANO: getAppPath()");
 	var appRoot = require('app-root-path');
@@ -559,20 +907,11 @@ function getCachePath(req) {
 	return cachePath;
 }
 exports.getCachePath = getCachePath;
-
-/* 
-questa definisce se si tratta di un'immagine di un utente (che sta nel repo) o una di default dei template (che sta in req.app.sbam.config.templatesImagesDir)
-*/
-function isTemplateImage(req,res,path) {
-	//qui faccio il controllo sul path.
-	//il difetto di questo metodo è che se l'utente crea nel ruo repo le 2 cartelle "teplates/images/" allora non gli ritorneranno le immagini caricate lì ma quelle di default (accettabile)
-	if ( stringStartWith(path,req.app.sbam.config.templatesImagesDir) ) {
-		return true;
-	} else {
-		return false;
-	}
+function getEffectsPath(req) {
+	var effectsPath = getAppPath() + req.app.sbam.config.effectsDir;
+	return effectsPath;
 }
-exports.isTemplateImage = isTemplateImage;
+exports.getEffectsPath = getEffectsPath;
 
 function bboxValToPixel(val,referencePx,referenceMm) {
 	//console.log("utils.bboxValToPixel: val:"+val+" referencePx:"+referencePx+" referenceMm:"+referenceMm);
@@ -722,7 +1061,7 @@ function getTempate(req, res, tplFile, next){
 				//console.log(data);
 				parser.parseString(data, function (err, result) {
 					if ( err ) {
-						console.log("route /getPageTemplate: xml layout parsing: error "+err);
+						console.log("route /getPageTemplate: xml layout parsing file "+tplFile+" : error "+err);
 						next(false);
 					} else {
 						//console.log(result.elements);
@@ -744,13 +1083,15 @@ function getTempate(req, res, tplFile, next){
 						}
 						
 						//quando ci sono dei testi (element.text.content) nei template, devo presupporli come testi di esempio
-						//quindi li flaggo come contenti che devono venire cambiati, altrimenti non usciranno nel pdf finale
+						//quindi li flaggo come contenuti che devono venire cambiati, altrimenti non usciranno nel pdf finale
 						//nota che questo flag non è dichiarato nel model, vale solo runtime
 						for ( var x=0; x<elements_array.length; x++ ) {
 							var element = elements_array[x];
 							if ( element.type == "text" && element.text && element.text.content ) {
-								//aggiungo il flag 
-								element.text.demoContent = true;
+								//aggiungo il flag, ma solo se l'elemento non è locked
+								if ( !element.locked || element.locked == "no" ) {
+									element.text.demoContent = true;
+								}
 							}
 						}
 						
@@ -770,28 +1111,275 @@ exports.getTempate = getTempate;
 function parseTemplateFilename(fileName){
 	//in base alla naming convention qui definita, estraggo le parti che compongono il nome di un file di un template xml
 	//nota che fileName è al netto del suffisso
-	var templateName = "";
 	var projectTypes = [];
-	var projectSize = [];
+	var projectPresets = [];
 	var templateVariant = "";
 	var chunks = fileName.split("_");
-	templateName = chunks[0]; //primo chunk indica il nome di una serie di template (standard, deluxe, ecc.)
-	projectTypes = chunks[1].split("-"); //il secondo è un singolo project type o una serie di types (annuario, album, ecc) seprati da -
-	projectSize = chunks[2].split("x"); //il terzo sono le dimensioni in mm nella forma WWWxHHH
-	templateVariant = chunks[3]; //l'ultimo chunk è libero e contiene quello che si vuole (nessun matching)
-	//console.log("getPageTemplates: templateName: "+templateName);
+	projectTypes = chunks[0].split("-"); //il primo chunk è un project type o una serie di types (annuario, album, ecc) seprati da -
+	projectPresets = chunks[1].split("-"); //il secondo chunk è un project preset code o una serie di preset (normale, grande, vert, orizz, ecc) seprati da -
+	templateVariant = chunks[2]; //l'ultimo chunk è libero e contiene quello che si vuole (nessun matching)
 	//console.log("getPageTemplates: templateVariant: "+templateVariant);
 	//console.log("getPageTemplates: chunks[1]: "+chunks[1]);
 	//console.log("getPageTemplates: projectTypes: ");
 	//console.log(projectTypes);
+	/* questi sono i vecchi valori che ritornavo e che devo sostituire
 	return {
 		"templateName": templateName,
 		"projectTypes": projectTypes,
 		"projectSize": projectSize,
 		"templateVariant": templateVariant
 	};
+	*/
+	return {
+		"projectTypes": projectTypes,
+		"projectPresets": projectPresets,
+		"templateVariant": templateVariant
+	};
 }
 exports.parseTemplateFilename = parseTemplateFilename;
+
+/* 
+questa definisce se si tratta di un'immagine di un utente (che sta nel repo) o una di default dei template (che sta in req.app.sbam.config.templatesImagesDir)
+*/
+function isTemplateImage(req,res,path) {
+	//qui faccio il controllo sul path.
+	//il difetto di questo metodo è che se l'utente crea nel ruo repo le 2 cartelle "teplates/images/" allora non gli ritorneranno le immagini caricate lì ma quelle di default (accettabile)
+	if ( stringStartWith(path,req.app.sbam.config.templatesImagesDir) || stringStartWith(path,req.app.sbam.config.templatesImagesLink) ) {
+		return true;
+	} else {
+		return false;
+	}
+}
+exports.isTemplateImage = isTemplateImage;
+
+
+// STICKERS RELATED
+
+/*
+nel caso delle figurine, se è definito stickerLayout, le dimensioni dell'element sono prese dal preset del project, e bypassano eventuali w e h dichiarate nel layout xml
+stickerLayout me lo aspetto nella forma T-CxR
+NOTA: questo metodo c'è pari pari anche sul client sobuame.js
+*/
+function manageStickerLayout(element,projectPreset) {
+	//console.log("manageStickerLayout() PRIMA projectPreset:");
+	//console.log(projectPreset);
+	//console.log("manageStickerLayout() PRIMA element.bbox:");
+	//console.log(element.bbox);
+	if ( element.type && element.type == "image" && element.image && element.image.type && element.image.type == "sticker" && element.image.stickerLayout ) {
+		if ( !element.bbox ) element.bbox = {};
+			
+		//faccio il parsing
+		var layout = parseStickerLayout(element.image.stickerLayout);
+		
+		//calcolo le dimensioni del bbox per la figurina multipla complessiva
+		if ( layout.stickerLayoutType == "v" ) {
+			var stickerW = projectPreset.stickers.width * layout.stickerLayoutCols;
+			var stickerH = projectPreset.stickers.height * layout.stickerLayoutRows;
+		} else {
+			var stickerW = projectPreset.stickers.height * layout.stickerLayoutCols;
+			var stickerH = projectPreset.stickers.width * layout.stickerLayoutRows;
+		}
+		element.bbox.w = String(stickerW);
+		element.bbox.h = String(stickerH);
+	}
+	//console.log("manageStickerLayout() DOPO element.bbox:");
+	//console.log(element.bbox);
+	//console.log("manageStickerLayout() DOPO element.image.stickerLayout: "+element.image.stickerLayout);
+	//console.log("manageStickerLayout() DOPO layout.stickerLayoutType: "+layout.stickerLayoutType);
+	//console.log("manageStickerLayout() DOPO layout.stickerLayoutCols: "+layout.stickerLayoutCols);
+	//console.log("manageStickerLayout() DOPO layout.stickerLayoutRows: "+layout.stickerLayoutRows);
+}
+exports.manageStickerLayout = manageStickerLayout;
+function parseStickerLayout(layout) {
+	//faccio il parsing
+	//stickerLayout me lo aspetto nella forma T-CxR
+	var stickerLayoutParts = layout.toLowerCase().split("-");
+	//console.log("manageStickerLayout() DURANTE stickerLayoutParts: ");
+	//console.log(stickerLayoutParts);
+	var stickerLayoutType = stickerLayoutParts[0];
+	var stickerLayoutSize = stickerLayoutParts[1];
+	var stickerLayoutCols = Math.round(Number(stickerLayoutSize.split("x")[0]));
+	var stickerLayoutRows = Math.round(Number(stickerLayoutSize.split("x")[1]));
+	//console.log("manageStickerLayout() DURANTE stickerLayoutCols: "+stickerLayoutCols);
+
+	//valido i parametri
+	//se il type non è h, allora è sempre v
+	if ( stickerLayoutType && ( stickerLayoutType == "h" ) ) {
+		stickerLayoutType = "h";
+	} else {
+		stickerLayoutType = "v";
+	}
+	if ( !stickerLayoutCols || isNaN(stickerLayoutCols) || stickerLayoutCols <= 0 ) {
+		stickerLayoutCols = 1;
+	}
+	//console.log("manageStickerLayout() DURANTE stickerLayoutCols: "+stickerLayoutCols);
+	if ( !stickerLayoutRows || isNaN(stickerLayoutRows) || stickerLayoutRows <= 0 ) {
+		stickerLayoutRows = 1;
+	}
+	return {
+		"stickerLayoutType": stickerLayoutType,
+		"stickerLayoutCols": stickerLayoutCols,
+		"stickerLayoutRows": stickerLayoutRows
+	};
+}
+exports.parseStickerLayout = parseStickerLayout;
+
+
+
+
+
+// MEDIA RELATED
+function editMedia(req,res,url,projectId,action,next) {
+	//helpers
+	function resetCache() {
+		resetCacheByValues(req,res,{'SRC':url,'PRJ':projectId,'USR':req.cookies.userID});
+		next("ok");
+	}
+	var urlParts = url.split("/");
+	var name = urlParts.pop();
+	var path = urlParts.join("/");
+	if ( path != "" ) path += "/";
+	var mediaFullpath = getRepoPath(req.cookies.userID, projectId) + path + name;
+	//console.log("DAJEEEEEEEEEEEEEEEEEEE action="+action+" path="+path+" name="+name+" projectId="+projectId);
+	var gm = require('gm').subClass({ imageMagick: true });
+	//prima di eseguire la action sull'immagine, ne leggo le dimensioni
+	req.app.sbam.utils.getImgFeatures(req, res, req.cookies.userID, projectId, path, name, null, function(features){
+		var sourceImagePixW = features.size.width;
+		var sourceImagePixH = features.size.height;
+		switch ( action ) {
+			case "rotateRight":
+				gm(mediaFullpath).rotate('black', 90).repage(sourceImagePixH,sourceImagePixW,0,0).write(mediaFullpath, function (err) {
+					if ( err ) { 
+						console.log("/editMedia: imagemagick:error during image editing: "+err); 
+						next(err);
+					} else {
+						resetCache();
+					}
+				});
+				break;
+			case "rotateLeft":
+				gm(mediaFullpath).rotate('black', -90).repage(sourceImagePixH,sourceImagePixW,0,0).write(mediaFullpath, function (err) {
+					if ( err ) { 
+						console.log("/editMedia: imagemagick:error during image editing: "+err); 
+						next(err);
+					} else {
+						resetCache();
+					}
+				});
+				break;
+			case "flipHoriz":
+				gm(mediaFullpath).flop().write(mediaFullpath, function (err) {
+					if ( err ) { 
+						console.log("/editMedia: imagemagick:error during image editing: "+err); 
+						next(err);
+					} else {
+						resetCache();
+					}
+				});
+				break;
+			case "flipVert":
+				gm(mediaFullpath).flip().write(mediaFullpath, function (err) {
+					if ( err ) { 
+						console.log("/editMedia: imagemagick:error during image editing: "+err); 
+						next(err);
+					} else {
+						resetCache();
+					}
+				});
+				break;
+		}
+	});
+	
+}
+exports.editMedia = editMedia;
+
+
+
+
+
+//CACHE MANAGEMENT
+
+/*
+siccome i file nella cache devono seguire la naming convention definita in getCacheFilename()
+posso scegliere i file da cancellare in base a uno o più dei valori SRC,PRJ,USR,SIZE ecc.
+i valori su cui filtrare vengono passato con un object del tipo
+filters = {'SRC':'ciao/file.jpg','USR':'54662d2c8dbf26087710d585'} //cancellerà tutti i file in cache che hanno SRC = ciao/file.jpg e appartengono all'utente 54662d2c8dbf26087710d585
+nota che le condizioni espresse in filters sono considerate in AND, cioè devono essere tutte valide contemporaneamente sullo stesso file affinchè questo venga cancellato
+nota che nel caso di SRC posso lasciare gli / perchè verranno convertiti in - prima di fare il matching sul nome del file
+*/
+function resetCacheByValues(req,res,filters){
+	console.log("resetCacheByValues() inizio con filters:");
+	console.log(filters);
+	//prima devo leggere tutti i file in cache (dispendioso...)
+	var cachePath = getCachePath(req);
+	//console.log("cachePath:"+cachePath);
+	var fs = require('fs');
+	fs.readdir(cachePath, function(err, files) {
+		if (err) {
+			console.log("resetCacheByValues() error "+err);
+			res.send(err);
+		} else if (files) {
+			//console.log("resetCacheByValues() arrivati i files:");
+			//console.log(files);
+			//poi ciclo su ciascuno, ne parso il nome, e se matchano i values con i filters lo cancello
+			for ( var x=0; x<files.length; x++ ) {
+				var file = files[x];
+				console.log("resetCacheByValues() ciclo su file: "+file);
+				//faccio il parsing del nome file
+				var values = parseCacheFilename(file);
+				console.log("resetCacheByValues() da cui estraggo values:");
+				console.log(values);
+				//considero il file da cancellare solo se tutti i filters esistono anche nei values, e hanno lo stesso valore
+				var deleteFile = true;
+				if ( values && filters ) {
+					for (var filterKey in filters) {
+						console.log("resetCacheByValues() ciclo su filterKey = "+filterKey);
+						if ( filters.hasOwnProperty(filterKey) && typeof filters[filterKey] !== 'function') {
+							var filterValue = filters[filterKey];
+							//solo nel caso di SRC devo sostituire gli / con -
+							if ( filterKey == "SRC" ) filterValue = filterValue.split("/").join("-");
+							console.log("resetCacheByValues() con filterValue = "+filterValue);
+							if ( values.hasOwnProperty(filterKey) && typeof values[filterKey] !== 'function') {
+								var valuesValue = values[filterKey];
+								console.log("resetCacheByValues() con valuesValue = "+valuesValue);
+								if ( 
+									filterValue == valuesValue 
+									||
+									(
+										filterKey == "SRC"
+										&&
+										filterValue+".info" == valuesValue
+									)	
+								) {
+									console.log("QUIIIIIIIIIIIAAAAAAAAAAAAAAAAAAAAAAAAA LO CANCELLEREIIIIIIIIIIIIIIIIIIIIIIIII: "+file);
+								} else {
+									deleteFile = false;
+								}
+							} else {
+								deleteFile = false;
+							}
+						} else {
+							deleteFile = false;
+						}
+					}
+				} else {
+					deleteFile = false;
+				}
+				if ( deleteFile ) {
+					console.log("CANCELLOOOOOOOOOOOOOOOOOOO: "+cachePath+file);
+					fs.unlinkSync(cachePath+file);
+				}
+			}
+		} else {
+			console.log("resetCacheByValues() empty result");
+		}
+	});
+}
+exports.resetCacheByValues = resetCacheByValues;
+
+
+
+
 
 
 // VARIE
@@ -848,10 +1436,19 @@ Array.prototype.remove= function(){
 
 /* says if an object is empty, i.e.: obj = {} */
 function is_empty(obj) {
+	//console.log("WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW is_empty(): MUHAHAHAHAHAHA MI CHIEDONO SE QUESTO OBJ E VUOTO!!!! obj:");
+	//console.log(obj);
     for(var prop in obj) {
-        if(obj.hasOwnProperty(prop))
+		//console.log("WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW is_empty(): per l'obj in questione ciclo sulla prop="+prop+" che tralaltro ha typeof obj[prop]="+typeof obj[prop]);
+		//typeof jsonObj[property] !== 'function'
+        if(obj.hasOwnProperty(prop) && typeof obj[prop] != "function" && typeof obj[prop] != "undefined") {
+			//console.log("WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW is_empty(): e la  prop="+prop+" E SUA; QUINDI NON E VUOTO!!!");
             return false;
+		} else {
+			//console.log("WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW is_empty(): ma la  prop="+prop+" non è sua, potrebbe essere vuoto");
+		}
     }
+	//console.log("WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW is_empty(): alla fine del loop non ho trovato prop dell'obj, quindi E VUOTO!!!!");
     return true;
 }
 exports.is_empty = is_empty;

@@ -1,0 +1,11 @@
+extends layout
+block content
+	div(data-role='page' id='page-admin' data-url='/admin').vertScrollable 
+		script.
+			var sbamBootstrap = false;
+			var sbamFromadmin = true;
+			var sbamPlatform = "mye";
+		include includes/appHeaderAdmin
+		div(role='main').ui-content
+			div(id='mainContent').ui-body
+		include includes/appFooter

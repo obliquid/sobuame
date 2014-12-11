@@ -1,9 +1,25 @@
 
+
+
+
+
+
+
 /* GENERICI */
 
 
+.bgDark {
+	background-color:rgba(51, 136, 204, 0.298039) !important;
+}
+.bgMoreDark,
+.bgDark:hover {
+	background-color:rgba(0, 85, 153, 0.298039) !important;
+}
 .bgGreen {
 	background-color:#ddffdd !important;
+}
+.fgGreen {
+	color:#009900 !important;
 }
 .bgRed {
 	background-color:#ffdddd !important; 
@@ -17,22 +33,50 @@
 	margin-top:0px;
 	margin-bottom:0px;
 }
+.notTruncable {
+	white-space: normal !important;
+	word-wrap:break-word;
+	overflow-wrap: break-word;
+}
+.notInteractive {
+	pointer-events: none;
+}
+.noBackgroundImage {
+	background-image:none;
+}
+.noBackgroundColor {
+	background-color:transparent !important;
+}
+
+
+
+
+
+
 
 
 /* UN PO' MENO GENERICI */
 
-body {
+body,
+#page-home
+{
 	overflow: hidden;
 }
+#page-login,
+#page-admin,
 #page-home {
 	background-image:url('/images/appbg.png');
 	background-attachment: fixed;
-	overflow: hidden;
 }
-
 #page-home .sbamMainContainer {
 	position:fixed;
 	overflow: hidden;
+}
+#page-login,
+#page-admin {
+	margin:0px !important;
+	padding:0px !important;
+	height: 100%;
 }
 
 #leftPageCont,
@@ -59,12 +103,19 @@ body {
 	background-repeat: no-repeat;
 	background-size: 20px;
 	background-position: center;
+	cursor:pointer;
 }
-.noBackgroundImage {
-	background-image:none;
+.dragCursor
+{
+	cursor:move;
 }
-.noBackgroundColor {
-	background-color:transparent !important;
+.loadingUiBlocker {
+	width:100%;
+	height:100%;
+	background-color:rgba(0,0,0,0.5);
+	position: fixed;
+	z-index:1000000;
+	display:none;
 }
 
 .elementText:hover,
@@ -83,23 +134,52 @@ body {
 .elementImage img {
 	position:absolute;
 }
+
+.ui-navbar ul li {
+	overflow:hidden;
+}
+.elementToolbox .ui-navbar ul li a {
+	padding-top: 10px;
+	padding-bottom: 23px;
+	font-size: 8px;
+}
+
+.elementTextToolbox fieldset.ui-controlgroup {
+	margin:0px;
+}
 .elementToolbox {
 	border:none !important;
 }
+.elementEffectsToolbox .ui-controlgroup-controls label {
+	margin:0px !important;
+}
+.elementEffectsToolbox {
+	padding:0px !important;
+	margin:0px !important;
+	-webkit-border-radius: 0 !important;
+	border-radius: 0 !important;
+	width:100%;
+	max-height: 140px;
+	border-radius: 0;
+	display:none;
+	position:absolute;
+	left:0px;
+    border-radius: 0;
+    background-color: #fff;
+    padding: 10px;
+	box-shadow: rgba(0, 0, 0, 0.6) 0px 0px 12px 0px;
+}
 .elementTextToolbox{
-	min-width: 210px;
+	min-width: 250px;
 	display:none;
 	position:absolute;
 	background-color: #fff;
 	z-index:100;
 	box-shadow: rgba(0, 0, 0, 0.6) 0px 0px 12px 0px;
 }
-.elementToolboxAnchor {
-	position:absolute;
-}
 .elementImageToolboxZoomContainer {
 	width:100%;
-	min-width: 240px;
+	min-width: 280px;
 }
 .elementImageToolboxZoomContainer .ui-icon-search-minus,
 .elementImageToolboxZoomContainer .ui-icon-search-plus
@@ -135,12 +215,45 @@ body {
 	width: 100%;
 	height: 100%;
 }
-.templateItem .ui-btn {
-	padding-top: 0 !important;
-	padding-bottom: 0 !important;
+.elementLocked {
+	outline:none !important;
+	cursor:default;
+	text-decoration:none;
 }
-.templateItem .ui-btn img {
-	margin-top: 6px !important;
+.elementStickerLayoutGrid {
+	border-top:1px dashed rgba(255,255,255,0.5);
+	border-left:1px dashed rgba(255,255,255,0.5);
+	position:absolute;
+	margin:0;
+	padding:0;
+}
+.elementStickerLayoutGridFirsRow {
+	border-top:none;
+}
+.elementStickerLayoutGridFirsCol {
+	border-left:none;
+}
+
+.templateItem {
+	width:76px;
+	height:76px;
+	margin:0px !important;
+	padding:0px !important;
+	float:left;
+}
+.templateItem .ui-btn img,
+.templateItem .ui-btn {
+	padding: 0 !important;
+	margin: 0 !important;
+	border: none !important;
+}
+.templateItem .ui-btn {
+	width:60px;
+	height:60px;
+	padding-left:8px !important;
+	padding-right:8px !important;
+	padding-top:8px !important;
+	padding-bottom:8px !important;
 }
 #prevPageButton,
 #nextPageButton {
@@ -166,6 +279,134 @@ body {
 	background-color: #acacac;
 	border-radius:5px;
 }
+#presetFieldset {
+	max-height:130px;
+}
+.projectItem a.ui-btn {
+	min-height: 80px !important;
+	padding: 0px !important;
+	padding-top: 5px !important;
+	padding-bottom: 5px !important;
+	padding-left: 95px !important;
+	padding-right: 20px !important;
+	margin: 0px !important;
+}
+.projectItem img {
+	position: absolute !important;
+	top:5px !important;
+	left:5px !important;
+}
+.projectItem h2 {
+	padding:0px !important;
+	margin:0px !important;
+}
+#popupOrderProject {
+	max-width:900px;
+}
+.orderQtyInputCont {
+	width: 60px !important;
+}
+.orderItemSmall {
+	font-weight: bold;
+	font-size: 12px;
+}
+.orderItemBig {
+	font-weight: bold;
+	font-size: 18px;
+}
+#panelPageTemplates {
+	background-color: rgb(246,246,246);
+}
+#panelPageTemplatesListview {
+	width: 256px;
+	padding:0px !important;
+	margin:0px !important;
+}
+.usedImageIcon {
+	background-image:url('/javascripts/jqmobile/images/icons-svg/check-white.svg');
+	background-repeat: no-repeat;
+	background-size: 10px;
+	background-position: center;
+	background-color: rgba(64,128,64,0.75);
+	border-radius: 25px;
+	position:absolute;
+	top:2px;
+	left:103px;
+	width:15px;
+	height:15px;
+}
+.pageItemButtonMoveUp,
+.pageItemButtonMoveDown {
+	display:none;
+	cursor:pointer;
+	background-image:url('/javascripts/jqmobile/images/icons-svg/carat-u-white.svg');
+	background-repeat: no-repeat;
+	background-size: 10px;
+	background-position: center;
+	background-color: rgba(200,200,200,0.75);
+	border-radius: 25px;
+	position:absolute;
+	top:11px;
+	left:5px;
+	width:15px;
+	height:15px;
+}
+.pageItemButtonMoveDown {
+	background-image:url('/javascripts/jqmobile/images/icons-svg/carat-d-white.svg');
+	top:29px;
+}
+.pageItemButtonMoveUp:hover,
+.pageItemButtonMoveDown:hover {
+	background-color: rgba(64,128,64,0.75);
+}
+.uploaderProgressBarBg,
+.uploaderProgressBar {
+	position:relative;
+	top:-8px;
+	background-color: #38c;
+	width: 10px;
+	height: 8px;
+	margin: 1px;
+	margin-top: 4px;
+}
+.uploaderProgressBarBg {
+	top:4px;
+	background-color: #ddd;
+}
+.uploaderProgressBarLabel {
+	font-size: 11px;
+	font-weight: bold;
+}
+#buttonMediaWaiter:hover {
+	color:black;
+}
+#buttonMediaWaiter {
+	display:none;
+	background-image:url('/images/clockanim.gif');
+	background-repeat: no-repeat;
+	background-size: 20px;
+	background-position: 5px 5px;
+	background-color:white;
+	color:grey;
+	height:24px;
+	padding:1px;
+	padding-left:36px;
+	padding-top:6px;
+	padding-right:8px;
+	margin:0px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 /* MODIFICO ROBA GIA ESISTENTE */
 
@@ -237,7 +478,7 @@ body {
 	left:85%;
 	width:15%;
 }
-.ui-slider-bg {
+.elementImageToolboxZoomContainer .ui-slider-bg {
 	background-color: rgba(0,0,0,0.7) !important;
 }
 /*
@@ -268,17 +509,19 @@ body {
 
 
 
+/* ADMIN SPECIFICS */
 
-.ui-navbar ul li {
-	overflow:hidden;
+#page-admin > div.ui-content {
+	margin:0px !important;
+	padding:0px !important;
 }
 
-.elementToolbox .ui-navbar ul li a {
-	padding-top: 10px;
-	padding-bottom: 23px;
-	font-size: 8px;
+#page-admin > div.ui-content #mainContent {
+	margin:0px !important;
+	padding:40px !important;
 }
 
-.elementTextToolbox fieldset.ui-controlgroup {
-	margin:0px;
-}
+
+
+
+

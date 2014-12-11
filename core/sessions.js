@@ -21,7 +21,7 @@
  */
 
 
-
+if ( true ) {
 
 	
 //SESSIONS
@@ -29,13 +29,14 @@
 
 
 /* controllo nei cookies e nel db se lo user è valido e può vedere la route richieste, o se devo fare un redirect sulla route di login */
-function checkValidUser(req, res, next)
-{
+function checkValidUser(req, res, next) {
 	console.log('checkValidUser');
 	var userID = "";
 	var userName = "";
 	console.log("req.cookies.userID:"+req.cookies.userID);
 	console.log("req.cookies.userName:"+req.cookies.userName);
+	console.log("--------------------------------------------------------------");
+	
 	if ( req.cookies.userID != "" && req.cookies.userID != undefined ) {
 		//l'utente ha già un ID assegnato, tengo quello
 		userID = req.cookies.userID;
@@ -100,12 +101,15 @@ function checkWordpressValidUser(req,res,userName,password,success,fail) {
 	//non configuro mysql a livello di app per non appesantirla inutilmente
 	//mi connetto al db mysql (ho gli accessi nel config)
 	var mysql      = require('mysql');
-	var connection = mysql.createConnection({
-		host     : req.app.sbam.config.mysqlHost,
-		database : req.app.sbam.config.mysqlDatabase,
-		user     : req.app.sbam.config.mysqlUser,
-		password : req.app.sbam.config.mysqlPassword
-	});
+	var options = {
+		host     : req.app.sbam.config.mysql.host,
+		database : req.app.sbam.config.mysql.database,
+		user     : req.app.sbam.config.mysql.user,
+		password : req.app.sbam.config.mysql.password
+	};
+	console.log("checkWordpressValidUser provo a connettermi al db wordpress usando queste credenziali:");
+	console.log(options);
+	var connection = mysql.createConnection(options);
 	connection.connect();
 	
 	//MYSQL QUERY TO REMOTE WORDPRESS DB
@@ -127,10 +131,27 @@ function checkWordpressValidUser(req,res,userName,password,success,fail) {
 				'hash': hash,
 				'password': password
 			});
+			//var wpSiteHost = req.app.sbam.config.wpSiteUrl;
+			/*
+			NOTA: se wpSiteUrl già contiene un path lo devo togliere dall'host e lo devo spostare nel path, altrimenti sto httpReq non va
+			*/
+			var wpSiteHost = "";
+			var wpSitePath = "";
+			//var wpSitePath = '/it/wp-auth-sobuame.php';
+			var wpSiteHostChunks = req.app.sbam.config.wpSiteUrl.split("/");
+			for ( var x=0; x<wpSiteHostChunks.length; x++ ) {
+				var chunk = wpSiteHostChunks[x];
+				if ( x == 0 ) {
+					wpSiteHost = chunk;
+				} else {
+					wpSitePath += "/"+chunk;
+				}
+			}
+			wpSitePath += "/wp-auth-sobuame.php";
 			var options = {
-				host: req.app.sbam.config.wpSiteUrl,
+				host: wpSiteHost,
 				port: 80,
-				path: '/wp-auth-sobuame.php',
+				path: wpSitePath,
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/x-www-form-urlencoded',
@@ -148,9 +169,9 @@ function checkWordpressValidUser(req,res,userName,password,success,fail) {
 						
 						//####### POST AUTENTICAZIONE ########
 						
-						//l'autenticazione è avvenuta, procedo con il processo di post autenticazione
+						//l'autenticazione in wp è avvenuta con successo, procedo con il processo di post autenticazione
 						//cerco nel mongodb se esiste già uno user con questo userName
-						req.app.sbam.user.findOne({'name':userName}, function(err, user) {
+						req.app.sbam.user.findOne({'name':userName,'platform':req.app.sbam.config.platform}, function(err, user) {
 							if (err) {
 								console.log("findOne:error "+err);
 								res.send(err);
@@ -161,8 +182,9 @@ function checkWordpressValidUser(req,res,userName,password,success,fail) {
 								//se sono uguali
 								if ( user._id.toString() == req.cookies.userID ) {
 									//è un login ricorrente (perchè scaduto) su una stessa macchina, lascio come valido l'_id nei cookies
-									//salvo nei cookies lo username
+									//salvo nei cookies lo username e la platform
 									setCookieUserName(req,res,userName);
+									setCookiePlatform(req,res,user.platform);
 									success('brao! login ricorrente!');
 								//se sono diversi
 								} else {
@@ -183,6 +205,7 @@ function checkWordpressValidUser(req,res,userName,password,success,fail) {
 											//in questo caso non tocco il veccio utente, ma salvo nei cookies l'ID del nuovo, oltre al nuovo username
 											setCookieUserId(req,res,user._id.toString());
 											setCookieUserName(req,res,userName);
+											setCookiePlatform(req,res,user.platform);
 											success('login succeded and user switched');
 										} else if (prevUser && ( !prevUser.name || prevUser.name == "" || prevUser.name == undefined ) ) {
 											//il vecchio id esiste, ma non ha un name
@@ -197,12 +220,12 @@ function checkWordpressValidUser(req,res,userName,password,success,fail) {
 													res.send(err);
 												} else {
 													//e cancellare dal db il vecchio user anonimo
-													//req.app.sbam.user.findById(req.cookies.userID).remove( function() {
 													prevUser.remove( function() {
 														//poi sovrascrivo i cookies con il nuovo id
 														setCookieUserId(req,res,user._id.toString());
-														//e salvo nei cookies lo username
+														//e salvo nei cookies lo username e la platform
 														setCookieUserName(req,res,userName);
+														setCookiePlatform(req,res,user.platform);
 														//devo anche spostare i file uploadati dall'utente anonimo nel folder dell'utente loggato
 														//e poi cancellare la cartella dell'utente anonimo
 														var ncp = require('ncp').ncp;
@@ -273,12 +296,8 @@ function checkWordpressValidUser(req,res,userName,password,success,fail) {
 									} else {
 										//il mio id anche se esiste nel db non ha name salvato, è un first login
 										//salvo il name nel db per l'utente che ha per _id quello salvato nei cookies
-										//////req.app.sbam.user.findById(req.cookies.userID, function (err, user2){
-											//////if (err) {
-												//////console.log("findById:error "+err);
-												//////res.send(err);
-											//////} else {
 										user.name = userName;
+										user.platform = req.app.sbam.config.platform;
 										user.save(function (err) { 
 											if (err) {
 												console.log("save:error "+err);
@@ -287,8 +306,6 @@ function checkWordpressValidUser(req,res,userName,password,success,fail) {
 												success('great! your first authentication!');
 											}
 										});
-											//////}
-										//////});
 									}
 								});
 							}
@@ -301,11 +318,13 @@ function checkWordpressValidUser(req,res,userName,password,success,fail) {
 				});
 			});
 			
-			//boh, questa mi da un errore di parsing, anche se tutto funziona e ricevo un 200
+			//ritorna un errore per esempio se nella piattaforma wordpress non è stato uploadato il file wp-auth-sobuame.php
 			httpReq.on('error', function(e) {
 				console.log('problem with request: ' + e.message);
+				console.log('have uploaded wp-auth-sobuame.php file to ' + req.app.sbam.config.wpSiteUrl + ' ?');
+				fail('problems connecting to wp-auth-sobuame.php on wp site');
 			});
-
+			console.log("try to connect to wp-auth-sobuame.php with url="+wpSiteHost+wpSitePath);
 			//write data to request body
 			//ovvero esego effettivamente la chiamata http
 			//da qui in poi l'esecuzione prosegue in httpRes.on('data'...
@@ -331,23 +350,6 @@ exports.logout = logout;
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 function setCookieUserId(req,res,id) {
 	req.cookies.userID = id;
 	res.cookie('userID', id, { maxAge: 1000*60*60*24*365 }); //1 anno
@@ -355,12 +357,31 @@ function setCookieUserId(req,res,id) {
 exports.setCookieUserId = setCookieUserId; 
 
 function setCookieUserName(req,res,name) {
-	console.log("EPORCODIO IO LO SALVO STO COOKIE!!!");
 	req.cookies.userName = name;
 	res.cookie('userName', name, { maxAge: 1000*60*60*8 }); //8 ore
-	console.log("ENNFATTI MO VALE: "+req.cookies.userName);
 }
 exports.setCookieUserName = setCookieUserName; 
+
+function setCookieBootstrap(req,res,content) {
+	req.cookies.bootstrap = content;
+	res.cookie('bootstrap', content, { maxAge: 1000*60*1 }); //dura solo un minuto, perchè viene consumato subito al bootstrap
+}
+exports.setCookieBootstrap = setCookieBootstrap; 
+
+function setCookiePlatform(req,res,platform) {
+	req.cookies.platform = platform;
+	res.cookie('platform', platform, { maxAge: 1000*60*60*24*365 }); //1 anno
+}
+exports.setCookiePlatform = setCookiePlatform; 
+
+//questo dura poco, e lo piazzo solo quando l'admin forza il login come un utente
+//in questo modo,pur essendo loggato come utente, potrà avere funzioni e privilegi da admin dove serve
+//per esempio per poter creare i file di stampa
+function setCookieFromAdmin(req,res) {
+	req.cookies.fromadmin = 'yes';
+	res.cookie('fromadmin', 'yes', { maxAge: 1000*60*60*8 }); //8 ore
+}
+exports.setCookieFromAdmin = setCookieFromAdmin; 
 
 function resetCookieUserId(req,res) {
 	req.cookies.userID = "";
@@ -369,16 +390,59 @@ function resetCookieUserId(req,res) {
 exports.resetCookieUserId = resetCookieUserId; 
 
 function resetCookieUserName(req,res) {
-	console.log("AAAAMAPPEROLOSCANCELLO!!!");
 	req.cookies.userName = "";
 	res.clearCookie('userName');
 }
 exports.resetCookieUserName = resetCookieUserName; 
 
+function resetCookieBootstrap(req,res) {
+	req.cookies.bootstrap = "";
+	res.clearCookie('bootstrap');
+}
+exports.resetCookieBootstrap = resetCookieBootstrap; 
+
+function resetCookiePlatform(req,res) {
+	req.cookies.platform = "";
+	res.clearCookie('platform');
+}
+exports.resetCookiePlatform = resetCookiePlatform; 
+
+function resetCookieFromAdmin(req,res) {
+	req.cookies.fromadmin = "";
+	res.clearCookie('fromadmin');
+}
+exports.resetCookieFromAdmin = resetCookieFromAdmin; 
+
 function resetCookies(req,res) {
-	//console.log("resetCookies");
 	resetCookieUserId(req,res);
 	resetCookieUserName(req,res);
+	resetCookieBootstrap(req,res);
+	resetCookieFromAdmin(req,res);
+	//NO, questo deve durare resetCookiePlatform(req,res);
 }
 exports.resetCookies = resetCookies; 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}

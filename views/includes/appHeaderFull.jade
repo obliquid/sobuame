@@ -9,12 +9,20 @@ div(data-role='header' data-position='fixed' data-tap-toggle='false' )
 		a(href='#panelProjects' data-iconpos='notext').ui-btn.ui-icon-book.ui-btn-icon-notext.ui-title
 		a(href='#panelPages' data-iconpos='notext' id="buttonPages").ui-btn.ui-icon-files-o.ui-btn-icon-notext.ui-title.ui-state-disabled
 		a(href='#panelMedia' data-iconpos='notext' id="buttonMedia").ui-btn.ui-icon-camera.ui-btn-icon-notext.ui-title.ui-state-disabled
-		//img(src='/images/logo_mini.png',style='position:absolute;left:120px;top:2px;')
+		if platform == 'tuolibro'
+			img(src='/images/logo_mini_tuolibro.png',style='position:absolute;left:115px;top:2px;')
+		else
+			img(src='/images/logo_mini.png',style='position:absolute;left:115px;top:2px;')
 	div(data-role='controlgroup',data-type='horizontal').ui-mini.ui-btn-right
+		a(id="buttonMediaWaiter" href='#popupAddMedia' data-rel="popup" data-position-to="window" ).ui-btn.ui-title #{__i("caricamento...")}
+		
+ 
+		
+		
 		button(id="buttonUndo").ui-btn.ui-icon-mail-reply.ui-btn-icon-notext.ui-title.ui-state-disabled
 		a(id="buttonHistory" href='#panelHistory' data-iconpos='notext').ui-btn.ui-icon-ellipsis-h.ui-btn-icon-notext.ui-title.ui-state-disabled
 		button(id="buttonRedo").ui-btn.ui-icon-mail-forward.ui-btn-icon-notext.ui-title.ui-state-disabled
-		a(id='buttonPrint' href='#popupPrintProject' data-rel="popup" data-position-to="window" data-transition="pop").ui-btn.ui-icon-print.ui-btn-icon-notext.ui-title.ui-state-disabled
+		a(id='buttonOrder' href='#popupOrderProject' data-rel="popup" data-position-to="window" data-transition="pop").ui-btn.ui-icon-shop.ui-btn-icon-notext.ui-title.ui-state-disabled
 		if userName
 			a(id='buttonSave').ui-btn.ui-icon-save.ui-btn-icon-notext.ui-title.ui-state-disabled
 			a(href='#panelAccount' style='background-color:#bbffbb;').ui-btn.ui-icon-user.ui-btn-icon-notext.ui-title

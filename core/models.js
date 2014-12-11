@@ -20,7 +20,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
+if ( true ) {
 
 //models
 
@@ -38,7 +38,8 @@ function defineModels(mongoose, app, next) {
 		'name': { type: String, index: true, required: false },
 		'created_at':{ type: Date, index: true },
 		'updated_at':{ type: Date, index: true },
-		'ip':{ type: String, index: true }
+		'ip':{ type: String, index: true },
+		'platform':{ type: String, index: true, required: true }
 	});
 	User.pre('save', function(next){
 		now = new Date();
@@ -52,25 +53,67 @@ function defineModels(mongoose, app, next) {
 	
 	//Schema project
 	var maxSizemm = 1000000; //è la massima dimensione salvabile nel db per tutte le dimensioni, ed è in mm. quindi così è 1km, abbondande per la stampa...
+	//NOTA: ogni modifica al db va riportata coerentemente in projectTypesAndPresets.json
 	var Project = new Schema({
+		'name': { type: String, index: true, required: true },//usata nella prima parte dei nomi file dei layout xml
 		'user': { type: Schema.ObjectId, ref: 'user', required: true, index: true },
-		'type': { type: String, enum: ['album', 'poster', 'annuario','libro'], index: true, required: true },//NOTA: ogni modifica a type va riportata coerentemente in sobuame.js
-		'name': { type: String, index: true, required: true },
 		'created_at':{ type: Date, index: true },
 		'updated_at':{ type: Date, index: true },
-		'dpi':{ type: Number, max: maxSizemm, index: true, required: true },
-		'width':{ type: Number, max: maxSizemm, index: true, required: true },
-		'height':{ type: Number, max: maxSizemm, index: true, required: true },
+		'type': { type: String, enum: ['album', 'poster', 'annuario','libro'], index: true, required: true },//NOTA: ogni modifica a type va riportata coerentemente in sobuame.js
+		'status': { type: String, enum: ['editing', 'ordered'], index: true, required: true },
 		'spline': { type: String, index: false, required: false },
-		'variant': { type: String, index: false, required: false },
-		'minPageQuantity': { type: Number, max: 256, index: true, required: false },
-		'stickersLayers': [{ //i layers sono intesi come url di immagini che verranno prese e stretchate alla misura del bbox e sovrapposte ad ogni immagine di tipo sticker. non sono immagini caricabili dall'utente (sono immagini di template - PNG trasparenti - lette dalla dir dei template), ma solo gli utenti possono assegnarli runtime a livello di intero progetto.
-			'url': { type: String, index: true, required: false }
-		}],
+		'preset': {
+			'label': { type: String, index: true, required: false },
+			'code': { type: String, index: true, required: false }, //usata nella seconda parte dei nomi file dei layout xml
+			'width':{ type: Number, max: maxSizemm, index: true, required: false },//in mm, sbordatura (3mm) compresa
+			'height':{ type: Number, max: maxSizemm, index: true, required: false },
+			'minPageQuantity': { type: Number, max: 256, index: true, required: false },
+			'minPageNum': { type: Number, index: true, required: false }, //minimo numero di pagine per il project
+			'maxPageNum': { type: Number, index: true, required: false }, //massimo numero di pagine per il project
+			'rilegatura': { type: String, index: true, required: false }, //per ora: "brossura" o "punto metallico", ma serve solo per info, non viene usata nel codice
+			'price':{ type: Number, index: false, required: false }, //prezzo base (di avviamento) iva esclusa in euro
+			'pricePerPage':{ type: Number, index: false, required: false }, //prezzo per pagina iva esclusa in euro
+			'dpi':{ type: Number, max: maxSizemm, index: true, required: true },//questo dovrebbe essere uguale a sbam.config.defaultPdfDpi
+			'stickers':{
+				'width':{ type: Number, max: maxSizemm, index: true, required: false }, //in mm, sbordatura esclusa
+				'height':{ type: Number, max: maxSizemm, index: true, required: false },
+				'sbordatura':{ type: Number, max: maxSizemm, index: true, required: false } //in mm, sbordatura
+			},
+			'cover': { //coperta
+				'type': { type: String, index: true, required: false }, //può essere "rigida" o "morbida"
+				'pageWidth': { type: Number, max: maxSizemm, index: true, required: false }, //larghezza e altezza della singola facciata della coperta
+				'pageHeight': { type: Number, max: maxSizemm, index: true, required: false },
+				'splineWidth': { type: Number, max: maxSizemm, index: true, required: false }, //larghezza del dorso
+				'wingWidth': { type: Number, max: maxSizemm, index: true, required: false }, //larghezza della singola aletta da incollare
+				'wingHeight': { type: Number, max: maxSizemm, index: true, required: false } //altezza della singola aletta da incollare
+				//quindi le dimensioni totali del pdf da stampare saranno: 	2*pageWidth + splineWidth + 2*wingWidth x pageHeight + 2*wingHeight
+			},
+			'coverlet': { //sovracoperta
+				'pageWidth': { type: Number, max: maxSizemm, index: true, required: false }, //larghezza e altezza della singola facciata della sovracoperta
+				'pageHeight': { type: Number, max: maxSizemm, index: true, required: false },
+				'splineWidth': { type: Number, max: maxSizemm, index: true, required: false }, //larghezza del dorso
+				'wingWidth': { type: Number, max: maxSizemm, index: true, required: false }, //larghezza della singola aletta da incollare
+				'wingHeight': { type: Number, max: maxSizemm, index: true, required: false } //altezza della singola aletta da incollare
+				//quindi le dimensioni totali del pdf da stampare saranno: 	2*pageWidth + splineWidth + 2*wingWidth x pageHeight + 2*wingHeight
+			},
+			'coupons': [{
+				'code': { type: String, index: true, required: false }, //codice libero per identificare il coupon. è quello che l'utente dovrà inserire all'atto dell'ordine
+				'label': { type: String, index: true, required: false }, //una label, tipo "sconto 10% natalizio", oppure "spedizione gratuita"
+				'start': { type: Date, index: true, required: false }, //una data di inizio (nella forma "2014-11-30") (facoltativo)
+				'end': { type: Date, index: true, required: false }, //una data di fine (nella forma "2014-11-30") (facoltativo)
+				'priceMultiply': { type: Number, index: true, required: false }, //uno sconto o maggiorazione in %, dove 1 significa prezzo del 100% cioè no sconto. viene applicato al totale, ESCLUSE le spese di spedizione (facoltativo)
+				'priceAdd': { type: Number, index: true, required: false } //uno sconto o maggiorazione in euro da aggiungere al prezzo totale dell'ordine, quindi -10 nel caso di uno sconto di 10€+iva. è inteso iva esclusa. 0 significa no sconto (facoltativo)
+				
+			}]
+		},
+		//'width':{ type: Number, max: maxSizemm, index: true, required: true },
+		//'height':{ type: Number, max: maxSizemm, index: true, required: true },
 		'pages': [{ //ogni pagina in un progetto è identificata da 2 parametri (oltre ovviamente al suo _id univoco assegnato da mongo): num e type. num da solo non basta perchè ci sono le pagine speciali, come le copertine, che non lo usano.
 			'type': { type: String, enum: ['left','right','cover-1-front','cover-2-front','cover-3-back','cover-4-back','single'], index: true, required: false },
 			'num': { type: Number, default: -1, index: false, required: false },//type:left e type:right condividono la numerazione a partire dalla 1 (si inizia con 1 che è right, e vale la regola che tutti le pagine dispari sono right e quelle pari sono left), mentre type:cover-front e cover-back non usano il campo num
 			'elements': [{
+				'type': { type: String, enum: ['text','image','pagenum'], index: true, required: false },
+				'locked': { type: String, enum: ['yes','no'], index: true, required: false },
 				'bbox': {
 					'x': { type: String, index: true, required: false },
 					'y': { type: String, index: true, required: false },
@@ -94,10 +137,10 @@ function defineModels(mongoose, app, next) {
 					'fontSize':{ type: Number, max: 10000, index: false, required: false }, //sono intesi in pt (point)
 					'align': { type: String, enum: ['left','right','center','justify'], index: true, required: false }
 				},
-				'type': { type: String, enum: ['text','image','pagenum'], index: true, required: false },
 				'text': {
 					'content': { type: String, index: true, required: false },
-					'demoContent': { type: Boolean, index: false, required: false }
+					'demoContent': { type: Boolean, index: false, required: false },
+					'rotate': { type: Number, max: 360, min: -360, index: false, required: false } //in gradi da -360 a 360. se positivo, ruota in senso orario
 				},
 				'image': {
 					'type': { type: String, enum: ['image','sticker'], index: true, required: false },
@@ -105,6 +148,7 @@ function defineModels(mongoose, app, next) {
 					'dpi': { type: Number, index: false, required: false }, //uso i dpi dell'immagine come valore di zoom. per ingrandire l'immagine, diminuisco i dpi. per tutto il resto valgono idp del project
 					'offsetx': { type: Number, index: false, required: false }, //questi devono essere in mm, non vale la percentuale
 					'offsety': { type: Number, index: false, required: false },
+					'effects': { type: String, index: true, required: false }, //elenco di nomi di filtri da applicare, nell'ordine di applicazione, seprati da virgola
 					'stickerLayout': { type: String, index: true, required: false } //il layout delle figurine indica se sono singoile, o multipli. per questo campo si usa la naming convention: T-CxR, es. v-3x2 (l'immagine verrà suddivisa su 6 figurine verticali "v" disposte su 2 righe "R" e 3 colonne "C")
 				},
 				'pagenum': {
@@ -364,3 +408,6 @@ function defineModels(mongoose, app, next) {
 
 exports.defineModels = defineModels; 
 
+
+
+}

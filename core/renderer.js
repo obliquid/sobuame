@@ -1,3 +1,5 @@
+if ( true ) {
+
 /**
  * SOBUAME
  *
@@ -22,27 +24,480 @@
 
 
 
-
 	
 //RENDERER
 
 /*
-questo metodo usa la libreria pdfkit per generare i pdf
+questo metodo chiama N volte renderPdf per generare tutti i pdf che compongono
 */
-function renderPdf(req,res,project,next) {
+function renderAllPdf(req,res,project,next) {
+	//helpers
+	function parallelAsyncLoop() {
+		remaining--;
+		if ( remaining == 0 ) {
+			//finito async loop
+			next(pdfs);
+		}
+	}
+	
+	function placePage(sourcePage,destPage,options) {
+		//loop su tutti gli elementes della sourcePage
+		for ( var x=0; x<sourcePage.elements.length; x++ ) {
+			var sourceElement = sourcePage.elements[x];
+			//console.log(">>>>>>>>>>>>>>>>>>> placePage(): prendo questo element da sourcePage:");
+			//console.log(sourceElement);
+			//clono l'element
+			var destElement = JSON.parse(JSON.stringify(sourceElement));
+			//apllico all'element scaleAndOffsetElement(element, options)
+			destElement = scaleAndOffsetElement( destElement, options );
+			//console.log(">>>>>>>>>>>>>>>>>>> placePage(): e dopo averlo smandruppato lo salvo in destPage così:");
+			//console.log(destElement);
+			//e lo pusho in destPage
+			destPage.elements.push(destElement);
+		}
+	}
+	
+	//options: { refValX, refValY, newRefValX, newRefValY, offsetX, offsetY }
+	function scaleAndOffsetElement( element, options ) {
+		if (element.bbox) {
+			var bbox = element.bbox;
+			if (bbox.x || bbox.x == 0) bbox.x = scaleAndOffset( bbox.x, options.refValX, options.newRefValX, options.offsetX );
+			if (bbox.y || bbox.y == 0) bbox.y = scaleAndOffset( bbox.y, options.refValY, options.newRefValY, options.offsetY );
+			if (bbox.w) bbox.w = scaleAndOffset( bbox.w, options.refValX, options.newRefValX );
+			if (bbox.h) bbox.h = scaleAndOffset( bbox.h, options.refValY, options.newRefValY );
+		}
+		if (element.image) {
+			var image = element.image;
+			if (image.offsetx) image.offsetx = scaleAndOffset( image.offsetx, options.refValX, options.newRefValX );
+			if (image.offsety) image.offsety = scaleAndOffset( image.offsety, options.refValY, options.newRefValY );
+			if (image.dpi) {
+				//per i dpi tra lo scaling delle x e quello delle y, scelgo quello maggiore
+				var ipd = 100000/image.dpi; //i dpi li aggancio alle X, ma all'inverso, perchè i dpi diminuiscono quando aumentano le dimensioni
+				var scaleFactorX = scaleAndOffset( 1, options.refValX, options.newRefValX );
+				var scaleFactorY = scaleAndOffset( 1, options.refValY, options.newRefValY );
+				if ( scaleFactorX > scaleFactorY ) {
+					var scaledIpd = scaleAndOffset( ipd, options.refValX, options.newRefValX ); 
+				} else {
+					var scaledIpd = scaleAndOffset( ipd, options.refValY, options.newRefValY ); 
+				}
+				//console.log("======================= scale factor: "+(options.newRefValX/options.refValX));
+				//console.log("======================= image.dpi: "+image.dpi);
+				//console.log("======================= ipd: "+ipd);
+				//console.log("======================= scaledIpd: "+scaledIpd);
+				image.dpi = 100000/scaledIpd;
+				//console.log("======================= inverted scaledIpd: "+image.dpi);
+			}
+		}
+		if (element.style) {
+			var style = element.style;
+			if (style.fontSize) style.fontSize = scaleAndOffset( style.fontSize, options.refValX, options.newRefValX ); //il fontSize lo aggancio alle X
+		}
+		return element;
+	}
+	function scaleAndOffset( val, refVal, newRefVal, offset ) {
+		//prima traduco in mm
+		var newVal = req.app.sbam.utils.bboxValToMm(val,refVal);
+		//console.log(">>>>>>>>>> sto scalando: val="+val+" refVal="+refVal+" newRefVal="+newRefVal+" offset="+offset+" da cui ottengo newVal="+newVal);
+		//poi effettuo lo scaling
+		if ( refVal != newRefVal ) newVal = Number(newVal * newRefVal / refVal);
+		//console.log(">>>>>>>>>> sto scalando: val="+val+" refVal="+refVal+" newRefVal="+newRefVal+" offset="+offset+" da cui ottengo newVal="+newVal);
+		//poi lo traslo
+		if ( offset && offset != 0 ) newVal = Number(newVal) + Number(offset);
+		//console.log(">>>>>>>>>> sto scalando: val="+val+" refVal="+refVal+" newRefVal="+newRefVal+" offset="+offset+" da cui ottengo newVal="+newVal);
+		return newVal;
+	}
+	function populateOrderProject(project) {
+		//clono il project principale
+		var orderProject = JSON.parse(JSON.stringify(project));
+		//imposto al project width ed height A4
+		orderProject.preset.width = 210;
+		orderProject.preset.height = 297;
+		//creo la pagina dell'order
+		//che ha inizialmente dentro solo un text con tutti i dati utili del progetto stampato
+		var orderPage = {
+			'type': 'single',
+			'num': 1,
+			'elements': [{
+				'bbox': {
+					'x': 20,
+					'y': 20,
+					'w': 120,
+					'h': 100
+				},
+				'type': 'text',
+				'text': {
+					'content': "ORDER from platform: "+req.cookies.platform.toUpperCase()+"\n\n\npreset:   "+project.preset.label+"\ndim.:   "+project.preset.width+" x "+project.preset.height+" mm\npag.:   "+project.pages.length+"\n\n\ncustomer username:   "+req.cookies.userName+"\ncustomer userID:   "+req.cookies.userID
+				}
+			},
+			{
+				'bbox': {
+					'x': 130,
+					'y': 20,
+					'w': 70,
+					'h': 250
+				},
+				'type': 'text',
+				'style': {
+					'font':'UbuntuMono-Regular.ttf',
+					'fontSize':'7'
+				},
+				'text': {
+					'content': "preset data:   "+JSON.stringify(project.preset, null, 4)
+				}
+			}]
+		};
+		//e poi ci piazzo dentro la copertina in miniatura
+		var firstPage = JSON.parse(JSON.stringify( orderProject.pages[0]));
+		placePage( firstPage,orderPage,{ 'refValX': project.preset.width, 'refValY': project.preset.height, 'newRefValX': 100, 'newRefValY': 100/project.preset.width*project.preset.height, 'offsetX': 20, 'offsetY': 120 });
+		//infine metto la mia order page nel mio order project, e lo ritorno
+		orderProject.pages = []; //azzero pagine preesistenti
+		orderProject.pages.push(orderPage);
+		return orderProject;
+	}
+	function populateCoverProject(coverType,project) {
+		/**
+		schema generale per la cover
+		
+		^ y
+		|
+		|wing left |  cover left  |spl|  cover left  |wing right|
+		|3a di cop.|  4a di cop.  |spl|  1a di cop.  |2a di cop.|
+		|wingWidth |  pageWidth   |s.W|  pageWidth   |wingWidth |
+		+----------+--------------+---+--------------+----------+
+		|          |              |   |              |          | wingHeight
+		+----------+--------------+---+--------------+----------+
+		|          |              |   |              |          |
+		|          |              |   |              |          |
+		|          |              |   |              |          |
+		|          |              |   |              |          |
+		|          |              |   |              |          | pageHeight
+		|          |              |   |              |          |
+		|          |              |   |              |          |
+		|          |              |   |              |          |
+		+----------+--------------+---+--------------+----------+
+		|          |              |   |              |          | wingHeight
+		+----------+--------------+---+--------------+----------+--> x
+
+		*/
+		
+		
+		//clono il project principale
+		var coverProject = JSON.parse(JSON.stringify(project));
+		//console.log("AAAAAAAAAAAAAAAAAAAA populateCoverProject(): project.preset: ");
+		//console.log(project.preset);
+		//console.log("BBBBBBBBBBBBBBBBBBBB populateCoverProject(): coverProject.preset: ");
+		//console.log(coverProject.preset);
+		
+		//normalizzo i dati
+		if ( !coverType ) coverType = "cover";
+		if ( coverType == "cover" ) {
+			var cover = coverProject.preset.cover;
+		} else if ( coverType == "coverlet" ) {
+			var cover = coverProject.preset.coverlet;
+		}
+		
+		if ( !cover.pageWidth ) cover.pageWidth = coverProject.preset.width; //nota: qui coverProject.preset.width è ancora quello originale, poi cambierà
+		if ( !cover.pageHeight ) cover.pageHeight = coverProject.preset.height;
+		if ( !cover.wingWidth ) cover.wingWidth = 0;
+		if ( !cover.wingHeight ) cover.wingHeight = 0;
+		if ( !cover.splineWidth ) cover.splineWidth = 0;
+
+		
+		//imposto al project width ed height finali della cover (vedi schema), calcolate in base ai dati dichiarati nel preset
+		coverProject.preset.width = 2*cover.pageWidth + cover.splineWidth + 2*cover.wingWidth;
+		coverProject.preset.height = cover.pageHeight + 2*cover.wingHeight;
+		
+		//tengo copia (clono) delle 4 pagine cover (prima, seconda, terza e quarta)
+		var sourceCoverPage1 = JSON.parse(JSON.stringify(coverProject.pages[0]));
+		var sourceCoverPage2 = JSON.parse(JSON.stringify(coverProject.pages[1]));
+		var sourceCoverPage3 = JSON.parse(JSON.stringify(coverProject.pages[ coverProject.pages.length - 2 ]));
+		var sourceCoverPage4 = JSON.parse(JSON.stringify(coverProject.pages[ coverProject.pages.length - 1 ]));
+		
+		//poi creo exnovo una pagina per lo spline
+		//che ha un solo elemento, che è un'immagine del testo dello spline ruotato
+
+		if ( cover.splineWidth ) {
+			var splinePage = {
+				'type': 'single',
+				'num': 1,
+				'elements': [{
+					'bbox': {
+						'x': 0,
+						'y': cover.pageHeight,
+						'w': cover.pageHeight,
+						'h': cover.splineWidth
+					},
+					'style': {
+						'foregroundColor': {
+							'c':0,
+							'm':0,
+							'y':0,
+							'k':0
+						},
+						'backgroundColor': {
+							'c':Math.random()*50,
+							'm':Math.random()*50,
+							'y':Math.random()*50,
+							'k':10
+						},
+						'font':'Roboto-Bold.ttf',
+						'fontSize':'24', //sono intesi in pt (point)
+						'align': 'left'
+					},
+					'type': 'text',
+					'text': {
+						'content': "     "+coverProject.spline,
+						'rotate': -90
+					}
+				},
+				{
+					'bbox': {
+						'x': 0,
+						'y': cover.splineWidth/3*2,
+						'w': cover.splineWidth,
+						'h': cover.splineWidth/1.142595978
+					},
+					'style': {
+						'backgroundColor': {
+							'c':0,
+							'm':0,
+							'y':0,
+							'k':0
+						},
+						'font':'Roboto-Bold.ttf',
+						'fontSize':'24', //sono intesi in pt (point)
+						'align': 'left'
+					},
+					'type': 'image',
+					'image': {
+						'url': "templates/images/altre/symbol_my-e.png"
+					}
+				}]
+			};
+		}
+		
+		//poi elimino tutte le pagine da coverProject
+		coverProject.pages = [];
+		
+		//creo una nuova pagina singola vuota, type=single, num=1, elements=[]
+		var coverPage = {
+			'type': 'single',
+			'num': 1,
+			'elements': []
+		};
+		
+		//procedo a popolare gli elements di coverPage (la mia pagina singola vuota) da sinistra a destra, secondo lo schema di cui sopra:
+		
+		//piazzo la 3a di copertina
+		if (cover.wingWidth) {
+			//console.log("ok ok, piazzerei questa sourceCoverPage3 dentro alla mia cover:");
+			//console.log(sourceCoverPage3);
+			placePage(sourceCoverPage3,coverPage,{ 'refValX': project.preset.width, 'refValY': project.preset.height, 'newRefValX': cover.pageWidth, 'newRefValY': cover.pageHeight, 'offsetX': cover.wingWidth - cover.pageWidth, 'offsetY': cover.wingHeight });
+		};
+		
+		//piazzo la 4a di copertina
+		//console.log("ok ok, piazzerei questa sourceCoverPage4 dentro alla mia cover:");
+		//console.log(sourceCoverPage4);
+		placePage(sourceCoverPage4,coverPage,{ 'refValX': project.preset.width, 'refValY': project.preset.height, 'newRefValX': cover.pageWidth, 'newRefValY': cover.pageHeight, 'offsetX': cover.wingWidth, 'offsetY': cover.wingHeight });
+		
+		//piazzo il dorso (spline)
+		if (cover.splineWidth) {
+			var splineOffsetX = cover.wingWidth + cover.pageWidth;
+			//console.log("ok ok, splineOffsetX="+splineOffsetX);
+			//console.log("ok ok, piazzerei questa splinePage dentro alla mia cover:");
+			//console.log(splinePage);
+			//solo nel caso del dorso, che è una pagina creata runtime, non applico scaling, perchè l'ho già creato delle dimensioni giuste
+			placePage(splinePage,coverPage,{ 'refValX': cover.pageWidth, 'refValY': cover.pageHeight, 'newRefValX': cover.pageWidth, 'newRefValY': cover.pageHeight, 'offsetX': splineOffsetX, 'offsetY': cover.wingHeight });
+			//placePage(splinePage,coverPage,{ 'refValX': project.preset.width, 'refValY': project.preset.height, 'newRefValX': cover.pageWidth, 'newRefValY': cover.pageHeight, 'offsetX': splineOffsetX, 'offsetY': cover.wingHeight });
+		}
+			
+		//piazzo la 1a di copertina
+		//console.log("ok ok, piazzerei questa sourceCoverPage1 dentro alla mia cover:");
+		//console.log(sourceCoverPage1);
+		placePage(sourceCoverPage1,coverPage,{ 'refValX': project.preset.width, 'refValY': project.preset.height, 'newRefValX': cover.pageWidth, 'newRefValY': cover.pageHeight, 'offsetX': cover.wingWidth + cover.pageWidth + cover.splineWidth, 'offsetY': cover.wingHeight });
+		
+		//piazzo la 2a di copertina
+		if (cover.wingWidth) {
+			//console.log("ok ok, piazzerei questa sourceCoverPage2 dentro alla mia cover:");
+			//console.log(sourceCoverPage2);
+			placePage(sourceCoverPage2,coverPage,{ 'refValX': project.preset.width, 'refValY': project.preset.height, 'newRefValX': cover.pageWidth, 'newRefValY': cover.pageHeight, 'offsetX': cover.wingWidth + 2*cover.pageWidth + cover.splineWidth, 'offsetY': cover.wingHeight });
+		}
+			
+		//infine piazzo la mia cover page nel mio cover project, e lo ritorno
+		coverProject.pages.push(coverPage);
+			
+		return coverProject;
+	}
+	function populateStickersProject(project) {
+		//clono il project principale
+		var stickersProject = JSON.parse(JSON.stringify(project));
+		console.log("@@@@@@@@@@@@@@@@@@@@ populateStickersProject(): stickersProject.preset: ");
+		console.log(stickersProject.preset);
+
+		//prima di resettare le pagine, faccio un parsing per tirar fuori solo gli element figurina
+		var stickersElements = [];
+		for ( var i=0; i<stickersProject.pages.length; i++ ) {
+			var page=stickersProject.pages[i];
+			for ( var j=0; j<page.elements.length; j++ ) {
+				var element = page.elements[j];
+				//console.log("decido se tenere: ");
+				//console.log(element);
+				if ( element.type == "image" && element.image && element.image.type && element.image.type == "sticker"  && element.image.url ) {
+					stickersElements.push(JSON.parse(JSON.stringify(element)));
+				}
+			}
+		}
+		
+		//imposto al project width ed height finali della singola figurina + relativa sbordatura, come dichiarato nel preset
+		stickersProject.preset.width = Number(stickersProject.preset.stickers.width) + 2*Number(stickersProject.preset.stickers.sbordatura);
+		stickersProject.preset.height = Number(stickersProject.preset.stickers.height) + 2*Number(stickersProject.preset.stickers.sbordatura);
+		
+		//ciclo su ogni sticker e per ciascuna
+		var figuPages = [];
+		for ( var x=0; x<stickersElements.length; x++ ) {
+			var sticker = stickersElements[x];
+			//QUI
+			console.log("ciclo su figu:");
+			console.log(sticker);
+			
+			//devo gestire le figurine multiple
+			
+			//prima parso il nome
+			var layout = req.app.sbam.utils.parseStickerLayout(sticker.image.stickerLayout);
+			
+			//poi faccio un ciclo su righe/colonne
+			for ( var r=0; r<layout.stickerLayoutRows; r++ ) {
+				for ( var c=0; c<layout.stickerLayoutCols; c++ ) {
+					//per ciascuna figurina atomica
+					//basta che la piazzo in una pagina vuota, con x e y traslati in base alla figurina considerata
+					if ( layout.stickerLayoutType == "v" ) {
+						sticker.bbox.x = stickersProject.preset.stickers.sbordatura - c*stickersProject.preset.stickers.width;
+						sticker.bbox.y = stickersProject.preset.stickers.sbordatura - r*stickersProject.preset.stickers.height;
+					} else {
+						//QUI problema: le figu orizzontali vanno girate, perchè il pdf è in verticale
+						sticker.bbox.x = stickersProject.preset.stickers.sbordatura - c*stickersProject.preset.stickers.height;
+						sticker.bbox.y = stickersProject.preset.stickers.sbordatura - r*stickersProject.preset.stickers.width;
+					}
+					
+					//creo una nuova pagina vuota, e ci piazzo solo la mia figu
+					var figuPage = {
+						'type': 'single',
+						'elements': []
+					};
+					figuPage.elements.push(JSON.parse(JSON.stringify(sticker)));
+					
+					//e poi metto la pagina nel project
+					figuPages.push(figuPage);
+					
+				}
+			}
+			
+			
+			
+			
+			
+			
+			
+		}
+
+		//poi elimino tutte le pagine da stickersProject
+		stickersProject.pages = [];
+
+		//e ci piazzo le nuove pagine con le figu
+		stickersProject.pages = figuPages;
+		
+		return stickersProject;
+	}
+	var pdfs = {
+		'main':"",
+		'cover':"",
+		'coverlet':"",
+		'stickers':"",
+		'order':""
+	};
+	var remaining = 2; //ci sono sempre almeno 2 pdf: il main e l'order
+	
+	//lancio subito il rendering del main pdf, che c'è sempre indipendentemente da covers e stickers
+	//(prima però, nel caso sia specificata anche una cover o una coverlet per questo progetto, devo scartare dal main pdf le 4 pagine cover)
+	if ( 
+		!req.app.sbam.utils.is_empty(project.preset.coverlet)
+		||
+		!req.app.sbam.utils.is_empty(project.preset.cover)
+	) {
+		var projectCloned = JSON.parse(JSON.stringify(project)); //tengo copia dell'originale e modifico la copia, cioè tolgo le cover pages solo alla copia, perchè poi mi serviranno
+		var pagesCloned = [];
+		for ( var x=0; x<projectCloned.pages.length; x++ ) {
+			var page = projectCloned.pages[x];
+			if ( page.type.substring(0,5) != 'cover' ) {
+				pagesCloned.push(page);
+			}
+		}
+		projectCloned.pages = pagesCloned;
+		renderPdf(req,res,projectCloned,"PROJECT-PDF-MAIN", function(outUrl){ pdfs.main = outUrl; parallelAsyncLoop(); }); 
+	} else {
+		renderPdf(req,res,project,"PROJECT-PDF-MAIN", function(outUrl){ pdfs.main = outUrl; parallelAsyncLoop(); }); 
+	}
+
+	//se devo, genero la cover
+	if ( !req.app.sbam.utils.is_empty(project.preset.cover) ) {
+		//console.log("HO DECISO DI FARE LA COVER PERCHE IL PRESET DICE: project.preset.cover:");
+		//console.log(project.preset.cover);
+		var coverProject = populateCoverProject("cover",project);
+		//ora che ho un project, con singola pagina, che è la coverPage, posso creare il pdf
+		//lancio renderPdf
+		remaining++;
+		renderPdf(req,res,coverProject,"PROJECT-PDF-COVER", function(outUrl){ pdfs.cover = outUrl; parallelAsyncLoop(); });
+	}
+	
+	//poi se devo, genero la coverlet
+	if ( !req.app.sbam.utils.is_empty(project.preset.coverlet) ) {
+		//console.log("HO DECISO DI FARE LA COVERLET PERCHE IL PRESET DICE: project.preset.coverlet:");
+		//console.log(project.preset.coverlet);
+		var coverletProject = populateCoverProject("coverlet",project);
+		//ora che ho un project, con singola pagina, che è la coverPage, posso creare il pdf
+		//lancio renderPdf
+		remaining++;
+		renderPdf(req,res,coverletProject,"PROJECT-PDF-COVERLET", function(outUrl){ pdfs.coverlet = outUrl; parallelAsyncLoop(); });
+	}
+	
+	//poi se devo, genero le figu
+	if ( !req.app.sbam.utils.is_empty(project.preset.stickers) ) {
+		//console.log("HO DECISO DI FARE LE FIGU PERCHE IL PRESET DICE: project.preset.stickers:");
+		//console.log(project.preset.stickers);
+		var stickersProject = populateStickersProject(project);
+		//ora che ho un project, posso creare il pdf
+		//lancio renderPdf
+		remaining++;
+		renderPdf(req,res,stickersProject,"PROJECT-PDF-STICKERS", function(outUrl){ pdfs.stickers = outUrl; parallelAsyncLoop(); });
+	}
+	
+	//infine, sempre, genero un pdf A4 a pagina singola con i dettagli dell'ordine
+	var orderProject = populateOrderProject(project);
+	//ora che ho un project, con singola pagina, che è la coverPage, posso creare il pdf
+	//lancio renderPdf
+	renderPdf(req,res,orderProject,"PROJECT-PDF-ORDER", function(outUrl){ pdfs.order = outUrl; parallelAsyncLoop(); });
+	
+}
+exports.renderAllPdf = renderAllPdf;
+/*
+questo metodo usa la libreria pdfkit per generare un pdf partendo da un project
+*/
+function renderPdf(req,res,project,suffix,next) {
 	//devo fare un loop sulle pagine che mi sono arrivate, e per ciascuna
 	//devo fare un loop sugli elementi e disegnarli nel pdf
 	
 	//inizializzo le librerie necessarie e il nome del file da generare
 	var fs = require('fs');
 	var PDFDocument = require('pdfkit');
-	var outFilename = "usr-"+req.cookies.userID+"_prj-"+project._id+"_"+project.width+"x"+project.height+"_PROJECT-PDF.pdf";
+	var outFilename = req.app.sbam.utils.getCacheFilename(req.cookies.userID,project._id,project.preset.width+"mm",project.preset.height+"mm",suffix+".pdf","",false);
+	
+	
 	var outFullpath = req.app.sbam.config.pdfDir + outFilename;
 	var outUrl = req.app.sbam.config.pdfUrl + outFilename;
 	
 	//inizializzo il documento vuoto
 	var pdf_options = {
-		size: [req.app.sbam.utils.mmToPDFPoints(project.width),req.app.sbam.utils.mmToPDFPoints(project.height)],
+		size: [req.app.sbam.utils.mmToPDFPoints(project.preset.width),req.app.sbam.utils.mmToPDFPoints(project.preset.height)],
 		info: {
 			Title: project.name,
 			Author: 'SOBUAME USER: '+req.cookies.userID
@@ -59,8 +514,8 @@ function renderPdf(req,res,project,next) {
 		if ( pagesCloned.length > 0 ) {
 			var page = pagesCloned.pop();
 			//ciclo su tutti gli elements della pagina e li disegno
-			console.log("ciclo su pagina:");
-			console.log(page);
+			//console.log("ciclo su pagina:");
+			//console.log(page);
 			//var elementsCloned = page.elements.slice(0).reverse(); //tengo copia dell'originale, visto che il clone lo spolpo
 			var elementsCloned = page.elements.slice(0).reverse(); //tengo copia dell'originale, visto che il clone lo spolpo
 			var elementsModified = [];
@@ -68,8 +523,10 @@ function renderPdf(req,res,project,next) {
 			function nestedAsyncLoop() {
 				if ( elementsCloned.length > 0 ) {
 					var elm = elementsCloned.pop();
-					console.log("ciclo su element:");
-					console.log(elm);
+					//console.log("ciclo su element:");
+					//console.log(elm);
+					//per le figu devo impostare le dimensioni in base a stickerLayout
+					req.app.sbam.utils.manageStickerLayout(elm,project.preset);
 					//per tutti gli elementi, se è definito un colore di fondo, lo disegno
 					if ( 
 						elm.style && 
@@ -88,33 +545,41 @@ function renderPdf(req,res,project,next) {
 						var cmykColor = [elm.style.backgroundColor.c,elm.style.backgroundColor.m,elm.style.backgroundColor.y,elm.style.backgroundColor.k];
 						/*
 						ctx.fillStyle = rgbColor;
-						var sizePos = req.app.sbam.utils.thepositioner(bitmapW,bitmapH,project.width,project.height);
+						var sizePos = req.app.sbam.utils.thepositioner(bitmapW,bitmapH,project.preset.width,project.preset.height);
 						console.log(sizePos);
-						var bboxPixX = req.app.sbam.utils.bboxValToPixel(elm.bbox.x,sizePos.w,project.width);
-						var bboxPixY = req.app.sbam.utils.bboxValToPixel(elm.bbox.y,sizePos.h,project.height);
-						var bboxPixW = req.app.sbam.utils.bboxValToPixel(elm.bbox.w,sizePos.w,project.width);
-						var bboxPixH = req.app.sbam.utils.bboxValToPixel(elm.bbox.h,sizePos.h,project.height);
+						var bboxPixX = req.app.sbam.utils.bboxValToPixel(elm.bbox.x,sizePos.w,project.preset.width);
+						var bboxPixY = req.app.sbam.utils.bboxValToPixel(elm.bbox.y,sizePos.h,project.preset.height);
+						var bboxPixW = req.app.sbam.utils.bboxValToPixel(elm.bbox.w,sizePos.w,project.preset.width);
+						var bboxPixH = req.app.sbam.utils.bboxValToPixel(elm.bbox.h,sizePos.h,project.preset.height);
 						ctx.fillRect(bboxPixX+sizePos.x,bboxPixY+sizePos.y,bboxPixW,bboxPixH);
 						//console.log("ho appena disegnato un rettangolo di colore: "+rgbColor);
 						*/
-						var bboxMmX = req.app.sbam.utils.bboxValToMm(elm.bbox.x,project.width);
-						var bboxMmY = req.app.sbam.utils.bboxValToMm(elm.bbox.y,project.height);
-						var bboxMmW = req.app.sbam.utils.bboxValToMm(elm.bbox.w,project.width);
-						var bboxMmH = req.app.sbam.utils.bboxValToMm(elm.bbox.h,project.height);
-						console.log("avrei da buttar giù sta robba:");
-						console.log(cmykColor);
-						console.log(req.app.sbam.utils.mmToPDFPoints(bboxMmX));
-						console.log(req.app.sbam.utils.mmToPDFPoints(bboxMmY));
-						console.log(req.app.sbam.utils.mmToPDFPoints(bboxMmW));
-						console.log(req.app.sbam.utils.mmToPDFPoints(bboxMmH));
+						var bboxMmX = req.app.sbam.utils.bboxValToMm(elm.bbox.x,project.preset.width);
+						var bboxMmY = req.app.sbam.utils.bboxValToMm(elm.bbox.y,project.preset.height);
+						var bboxMmW = req.app.sbam.utils.bboxValToMm(elm.bbox.w,project.preset.width);
+						var bboxMmH = req.app.sbam.utils.bboxValToMm(elm.bbox.h,project.preset.height);
+						//console.log("avrei da buttar giù sta robba:");
+						//console.log(cmykColor);
+						//console.log(req.app.sbam.utils.mmToPDFPoints(bboxMmX));
+						//console.log(req.app.sbam.utils.mmToPDFPoints(bboxMmY));
+						//console.log(req.app.sbam.utils.mmToPDFPoints(bboxMmW));
+						//console.log(req.app.sbam.utils.mmToPDFPoints(bboxMmH));
 						//pdf.save();
 						//pdf.fill(cmykColor).rect(
+						//se è specificata una rotazione per i text, devo anche ruotare lo sfondo
+						if ( elm.text && elm.text.rotate ) {
+							pdf.rotate(Number(elm.text.rotate),{origin:[req.app.sbam.utils.mmToPDFPoints(bboxMmX),req.app.sbam.utils.mmToPDFPoints(bboxMmY)]});
+						}
 						pdf.rect(
 							req.app.sbam.utils.mmToPDFPoints(bboxMmX), 
 							req.app.sbam.utils.mmToPDFPoints(bboxMmY), 
 							req.app.sbam.utils.mmToPDFPoints(bboxMmW), 
 							req.app.sbam.utils.mmToPDFPoints(bboxMmH)
 						).fill(cmykColor);
+						//se è specificata una rotazione per i text, la tolgo
+						if ( elm.text && elm.text.rotate ) {
+							pdf.rotate(-Number(elm.text.rotate),{origin:[req.app.sbam.utils.mmToPDFPoints(bboxMmX),req.app.sbam.utils.mmToPDFPoints(bboxMmY)]});
+						}
 						//pdf.restore();
 					}
 					
@@ -123,7 +588,7 @@ function renderPdf(req,res,project,next) {
 							//se un utente ha rimosso (remove) un'immagine da una pagina, e poi ha salvato, nel db resta l'elemento image, ma senza url (vuoto).
 							//quindi se si tratta di un'immagine senza url la scarto e procedo oltre
 							if (elm.image.url && elm.image.url != "") {
-								renderImageElement(req,res,"pdf",pdf,elm,project._id,project.width,project.height,null,null,function(){
+								renderImageElement(req,res,"pdf",pdf,elm,project._id,project.preset.width,project.preset.height,null,null,function(){
 									nestedAsyncLoop();
 								}); //qui non passo bitmapW e bitmapH perchè per i pdf non servono
 							} else {
@@ -131,7 +596,7 @@ function renderPdf(req,res,project,next) {
 							}
 							break;
 						case "text":
-							renderTextElement(req,res,"pdf",pdf,elm,project.width,project.height,null,null,function(){
+							renderTextElement(req,res,"pdf",pdf,elm,project.preset.width,project.preset.height,null,null,function(){
 								nestedAsyncLoop();
 							}); //qui non passo bitmapW e bitmapH perchè per i pdf non servono
 							break;
@@ -140,7 +605,6 @@ function renderPdf(req,res,project,next) {
 					//finito una pagina
 					//creo nuova pagina
 					//lo faccio alla fine del loop perchè la prima pagina viene creata automaticamente
-					//QUI if ( i < project.pages.length - 1 ) pdf.addPage();
 					if ( curPage < totalPages) pdf.addPage();
 					curPage++;
 					asyncLoop();
@@ -172,10 +636,10 @@ function renderPdf(req,res,project,next) {
 			var elm = page.elements[j];
 			switch (elm.type) {
 				case "image":
-					renderImageElement(req,res,"pdf",pdf,elm,project._id,project.width,project.height); //qui non passo bitmapW e bitmapH perchè per i pdf non servono
+					renderImageElement(req,res,"pdf",pdf,elm,project._id,project.preset.width,project.preset.height); //qui non passo bitmapW e bitmapH perchè per i pdf non servono
 					break;
 				case "text":
-					renderTextElement(req,res,"pdf",pdf,elm,project.width,project.height); //qui non passo bitmapW e bitmapH perchè per i pdf non servono
+					renderTextElement(req,res,"pdf",pdf,elm,project.preset.width,project.preset.height); //qui non passo bitmapW e bitmapH perchè per i pdf non servono
 					break;
 			}
 		}
@@ -197,23 +661,24 @@ function renderPdf(req,res,project,next) {
 exports.renderPdf = renderPdf;
 
 /*
-questo metodo usa la libreria node-canvas per generare i bitmap
-i parametri project e tplFilename sono mutuamente esclusivi
+questo metodo usa la libreria node-canvas per generare i bitmap partendo da un project o da un template
+i parametri project e la coppia tplFilename,projectPreset sono mutuamente esclusivi
 se si passa project (un project dal db) verrà generata una thumb della sua prima pagina
-se si passa tplFilename (un file dall dir dei template) verrà generata una thumb del template
+se si passano tplFilename,projectPreset (un file dall dir dei template) verrà generata una thumb del template
 tplFilename è senza estensione
 */
-function renderBitmap(req,res,project,tplFilename,bitmapW,bitmapH,next) {
+function renderBitmap(req,res,project,tplFilename,projectPreset,bitmapW,bitmapH,next) {
 	//helpers
 	function renderElements(elements) {
 		//inizializzo le librerie necessarie e il nome del file da generare
 		var fs = require('fs');
 		var Canvas = require('canvas');
+		
 		if ( sourceType == "prj" ) {
-			var outFilename = "usr-"+req.cookies.userID+"_prj-"+project._id+"_"+bitmapW+"x"+bitmapH+"_PROJECT-THUMBNAIL.png";
+			var outFilename = req.app.sbam.utils.getCacheFilename(req.cookies.userID,project._id,bitmapW,bitmapH,"PROJECT-THUMB.png","",false);
 		}
 		else if ( sourceType == "tpl" ) {
-			var outFilename = "usr-"+req.cookies.userID+"_tpl-"+tplFilename+"_"+bitmapW+"x"+bitmapH+"_TEMPLATE-THUMBNAIL.png";
+			var outFilename = req.app.sbam.utils.getCacheFilename("common","common",bitmapW,bitmapH,tplFilename+"_TEMPLATE-THUMB.png","",false);
 		}
 		var outFullpath = req.app.sbam.config.cacheDir + outFilename;
 		var outUrl = req.app.sbam.config.cacheUrl + outFilename;
@@ -258,11 +723,10 @@ function renderBitmap(req,res,project,tplFilename,bitmapW,bitmapH,next) {
 			ctx.antialias = 'subpixel';
 			//calcolo le dimensioni utili del bitmap per rispettare l'aspect ratio del project
 			if ( sourceType == "prj" ) {
-				var sizePos = req.app.sbam.utils.thepositioner(bitmapW,bitmapH,project.width,project.height);
+				var sizePos = req.app.sbam.utils.thepositioner(bitmapW,bitmapH,project.preset.width,project.preset.height);
 			}
 			else if ( sourceType == "tpl" ) {
-				var templateParts = req.app.sbam.utils.parseTemplateFilename(tplFilename);
-				var sizePos = req.app.sbam.utils.thepositioner(bitmapW,bitmapH,templateParts.projectSize[0],templateParts.projectSize[1]);
+				var sizePos = req.app.sbam.utils.thepositioner(bitmapW,bitmapH,projectPreset.width,projectPreset.height);
 			}
 			
 			
@@ -273,8 +737,8 @@ function renderBitmap(req,res,project,tplFilename,bitmapW,bitmapH,next) {
 			ctx.strokeStyle = '#ccc';
 			ctx.lineWidth = 1;
 			ctx.strokeRect(Math.round(sizePos.x)+1,Math.round(sizePos.y)+1,Math.round(sizePos.w)-2,Math.round(sizePos.h)-2);
-			console.log("STROKKEREI: ");
-			console.log(Math.round(sizePos.x)+","+Math.round(sizePos.y)+","+Math.round(sizePos.w)+","+Math.round(sizePos.h));
+			//console.log("STROKKEREI: ");
+			//console.log(Math.round(sizePos.x)+","+Math.round(sizePos.y)+","+Math.round(sizePos.w)+","+Math.round(sizePos.h));
 			ctx.restore();
 
 
@@ -288,6 +752,9 @@ function renderBitmap(req,res,project,tplFilename,bitmapW,bitmapH,next) {
 				if ( elementsCloned.length > 0 ) {
 					elementCounter++;
 					var elm = elementsCloned.pop();
+					//per le figu devo impostare le dimensioni in base a stickerLayout
+					req.app.sbam.utils.manageStickerLayout(elm,sourcePreset);
+					
 					//per tutti gli elementi se è definito un colore di fondo lo disegno (ma non per i tpl)
 					if ( 
 						sourceType == "prj" &&
@@ -307,14 +774,14 @@ function renderBitmap(req,res,project,tplFilename,bitmapW,bitmapH,next) {
 						var rgbObj = ColorConverter.toRGB(new CMYK(elm.style.backgroundColor.c,elm.style.backgroundColor.m,elm.style.backgroundColor.y,elm.style.backgroundColor.k));
 						var rgbColor = 'rgb('+rgbObj.r+','+rgbObj.g+','+rgbObj.b+')';
 						ctx.fillStyle = rgbColor;
-						var sizePos = req.app.sbam.utils.thepositioner(bitmapW,bitmapH,project.width,project.height);
+						var sizePos = req.app.sbam.utils.thepositioner(bitmapW,bitmapH,project.preset.width,project.preset.height);
 						//console.log("avrei da buttar giù sta robba:");
 						//console.log(element);
 						//console.log(sizePos);
-						var bboxPixX = req.app.sbam.utils.bboxValToPixel(elm.bbox.x,sizePos.w,project.width);
-						var bboxPixY = req.app.sbam.utils.bboxValToPixel(elm.bbox.y,sizePos.h,project.height);
-						var bboxPixW = req.app.sbam.utils.bboxValToPixel(elm.bbox.w,sizePos.w,project.width);
-						var bboxPixH = req.app.sbam.utils.bboxValToPixel(elm.bbox.h,sizePos.h,project.height);
+						var bboxPixX = req.app.sbam.utils.bboxValToPixel(elm.bbox.x,sizePos.w,project.preset.width);
+						var bboxPixY = req.app.sbam.utils.bboxValToPixel(elm.bbox.y,sizePos.h,project.preset.height);
+						var bboxPixW = req.app.sbam.utils.bboxValToPixel(elm.bbox.w,sizePos.w,project.preset.width);
+						var bboxPixH = req.app.sbam.utils.bboxValToPixel(elm.bbox.h,sizePos.h,project.preset.height);
 						ctx.fillRect(bboxPixX+sizePos.x,bboxPixY+sizePos.y,bboxPixW,bboxPixH);
 						//console.log("ho appena disegnato un rettangolo di colore: "+rgbColor);
 						
@@ -325,7 +792,7 @@ function renderBitmap(req,res,project,tplFilename,bitmapW,bitmapH,next) {
 							//se un utente ha rimosso (remove) un'immagine da una pagina, e poi ha salvato, nel db resta l'elemento image, ma senza url (vuoto).
 							//quindi se si tratta di un'immagine senza url la scarto e procedo oltre
 							if (elm.image && elm.image.url && elm.image.url != "" && sourceType == "prj") {
-								renderImageElement(req,res,"bitmap",ctx,elm,project._id,project.width,project.height,bitmapW,bitmapH,function(){
+								renderImageElement(req,res,"bitmap",ctx,elm,project._id,project.preset.width,project.preset.height,bitmapW,bitmapH,function(){
 									asyncLoop();
 								});
 							} else {
@@ -335,26 +802,21 @@ function renderBitmap(req,res,project,tplFilename,bitmapW,bitmapH,next) {
 									asyncLoop();
 								}
 								else if ( sourceType == "tpl" ) {
-									//estraggo le dimensioni in mm della pagina (cioè del project) dal tplFilename
-									var templateParts = req.app.sbam.utils.parseTemplateFilename(tplFilename);
-									//var templateName = templateParts.templateName;
-									//var projectTypes = templateParts.projectTypes;
-									//var projectSize = templateParts.projectSize;
-									//var templateVariant = templateParts.templateVariant;
+									//prendo le dimensioni in mm dal preset
 									//se non è specificata un'immagine, nel caso di sourceType tpl devo comunque renderizzare un rettangolo trasparente
 									//ma non lo faccio solo se il primo elemento è un'immagine a fondo pieno
 									if ( 
 										elementCounter == 1
 										&&
-										Math.round(req.app.sbam.utils.bboxValToMm(elm.bbox.w,templateParts.projectSize[0])) == Math.round(templateParts.projectSize[0])
+										Math.round(req.app.sbam.utils.bboxValToMm(elm.bbox.w,projectPreset.width)) == Math.round(projectPreset.width)
 										&&
-										Math.round(req.app.sbam.utils.bboxValToMm(elm.bbox.h,templateParts.projectSize[1])) == Math.round(templateParts.projectSize[1])
+										Math.round(req.app.sbam.utils.bboxValToMm(elm.bbox.h,projectPreset.height)) == Math.round(projectPreset.height)
 									) {
 										//caso di primo element immagine a sfondo pieno, skippo
 										asyncLoop();
 									} else {
 										//in tutti gli altri casi disegno
-										renderBitmapRectangle(req,res,ctx,'rgba(51,136,204,0.5)',elm,templateParts.projectSize[0],templateParts.projectSize[1],bitmapW,bitmapH,function(){
+										renderBitmapRectangle(req,res,ctx,'rgba(51,136,204,0.5)',elm,projectPreset.width,projectPreset.height,bitmapW,bitmapH,function(){
 											asyncLoop();
 										});
 									}
@@ -363,16 +825,14 @@ function renderBitmap(req,res,project,tplFilename,bitmapW,bitmapH,next) {
 							break;
 						case "text":
 							if ( sourceType == "prj" ) {
-								renderTextElement(req,res,"bitmap",ctx,elm,project.width,project.height,bitmapW,bitmapH,function(){
+								renderTextElement(req,res,"bitmap",ctx,elm,project.preset.width,project.preset.height,bitmapW,bitmapH,function(){
 									asyncLoop();
 								});
 							}
 							else if ( sourceType == "tpl" ) {
 								//per sourceType tpl invece del testo renderizzo un fondo
-								//QUI
-								//estraggo le dimensioni in mm della pagina (cioè del project) dal tplFilename
-								var templateParts = req.app.sbam.utils.parseTemplateFilename(tplFilename);
-								renderBitmapRectangle(req,res,ctx,'rgba(0,0,0,0.3)',elm,templateParts.projectSize[0],templateParts.projectSize[1],bitmapW,bitmapH,function(){
+								//prendo le dimensioni in mm della pagina (cioè del project) dal preset
+								renderBitmapRectangle(req,res,ctx,'rgba(0,0,0,0.3)',elm,projectPreset.width,projectPreset.height,bitmapW,bitmapH,function(){
 									asyncLoop();
 								});
 							}
@@ -398,9 +858,11 @@ function renderBitmap(req,res,project,tplFilename,bitmapW,bitmapH,next) {
 	//distinguo i 2 casi di sorgente project o tplFilename file
 	if ( project ) {
 		var sourceType = "prj";
+		var sourcePreset = project.preset;
 	}
-	else if ( tplFilename ) {
+	else if ( tplFilename && projectPreset ) {
 		var sourceType = "tpl";
+		var sourcePreset = projectPreset;
 	}
 	
 	//devo fare un loop sugli elementi che mi sono arrivati, e disegnarli nel bitmap
@@ -455,7 +917,7 @@ function renderImageElement(req,res,output,handler,element,projectId,projectW,pr
 	var path = req.app.sbam.utils.separateUrl(req,res,element.image.url).path;
 	var sourceImageFullpath = req.app.sbam.utils.getSourceImgFullpath(req,res,req.cookies.userID,projectId,name,path);
 	//trovo le dimensioni in pix dell'immagine
-	req.app.sbam.utils.getImgFeatures(req, res, req.cookies.userID, projectId, path, name, function(features){
+	req.app.sbam.utils.getImgFeatures(req, res, req.cookies.userID, projectId, path, name, element, function(features){
 		var sourceImagePixW = features.size.width;
 		var sourceImagePixH = features.size.height;
 		//se non sono definiti offset e/o dpi, li imposto per default usando un fill dell'immagine nel suo bbox
@@ -525,21 +987,26 @@ function renderImageElement(req,res,output,handler,element,projectId,projectW,pr
 			
 			//poi disegno l'immagine intera, che verrà tagliata dalla clipping mask
 			//ctx.image('images/test.jpeg', 0, 15, width: 300);
-			var sourceImage = fs.readFileSync(sourceImageFullpath);
+			
 			//sourceImagePixW
 			var imagePixW = req.app.sbam.utils.bboxValToPixel(imageMmW,sizePos.w,projectW);
 			var imagePixH = req.app.sbam.utils.bboxValToPixel(imageMmH,sizePos.h,projectH);
-			var img = new Image;
-			img.src = sourceImage;
-			ctx.drawImage(
-				img, 
-				bboxPixX + imageOffsetPixX + sizePos.x, 
-				bboxPixY + imageOffsetPixY + sizePos.y, 
-				imagePixW,
-				imagePixH
-			);
-			ctx.restore();
-			next();
+			
+			//prima devo chiamare un getImg per applicare eventuali effetti, non posso leggere direttamente l'immagine originale
+			req.app.sbam.utils.getImg(req,res,req.cookies.userID,projectId,name,path,imagePixW,imagePixH,false,element,true,function(resampledImageFullpath){
+				var sourceImage = fs.readFileSync("public/"+resampledImageFullpath);
+				var img = new Image;
+				img.src = sourceImage;
+				ctx.drawImage(
+					img, 
+					bboxPixX + imageOffsetPixX + sizePos.x, 
+					bboxPixY + imageOffsetPixY + sizePos.y, 
+					imagePixW,
+					imagePixH
+				);
+				ctx.restore();
+				next();
+			});			
 		} 
 		else if ( output == "pdf" ) {
 			//helpers
@@ -586,22 +1053,16 @@ function renderImageElement(req,res,output,handler,element,projectId,projectW,pr
 				next();
 			}
 			
-			//////se i dpi sono maggiori di app.sbam.config.defaultPdfDpi devo effettuare un downsampling dell'immagine prima di inserirla nel pdf
-			////if ( element.image.dpi > req.app.sbam.config.defaultPdfDpi ) {
-				//calcolo le misure dell'immagine alla risoluzione prevista per i pdf
-				var pdfImagePixW = sourceImagePixW / element.image.dpi * req.app.sbam.config.defaultPdfDpi;
-				var pdfImagePixH = sourceImagePixH / element.image.dpi * req.app.sbam.config.defaultPdfDpi;
-				//console.log("drawImageInPdf: downsamplo a pdfImagePixW="+pdfImagePixW+" e pdfImagePixH="+pdfImagePixH);
-				//creo una nuova immagine in cache, con le misure a 300dpi dell'immagine
-				req.app.sbam.utils.getImg(req,res,req.cookies.userID,projectId,name,path,pdfImagePixW,pdfImagePixH,false,function(resampledImageFullpath){
-					//console.log("drawImageInPdf: e ottengo resampledImageFullpath="+resampledImageFullpath);
-					//e poi nel pdf metto quella
-					drawImageInPdf("public/"+resampledImageFullpath,next);
-				});
-			////} else {
-			////	//metto nel pdf l'immagine orginiale
-			////	drawImageInPdf(sourceImageFullpath,next);
-			////}
+			//calcolo le misure dell'immagine alla risoluzione prevista per i pdf
+			var pdfImagePixW = sourceImagePixW / element.image.dpi * req.app.sbam.config.defaultPdfDpi;
+			var pdfImagePixH = sourceImagePixH / element.image.dpi * req.app.sbam.config.defaultPdfDpi;
+			//console.log("drawImageInPdf: downsamplo a pdfImagePixW="+pdfImagePixW+" e pdfImagePixH="+pdfImagePixH);
+			//creo una nuova immagine in cache, con le misure a 300dpi dell'immagine
+			req.app.sbam.utils.getImg(req,res,req.cookies.userID,projectId,name,path,pdfImagePixW,pdfImagePixH,false,element,true,function(resampledImageFullpath){
+				//console.log("drawImageInPdf: e ottengo resampledImageFullpath="+resampledImageFullpath);
+				//e poi nel pdf metto quella
+				drawImageInPdf("public/"+resampledImageFullpath,next);
+			});
 		}
 	});
 	
@@ -699,13 +1160,7 @@ function renderTextElement(req,res,output,handler,element,projectW,projectH,bitm
 				element.style.foregroundColor.c != undefined && 
 				element.style.foregroundColor.m != undefined && 
 				element.style.foregroundColor.y != undefined && 
-				element.style.foregroundColor.k != undefined &&
-				!(
-					element.style.foregroundColor.c == 0 &&
-					element.style.foregroundColor.m == 0 &&
-					element.style.foregroundColor.y == 0 &&
-					element.style.foregroundColor.k == 0
-				)
+				element.style.foregroundColor.k != undefined 
 			) {
 				var rgbObj = ColorConverter.toRGB(new CMYK(element.style.foregroundColor.c,element.style.foregroundColor.m,element.style.foregroundColor.y,element.style.foregroundColor.k));
 				var rgbColor = 'rgb('+rgbObj.r+','+rgbObj.g+','+rgbObj.b+')';
@@ -736,10 +1191,27 @@ function renderTextElement(req,res,output,handler,element,projectW,projectH,bitm
 		else if ( output == "pdf" ) {
 			//trasformo eventuali <br> in qualcosa di comrpensibile per il pdf
 			var contentPdffed = element.text.content.replace(/<br>/g,'\n');
+			//se è specificato rotate lo eseguo
+			//console.log("RUOTO O NON RUOTO? ");
+			//console.log(element.text);
+			if ( element.text.rotate ) {
+				pdf.rotate(Number(element.text.rotate),{origin:[req.app.sbam.utils.mmToPDFPoints(req.app.sbam.utils.bboxValToMm(element.bbox.x,projectW)),req.app.sbam.utils.mmToPDFPoints(req.app.sbam.utils.bboxValToMm(element.bbox.y,projectH))]});
+			}
+			//disegno il testo
+			var elementFont = "HelveticaNeue-Bold.ttf";
+			var elementFontSize = 12;
+			var elementForegroundColor = { c:0, m:0, y:0, k:100 };
+			var elementAlign = "left";
+			if ( element.style ) {
+				if ( element.style.font ) elementFont = element.style.font;
+				if ( element.style.fontSize ) elementFontSize = element.style.fontSize;
+				if ( element.style.foregroundColor ) elementForegroundColor = element.style.foregroundColor;
+				if ( element.style.align ) elementAlign = element.style.align;
+			}
 			pdf
-			.font("public/"+req.app.sbam.config.fontDir+element.style.font)
-			.fontSize(element.style.fontSize)
-			.fillColor([element.style.foregroundColor.c,element.style.foregroundColor.m,element.style.foregroundColor.y,element.style.foregroundColor.k])
+			.font("public/"+req.app.sbam.config.fontDir+elementFont)
+			.fontSize(elementFontSize)
+			.fillColor([elementForegroundColor.c,elementForegroundColor.m,elementForegroundColor.y,elementForegroundColor.k])
 			.text(
 				contentPdffed,
 				req.app.sbam.utils.mmToPDFPoints(req.app.sbam.utils.bboxValToMm(element.bbox.x,projectW)),
@@ -747,9 +1219,13 @@ function renderTextElement(req,res,output,handler,element,projectW,projectH,bitm
 				{
 					width: req.app.sbam.utils.mmToPDFPoints(req.app.sbam.utils.bboxValToMm(element.bbox.w,projectW)),
 					height: req.app.sbam.utils.mmToPDFPoints(req.app.sbam.utils.bboxValToMm(element.bbox.h,projectH)),
-					align: element.style.align
+					align: elementAlign
 				}
 			);
+			//se avevi ruotato, raddrizzo
+			if ( element.text.rotate ) {
+				pdf.rotate(-Number(element.text.rotate),{origin:[req.app.sbam.utils.mmToPDFPoints(req.app.sbam.utils.bboxValToMm(element.bbox.x,projectW)),req.app.sbam.utils.mmToPDFPoints(req.app.sbam.utils.bboxValToMm(element.bbox.y,projectH))]});
+			}
 		}
 		next(); //per ora è tutto sync, quindi chiamo next() alla fine
 	}
@@ -1026,7 +1502,7 @@ var ColorConverter = {
  
  
  
- 
+}
  
 
 

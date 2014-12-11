@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<elements>
+	<element>
+		<type>image</type>
+		<locked>yes</locked>
+		<image>
+			<url></url>
+		</image>
+		<bbox>
+			<x>0</x>
+			<y>0</y>
+			<w>100%</w>
+			<h>100%</h>
+		</bbox>
+	</element>
+</elements>

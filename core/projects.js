@@ -28,23 +28,34 @@
 
 
 
-/*
-function createUser(req,res,next) {
-	//creo lo user nel db
-	var user = new req.app.sbam.user();
-	user.ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-	//console.log("creato new user");
-	user.save(function (err) {
-		if ( err ) {
-			console.log("save:error "+err);
-			res.send(err);
+					
+function createProjectFolders(req,res,userId,projectId,next) {
+	var fs   = require('fs');
+	var projectDir = "repo/"+userId+"/files/project_"+projectId;
+	fs.mkdir(projectDir, 0775, function(err) {
+		if (err) {
+			if (err.code == 'EEXIST') {
+				// ignore the error if the folder already exists
+			} else {
+				// something else went wrong
+				console.log("addProjectSave: error creating folder "+projectDir+" for user "+userId);
+				console.log("addProjectSave: error: "+err);
+				next(err);
+			}
 		} else {
-			//console.log("salvo new user nei cookies");
-			//e lo salvo nei cookies dell'utente
-			req.app.sbam.sess.setCookieUserId(res,user._id.toString());
-			next();
+			// successfully created folder
+			//e infine dentro a questa cartella devo crearci un link alle immagini di default
+			var linkName = projectDir+"/libreria";
+			var linkTarget = "../../../../"+req.app.sbam.config.templatesImagesDir;
+			//console.log("proverei a creare il link da "+linkName+" a "+linkTarget);
+			fs.symlinkSync(linkTarget,linkName);
+			
+			//res.setHeader('Content-Type', 'application/json');//ma serve?
+			//res.end(JSON.stringify(project));	
+			//res.redirect("/");
+			next();	
 		}
 	});
 }
-exports.createUser = createUser; 
-*/
+exports.createProjectFolders = createProjectFolders;
+

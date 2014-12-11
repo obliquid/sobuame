@@ -1,4 +1,4 @@
-div(data-role='panel' id='panelMedia' data-display="overlay" )
+div(data-role='panel' id='panelMedia' data-display="overlay")
 	ul(data-role="listview" )
 		li
 			a(data-rel="close").ui-icon-delete #{__i("Immagini")}
@@ -6,7 +6,7 @@ div(data-role='panel' id='panelMedia' data-display="overlay" )
 			div(data-role="navbar")
 				ul
 					li
-						a(id="buttonAddMedia" href="#popupAddMedia" data-icon="plus" data-rel="popup" data-position-to="window" data-transition="pop") #{__i("Carica Immagini")}
+						a(id="buttonAddMedia" href="#popupAddMedia" data-icon="plus" data-rel="popup" data-position-to="window" ) #{__i("Carica Immagini")}
 					li
 						a(id="buttonAddFolder" href="#popupAddFolder" data-icon="folder" data-rel="popup" data-position-to="window" data-transition="pop") #{__i("Nuova Cartella")}
 		li(id="empty-media" data-role="list-divider")
@@ -15,18 +15,19 @@ div(data-role='panel' id='panelMedia' data-display="overlay" )
 	ul(data-role="listview" id='panelMediaListview'  data-split-icon="gear"  style='position:relative;top:16px;' )
 
 
-	div(data-role="popup" id="popupAddMedia")
+	div(data-role="popup" id="popupAddMedia" style="max-width:800px;")
 		div(role="main").ui-content
 			h3 #{__i("Caricamento Immagini")}
 			form(id="filesUploadForm" enctype="multipart/form-data" method="post" action="/upload")
-				label(for="fileToUpload") #{__i("Seleziona le immagini da caricare, anche più di una, e clicca su Inizia")}
+				label #{__i("Seleziona le immagini da caricare, anche più di una, e clicca su Inizia. Appena il caricamento sarà iniziato potrai cliccare su Nascondi e continuare a lavorare alla tua pubblicazione: le nuove immagini appariranno nel pannello Immagini man mano che verranno caricate.")}
 				input(type="file" name="fileToUpload" id="fileToUpload" onchange="sbam.utils.uploader.fileSelected();" multiple="multiple" accept="image/*").ui-btn.ui-icon-plus.ui-btn-icon-right.ui-shadow.ui-corner-all.ui-btn-inline
 				p
 					strong(id="totalFileSizeLabel")
 				input(type='range' name='progressNumber' id='progressNumber' data-highlight='true'  data-mini='true' min='0' max='100' value='0')
 				h2(id='progressLabel')
-				a(id="addMediaButton" onclick="sbam.utils.uploader.uploadFile()").ui-btn.ui-icon-cloud-upload.ui-btn-icon-right.ui-shadow.ui-corner-all.ui-btn-inline #{__i('Inizia caricamento')}
-				a(href="#" data-rel="back").ui-btn.ui-icon-delete.ui-btn-icon-right.ui-shadow.ui-corner-all.ui-btn-inline #{__i('Chiudi')}
+				a(id="addMediaButton" onclick="sbam.utils.uploader.uploadFile()").ui-btn.ui-icon-cloud-upload.ui-btn-icon-right.ui-shadow.ui-corner-all.ui-btn-inline.ui-disabled #{__i('Inizia caricamento')}
+				a(href="#" data-rel="back").ui-btn.ui-icon-delete.ui-btn-icon-right.ui-shadow.ui-corner-all.ui-btn-inline #{__i('Nascondi')}
+				table(id='progressBarsContainer').uploaderProgressBarContainer
 
 
 
@@ -43,8 +44,10 @@ div(data-role='panel' id='panelMedia' data-display="overlay" )
 
 
 	div(data-role="popup" id="popupToolboxMedia").ui-content
-		h3 #{__i("Gestisci immagine")}
-		p #{__i("Qui ci saranno operazioni specifiche sulle immagini")}
-		a(data-rel="back").ui-shadow.ui-btn.ui-corner-all.ui-btn-b.ui-icon-check.ui-btn-icon-left.ui-btn-inline.ui-mini #{__i("Azione")}
-		a(data-rel="back").ui-shadow.ui-btn.ui-corner-all.ui-btn-inline.ui-mini #{__i("Cancella")}
+		h3 #{__i("Modifica immagine")}
+		a(id="editMediaButtonRotateRight" title="#{__i('Ruota 90° in senso orario')}").ui-shadow.ui-btn.ui-corner-all.ui-btn-b.ui-icon-mail-forward.ui-btn-icon-left.ui-btn-inline.ui-mini #{__i("Rot. +90°")}
+		a(id="editMediaButtonRotateLeft" title="#{__i('Ruota 90° in senso antiorario')}").ui-shadow.ui-btn.ui-corner-all.ui-btn-b.ui-icon-mail-reply.ui-btn-icon-left.ui-btn-inline.ui-mini #{__i("Rot. -90°")}
+		a(id="editMediaButtonFlipHoriz" title="#{__i('Rifletti orizzontale')}").ui-shadow.ui-btn.ui-corner-all.ui-btn-b.ui-icon-arrows-h.ui-btn-icon-left.ui-btn-inline.ui-mini #{__i("Flip hor.")}
+		a(id="editMediaButtonFlipVert" title="#{__i('Rifletti verticale')}").ui-shadow.ui-btn.ui-corner-all.ui-btn-b.ui-icon-arrows-v.ui-btn-icon-left.ui-btn-inline.ui-mini #{__i("Flip ver.")}
+		a(data-rel="back").ui-shadow.ui-btn.ui-corner-all.ui-btn-inline.ui-mini #{__i("Chiudi")}
 	

@@ -1,0 +1,14 @@
+script(src='/javascripts/sobuame-admin.js')
+script.
+	var sbamAdminUsername = "#{username || ''}";
+	var sbamAdminPassword = "#{password || ''}";
+div(data-role='header' data-position='fixed' data-tap-toggle='false' )
+	div(data-role='controlgroup',data-type='horizontal').ui-mini.ui-btn-left
+		a(id='admBtnUsers').ui-btn.ui-icon-user.ui-btn-icon-notext.ui-title
+	//-
+		div(data-role='controlgroup',data-type='horizontal').ui-mini.ui-btn-right
+			a(href='#panelAccount' style='background-color:#bbffbb;').ui-btn.ui-icon-user.ui-btn-icon-notext.ui-title
+
+
+
+

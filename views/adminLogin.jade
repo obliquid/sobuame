@@ -1,0 +1,10 @@
+extends layout
+
+block content
+
+	div(data-role='page' id='page-login' data-url='/admin')
+		include includes/appHeaderMinimal
+		div(role='main').ui-content
+			include includes/formLogin
+			div.ui-body
+				p #{__i("Inserire Nome utente e Password da superadmin.")}

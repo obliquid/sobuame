@@ -12,7 +12,7 @@ div(data-role='panel' id='panelPages' data-display="overlay" )
 		li(id="empty-pages" data-role="list-divider")
 			p  #{__i("La tua pubblicazione non ha nessuna pagina.")}
 		li(data-role="list-divider")
-	ul(data-role="listview" id='panelPagesListview' style='position:relative;top:16px;')
+	ul(data-role="listview" id='panelPagesListview' style='position:relative;top:16px;' data-split-icon='gear')
 			
 			
 	div(data-role="popup" id="popupDelPage")
@@ -21,3 +21,10 @@ div(data-role='panel' id='panelPages' data-display="overlay" )
 			p #{__i('Sicuro di voler eliminare queste pagine?')}
 			a(id="delPageButton" data-icon="minus" data-rel="back").ui-btn.ui-icon-minus.ui-btn-icon-right.ui-shadow.ui-corner-all.ui-btn-inline #{__i('Elimina')}
 			a(href="#" data-rel="back").ui-btn.ui-icon-delete.ui-btn-icon-right.ui-shadow.ui-corner-all.ui-btn-inline #{__i('Annulla')}
+	
+	//-
+		div(data-role="popup" id="popupToolboxPage").ui-content
+			h3 #{__i("Sposta pagine")}
+			a(id="editPageButtonMoveUp" title="#{__i('sposta su')}").ui-shadow.ui-btn.ui-corner-all.ui-btn-b.ui-icon-mail-forward.ui-btn-icon-left.ui-btn-inline.ui-mini #{__i("Su")}
+			a(id="editPageButtonMoveDown" title="#{__i('sposta giu')}").ui-shadow.ui-btn.ui-corner-all.ui-btn-b.ui-icon-mail-reply.ui-btn-icon-left.ui-btn-inline.ui-mini #{__i("Giu")}
+			a(data-rel="back").ui-shadow.ui-btn.ui-corner-all.ui-btn-inline.ui-mini #{__i("Chiudi")}
